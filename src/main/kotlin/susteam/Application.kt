@@ -1,12 +1,17 @@
 package susteam
 
+import io.vertx.core.DeploymentOptions
+import io.vertx.kotlin.core.deployVerticleAwait
 import io.vertx.kotlin.coroutines.CoroutineVerticle
+import susteam.web.WebServerVerticle
 
-class Application: CoroutineVerticle() {
+class Application : CoroutineVerticle() {
 
     override suspend fun start() {
-        println("Hello Vert.x")
-        vertx.close()
+
+        vertx.deployVerticleAwait(WebServerVerticle(), DeploymentOptions().setConfig(config))
+
     }
+
 
 }
