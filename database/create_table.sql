@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS user, user_roles;
+DROP TABLE IF EXISTS user, user_roles, game, game_version;
 
 CREATE TABLE user
 (
@@ -26,3 +26,27 @@ VALUES ('admin',
 
 INSERT INTO user_roles
 VALUES ('admin', 'admin');
+
+CREATE TABLE IF NOT EXISTS game
+(
+    game_id      INT          NOT NULL AUTO_INCREMENT,
+    name         VARCHAR(255) NOT NULL,
+    price        INT          NOT NULL,
+    publish_date DATETIME(0)  NOT NULL,
+    author       VARCHAR(255) NOT NULL,
+    description  VARCHAR(4095),
+
+    PRIMARY KEY (game_id),
+    UNIQUE (name),
+    FOREIGN KEY (author) REFERENCES user (username)
+);
+
+CREATE TABLE IF NOT EXISTS game_version
+(
+    game_id INT          NOT NULL,
+    name    VARCHAR(255) NOT NULL,
+    url     VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (game_id, name),
+    FOREIGN KEY (game_id) REFERENCES game (game_id)
+);
