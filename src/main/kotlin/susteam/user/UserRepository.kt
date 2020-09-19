@@ -28,9 +28,9 @@ class UserRepository @Inject constructor(private val database: JDBCClient) {
 
     suspend fun get(username: String): User? {
         return database.querySingleWithParamsAwait(
-            """SELECT username, avatar, description FROM user WHERE username = ?;""",
+            """SELECT username, avatar, description, balance FROM user WHERE username = ?;""",
             jsonArrayOf(username)
-        )?.let { User(it.getString(0), it.getString(1), it.getString(2)) }
+        )?.let { User(it.getString(0), it.getString(1), it.getString(2), it.getInteger(3)) }
     }
 
     suspend fun getPasswordHash(username: String): String? {
@@ -43,7 +43,7 @@ class UserRepository @Inject constructor(private val database: JDBCClient) {
     suspend fun getRole(username: String): UserRole? {
         val result = database.queryWithParamsAwait(
             """
-                SELECT u.username, u.avatar, u.description, ur.role
+                SELECT u.username, u.avatar, u.description, u.balance, ur.role
                 FROM user u
                 LEFT JOIN user_roles ur on u.username = ur.username
                 WHERE u.username = ?;

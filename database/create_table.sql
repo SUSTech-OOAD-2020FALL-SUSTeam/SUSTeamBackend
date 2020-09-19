@@ -6,6 +6,7 @@ CREATE TABLE user
     password    VARCHAR(255) NOT NULL,
     description VARCHAR(255),
     avatar      VARCHAR(255),
+    balance     INT DEFAULT 0, -- Stored in Cents
 
     PRIMARY KEY (username)
 );

@@ -20,9 +20,9 @@ class UserService @Inject constructor(
             throw ServiceException("Username or password is blank")
         }
 
-        val hash = repository.getPasswordHash(username) ?: throw ServiceException("User not exist")
+        val hash = repository.getPasswordHash(username) ?: throw ServiceException("User does not exist")
         if (!hashingStrategy.verify(hash, password)) {
-            throw ServiceException("Authenticate failed")
+            throw ServiceException("Authentication failed")
         }
 
         val userRole = repository.getRole(username)!!
@@ -50,7 +50,7 @@ class UserService @Inject constructor(
     }
 
     suspend fun getUser(username: String): User {
-        return repository.get(username) ?: throw ServiceException("User not exist")
+        return repository.get(username) ?: throw ServiceException("User does not exist")
     }
 
     private fun HashingStrategy.generateSalt() = Random.nextBytes(32).toHexString()

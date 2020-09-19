@@ -8,7 +8,8 @@ import io.vertx.kotlin.core.json.jsonObjectOf
 data class User(
     val username: String,
     val avatar: String?,
-    val description: String?
+    val description: String?,
+    val balance: Int
 )
 
 typealias Auth = io.vertx.ext.auth.User
@@ -27,7 +28,8 @@ fun User.toJson(): JsonObject = jsonObjectOf(
 fun JsonObject.toUser(): User = User(
     getString("username"),
     getString("avatar"),
-    getString("description")
+    getString("description"),
+    getInteger("balance")
 )
 
 fun UserRole.toJson(): JsonObject = jsonObjectOf(
