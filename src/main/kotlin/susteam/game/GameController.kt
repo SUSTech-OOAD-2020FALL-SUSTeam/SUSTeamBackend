@@ -33,9 +33,9 @@ class GameController @Inject constructor(private val service: GameService) : Cor
 
     suspend fun handlePublishGameVersion(context: RoutingContext) {
         val params = context.bodyAsJson
-        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game id is empty")
+        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game ID is empty")
         val versionName = params.getString("versionName") ?: throw ServiceException("Game version name is empty")
-        val url = params.getString("url") ?: throw ServiceException("Url is empty")
+        val url = params.getString("url") ?: throw ServiceException("URL is empty")
 
         service.publishGameVersion(gameId, versionName, url)
 
@@ -44,7 +44,7 @@ class GameController @Inject constructor(private val service: GameService) : Cor
 
     suspend fun handleUpdateDescription(context: RoutingContext) {
         val params = context.bodyAsJson
-        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game id is empty")
+        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game ID is empty")
         val description = params.getString("description")
 
         service.updateDescription(gameId, description)
@@ -54,7 +54,7 @@ class GameController @Inject constructor(private val service: GameService) : Cor
 
     suspend fun handleGetGame(context: RoutingContext) {
         val params = context.bodyAsJson
-        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game id not found")
+        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game ID not found")
 
         val game: Game = service.getGame(gameId)
 
@@ -67,7 +67,7 @@ class GameController @Inject constructor(private val service: GameService) : Cor
 
     suspend fun handleGetVersion(context: RoutingContext) {
         val params = context.bodyAsJson
-        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game id not found")
+        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game ID not found")
         val versionName = params.getString("versionName") ?: throw ServiceException("Version name not found")
 
         val gameVersion: GameVersion = service.getGameVersion(gameId, versionName)

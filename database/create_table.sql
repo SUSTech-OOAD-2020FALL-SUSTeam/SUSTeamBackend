@@ -48,8 +48,22 @@ CREATE TABLE IF NOT EXISTS game_version
     name    VARCHAR(255) NOT NULL,
     url     VARCHAR(255) NOT NULL,
 
-    UNIQUE(game_id,name),
-    UNIQUE(url),
+    UNIQUE (game_id, name),
+    UNIQUE (url),
     PRIMARY KEY (game_id, name),
+    FOREIGN KEY (game_id) REFERENCES game (game_id)
+);
+
+CREATE TABLE IF NOT EXISTS `comment`
+(
+    username     VARCHAR(255) NOT NULL,
+    game_id      VARCHAR(255) NOT NULL,
+    comment_time DATETIME(3)  NOT NULL,
+    content      VARCHAR(255) NOT NULL,
+    score        INT          NOT NULL,
+
+    PRIMARY KEY (username, game_id), -- Each user can comment a game ONLY ONCE
+    INDEX (game_id),
+    FOREIGN KEY (username) REFERENCES user (username),
     FOREIGN KEY (game_id) REFERENCES game (game_id)
 );

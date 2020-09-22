@@ -13,7 +13,7 @@ class GameService @Inject constructor(
     }
 
     suspend fun getGameVersion(gameId: Int, versionName: String): GameVersion {
-        return repository.getVersion(gameId, versionName) ?: throw ServiceException("Version do not exist")
+        return repository.getVersion(gameId, versionName) ?: throw ServiceException("Version does not exist")
     }
 
     suspend fun publishGame(
@@ -26,7 +26,7 @@ class GameService @Inject constructor(
             throw ServiceException("Game name is blank")
         }
         if (price < 0) {
-            throw ServiceException("Price less than zero")
+            throw ServiceException("Price is less than zero")
         }
         if (author.isBlank()) {
             throw ServiceException("Author is blank")
@@ -46,7 +46,7 @@ class GameService @Inject constructor(
             throw ServiceException("Game version name is blank")
         }
         if (url.isBlank()) {
-            throw ServiceException("Url is blank")
+            throw ServiceException("URL is blank")
         }
 
         repository.createVersion(gameId, versionName, url)
