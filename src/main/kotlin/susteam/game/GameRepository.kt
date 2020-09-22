@@ -11,7 +11,7 @@ import java.time.Instant
 
 class GameRepository @Inject constructor(private val database: JDBCClient) {
 
-    suspend fun create(
+    suspend fun createGame(
             name: String,
             price: Int,
             publishDate: Instant,
@@ -24,26 +24,22 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
                     jsonArrayOf(name, price, publishDate, author, description)
             ).keys.getInteger(0)
         } catch (e: SQLIntegrityConstraintViolationException) {
-            if (e.message?.contains("game.name") == true) {
-                throw ServiceException("Cannot create game '$name', already exist", e)
-            } else {
                 throw e
-            }
         }
     }
 
     suspend fun updateDescription(
-            name: String,
+            gameId: Int,
             description: String?
     ) {
         try {
             database.updateWithParamsAwait(
-                    """UPDATE game SET description=? WHERE name=?""",
-                    jsonArrayOf(description, name)
+                    """UPDATE game SET description=? WHERE id=?""",
+                    jsonArrayOf(description, gameId)
             )
         } catch (e: SQLIntegrityConstraintViolationException) {
-            if (e.message?.contains("game.name") == true) {
-                throw ServiceException("Game '$name' is not exist", e)
+            if (e.message?.contains("game.id") == true) {
+                throw ServiceException("Game '$gameId' is not exist", e)
             } else {
                 throw e
             }
@@ -51,14 +47,14 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
     }
 
     suspend fun createVersion(
-            gameName: String,
+            gameId: Int,
             versionName: String,
             url: String
     ) {
         try {
-            val game: Game? = get(gameName)
+            val game: Game? = getById(gameId)
             if (game == null) {
-                throw ServiceException("Cannot create version '$versionName' for game '$gameName' because game '$gameName' do not exist")
+                throw ServiceException("Cannot create version '$versionName' for game '$gameId' because game '$gameId' do not exist")
             }
             database.updateWithParamsAwait(
                     """INSERT INTO game_version (game_id, name, url) VALUES (?, ?, ?);""",
@@ -73,10 +69,10 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         }
     }
 
-    suspend fun get(name: String): Game? {
+    suspend fun getById(id: Int): Game? {
         return database.querySingleWithParamsAwait(
                 """SELECT game_id, name, price, publish_date, author, description FROM game WHERE name = ?;""",
-                jsonArrayOf(name)
+                jsonArrayOf(id)
         )?.let {
             Game(
                     it.getInteger(0), it.getString(1), it.getInteger(2),
@@ -85,12 +81,12 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         }
     }
 
-    suspend fun getVersion(gameName: String, versionName: String): GameVersion? {
-        val game: Game? = get(gameName)
+    suspend fun getVersion(gameId: Int, versionName: String): GameVersion? {
+        val game: Game? = getById(gameId)
         if (game != null) {
             return database.querySingleWithParamsAwait(
                     """SELECT game_id, name, url FROM game_version WHERE name = ? and game_id = ?;""",
-                    jsonArrayOf(versionName, game.id)
+                    jsonArrayOf(versionName, gameId)
             )?.let {
                 GameVersion(
                         it.getInteger(0), it.getString(1), it.getString(2)

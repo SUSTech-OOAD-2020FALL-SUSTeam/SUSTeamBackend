@@ -8,12 +8,12 @@ class GameService @Inject constructor(
         private val repository: GameRepository
 ) {
 
-    suspend fun getGame(gameName: String): Game {
-        return repository.get(gameName) ?: throw ServiceException("Game does not exist")
+    suspend fun getGame(gameId: Int): Game {
+        return repository.getById(gameId) ?: throw ServiceException("Game does not exist")
     }
 
-    suspend fun getGameVersion(gameName: String, versionName: String): GameVersion {
-        return repository.getVersion(gameName, versionName) ?: throw ServiceException("Version do not exist")
+    suspend fun getGameVersion(gameId: Int, versionName: String): GameVersion {
+        return repository.getVersion(gameId, versionName) ?: throw ServiceException("Version do not exist")
     }
 
     suspend fun publishGame(
@@ -34,11 +34,11 @@ class GameService @Inject constructor(
 
         val publishDate: Instant = Instant.now()
 
-        repository.create(gameName, price, publishDate, author, description)
+        repository.createGame(gameName, price, publishDate, author, description)
     }
 
     suspend fun publishGameVersion(
-            gameName: String,
+            gameId: Int,
             versionName: String,
             url: String
     ) {
@@ -49,14 +49,14 @@ class GameService @Inject constructor(
             throw ServiceException("Url is blank")
         }
 
-        repository.createVersion(gameName, versionName, url)
+        repository.createVersion(gameId, versionName, url)
     }
 
     suspend fun updateDescription(
-            gameName: String,
+            gameId: Int,
             description: String?
     ) {
-        repository.updateDescription(gameName, description)
+        repository.updateDescription(gameId, description)
     }
 
 }

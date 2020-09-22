@@ -33,30 +33,30 @@ class GameController @Inject constructor(private val service: GameService) : Cor
 
     suspend fun handlePublishGameVersion(context: RoutingContext) {
         val params = context.bodyAsJson
-        val gameName = params.getString("gameName") ?: throw ServiceException("Game name is empty")
+        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game id is empty")
         val versionName = params.getString("versionName") ?: throw ServiceException("Game version name is empty")
         val url = params.getString("url") ?: throw ServiceException("Url is empty")
 
-        service.publishGameVersion(gameName, versionName, url)
+        service.publishGameVersion(gameId, versionName, url)
 
         context.success()
     }
 
     suspend fun handleUpdateDescription(context: RoutingContext) {
         val params = context.bodyAsJson
-        val gameName = params.getString("gameName") ?: throw ServiceException("Game name is empty")
+        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game id is empty")
         val description = params.getString("description")
 
-        service.updateDescription(gameName, description)
+        service.updateDescription(gameId, description)
 
         context.success()
     }
 
     suspend fun handleGetGame(context: RoutingContext) {
-        val request = context.request()
-        val gameName = request.getParam("gameName") ?: throw ServiceException("Game name not found")
+        val params = context.bodyAsJson
+        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game id not found")
 
-        val game: Game = service.getGame(gameName)
+        val game: Game = service.getGame(gameId)
 
         context.success(
                 jsonObjectOf(
@@ -66,11 +66,11 @@ class GameController @Inject constructor(private val service: GameService) : Cor
     }
 
     suspend fun handleGetVersion(context: RoutingContext) {
-        val request = context.request()
-        val versionName = request.getParam("versionName") ?: throw ServiceException("Version name not found")
-        val gameName = request.getParam("gameName") ?: throw ServiceException("Game name not found")
+        val params = context.bodyAsJson
+        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game id not found")
+        val versionName = params.getString("versionName") ?: throw ServiceException("Version name not found")
 
-        val gameVersion: GameVersion = service.getGameVersion(gameName, versionName)
+        val gameVersion: GameVersion = service.getGameVersion(gameId, versionName)
 
         context.success(
                 jsonObjectOf(
