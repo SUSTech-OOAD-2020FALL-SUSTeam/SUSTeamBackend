@@ -36,12 +36,11 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val params = context.bodyAsJson
         val name = params.getString("name") ?: throw ServiceException("Game name is empty")
         val price = params.getInteger("price") ?: throw ServiceException("Price is empty")
-        val author = params.getString("author") ?: throw ServiceException("Author is empty")
         val description = params.getString("description")
 
         val auth: Auth = context.user() ?: throw ServiceException("Permission deny, please login")
 
-        service.publishGame(auth, name, price, author, description)
+        service.publishGame(auth, name, price, description)
 
         context.success()
     }
