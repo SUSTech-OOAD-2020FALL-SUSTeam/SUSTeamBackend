@@ -11,7 +11,7 @@ import susteam.ServiceException
 class CommentController @Inject constructor(private val service: CommentService) : CoroutineController() {
 
     override fun route(router: Router) {
-        // XXX: Check if paths are correct.
+        // TODO: Check if paths are correct.
         router.get("/comment/user/:username").coroutineHandler(::handleGetCommentsByUser)
         router.get("/comment/:gameId").coroutineHandler(::handleGetCommentsByGame)
 
@@ -24,7 +24,7 @@ class CommentController @Inject constructor(private val service: CommentService)
 
         val comments: List<Comment> = service.getCommentsByUser(username)
 
-        // XXX: Check if the mapping is correct.
+        // TODO: Check if the mapping is correct.
         context.success(
             jsonObjectOf(
                 "comments" to JsonArray(comments.map { comment -> comment.toJson() })
@@ -38,7 +38,7 @@ class CommentController @Inject constructor(private val service: CommentService)
 
         val comments: List<Comment> = service.getCommentsByGame(gameId)
 
-        // XXX: Check if the mapping is correct.
+        // TODO: Check if the mapping is correct.
         context.success(
             jsonObjectOf(
                 "comments" to JsonArray(comments.map { comment -> comment.toJson() })

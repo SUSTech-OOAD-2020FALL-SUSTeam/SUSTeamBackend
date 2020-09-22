@@ -27,7 +27,6 @@ class CommentRepository @Inject constructor(private val database: JDBCClient) {
                 jsonArrayOf(username, gameId, commentTime, content, score)
             ).keys.getInteger(0)
         } catch (e: SQLIntegrityConstraintViolationException) {
-            // XXX: Shall we consider all cases of comment failures?
             throw ServiceException("Comment failed", e)
         }
     }

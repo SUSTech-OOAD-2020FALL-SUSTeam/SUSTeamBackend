@@ -8,7 +8,6 @@ import java.time.Instant
 
 class CommentService @Inject constructor(
     private val commentRepository: CommentRepository,
-    // XXX: Imported for validity checking purposes. Not sure if it is suitable.
     private val userRepository: UserRepository,
     private val gameRepository: GameRepository
 ) {
@@ -30,7 +29,6 @@ class CommentService @Inject constructor(
         if (content.isBlank()) {
             throw ServiceException("Content is blank")
         }
-        // XXX: Should we check the length of other attributes when creating new entries?
         else if (content.length > 255) {
             throw ServiceException("Content is too long")
         }
