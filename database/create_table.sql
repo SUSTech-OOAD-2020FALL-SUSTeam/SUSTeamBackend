@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS game_version
     name    VARCHAR(255) NOT NULL,
     url     VARCHAR(255) NOT NULL,
 
+    UNIQUE(game_id,name),
+    UNIQUE(url),
     PRIMARY KEY (game_id, name),
     FOREIGN KEY (game_id) REFERENCES game (game_id)
 );
