@@ -12,8 +12,8 @@ class GameService @Inject constructor(
         return repository.get(gameName) ?: throw ServiceException("Game does not exist")
     }
 
-    suspend fun getGameVersion(versionName: String): GameVersion {
-        return repository.getVersion(versionName) ?: throw ServiceException("Version do not exist")
+    suspend fun getGameVersion(gameName: String, versionName: String): GameVersion {
+        return repository.getVersion(gameName, versionName) ?: throw ServiceException("Version do not exist")
     }
 
     suspend fun publishGame(
@@ -56,7 +56,7 @@ class GameService @Inject constructor(
             gameName: String,
             description: String?
     ) {
-        repository.writeDescription(gameName, description)
+        repository.updateDescription(gameName, description)
     }
 
 }

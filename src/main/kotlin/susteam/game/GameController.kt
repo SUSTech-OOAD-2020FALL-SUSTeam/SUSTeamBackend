@@ -68,8 +68,9 @@ class GameController @Inject constructor(private val service: GameService) : Cor
     suspend fun handleGetVersion(context: RoutingContext) {
         val request = context.request()
         val versionName = request.getParam("versionName") ?: throw ServiceException("Version name not found")
+        val gameName = request.getParam("gameName") ?: throw ServiceException("Game name not found")
 
-        val gameVersion: GameVersion = service.getGameVersion(versionName)
+        val gameVersion: GameVersion = service.getGameVersion(gameName, versionName)
 
         context.success(
                 jsonObjectOf(

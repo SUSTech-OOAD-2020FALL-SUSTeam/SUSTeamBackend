@@ -32,7 +32,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         }
     }
 
-    suspend fun writeDescription(
+    suspend fun updateDescription(
             name: String,
             description: String?
     ) {
@@ -85,14 +85,19 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         }
     }
 
-    suspend fun getVersion(name: String): GameVersion? {
-        return database.querySingleWithParamsAwait(
-                """SELECT game_id, name, url FROM game_version WHERE name = ?;""",
-                jsonArrayOf(name)
-        )?.let {
-            GameVersion(
-                    it.getInteger(0), it.getString(1), it.getString(2)
-            )
+    suspend fun getVersion(gameName: String, versionName: String): GameVersion? {
+        val game: Game? = get(gameName)
+        if (game != null) {
+            return database.querySingleWithParamsAwait(
+                    """SELECT game_id, name, url FROM game_version WHERE name = ? and game_id = ?;""",
+                    jsonArrayOf(versionName, game.id)
+            )?.let {
+                GameVersion(
+                        it.getInteger(0), it.getString(1), it.getString(2)
+                )
+            }
+        } else {
+            throw ServiceException("Game not found")
         }
     }
 
