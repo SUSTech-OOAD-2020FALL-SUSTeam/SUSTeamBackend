@@ -2,10 +2,13 @@ package susteam.game
 
 import com.google.inject.Inject
 import susteam.ServiceException
+import susteam.user.Auth
+import susteam.user.isAuthorized
+import susteam.user.username
 import java.time.Instant
 
 class GameService @Inject constructor(
-        private val repository: GameRepository
+    private val repository: GameRepository
 ) {
 
     suspend fun getGame(gameId: Int): Game {
@@ -17,10 +20,11 @@ class GameService @Inject constructor(
     }
 
     suspend fun publishGame(
-            gameName: String,
-            price: Int,
-            author: String,
-            description: String?
+        auth: Auth,
+        gameName: String,
+        price: Int,
+        author: String,
+        description: String?
     ) {
         if (gameName.isBlank()) {
             throw ServiceException("Game name is blank")
@@ -32,15 +36,20 @@ class GameService @Inject constructor(
             throw ServiceException("Author is blank")
         }
 
+        if (!auth.isAuthorized("role:admin") && !auth.isAuthorized("role:developer")) {
+            throw ServiceException("Permission deny")
+        }
+
         val publishDate: Instant = Instant.now()
 
         repository.createGame(gameName, price, publishDate, author, description)
     }
 
     suspend fun publishGameVersion(
-            gameId: Int,
-            versionName: String,
-            url: String
+        auth: Auth,
+        gameId: Int,
+        versionName: String,
+        url: String
     ) {
         if (versionName.isBlank()) {
             throw ServiceException("Game version name is blank")
@@ -49,13 +58,31 @@ class GameService @Inject constructor(
             throw ServiceException("URL is blank")
         }
 
+        if (!auth.isAuthorized("role:admin") && !auth.isAuthorized("role:developer")) {
+            throw ServiceException("Permission deny")
+        }
+
         repository.createVersion(gameId, versionName, url)
     }
 
     suspend fun updateDescription(
-            gameId: Int,
-            description: String?
+        auth: Auth,
+        gameId: Int,
+        description: String?
     ) {
+        val game = repository.getById(gameId) ?: throw ServiceException("Game not exist")
+
+        val havePermission = when {
+            auth.isAuthorized("role:admin") -> true
+            auth.isAuthorized("role:developer") -> {
+                game.author == auth.username
+            }
+            else -> false
+        }
+        if (!havePermission) {
+            throw ServiceException("Permission deny")
+        }
+
         repository.updateDescription(gameId, description)
     }
 

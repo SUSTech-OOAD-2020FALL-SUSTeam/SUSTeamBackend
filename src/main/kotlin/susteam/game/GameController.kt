@@ -6,6 +6,7 @@ import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
+import susteam.user.Auth
 
 class GameController @Inject constructor(private val service: GameService) : CoroutineController() {
 
@@ -38,7 +39,9 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val author = params.getString("author") ?: throw ServiceException("Author is empty")
         val description = params.getString("description")
 
-        service.publishGame(name, price, author, description)
+        val auth: Auth = context.user() ?: throw ServiceException("Permission deny, please login")
+
+        service.publishGame(auth, name, price, author, description)
 
         context.success()
     }
@@ -50,7 +53,9 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val params = context.bodyAsJson
         val description = params.getString("description")
 
-        service.updateDescription(gameId, description)
+        val auth: Auth = context.user() ?: throw ServiceException("Permission deny, please login")
+
+        service.updateDescription(auth, gameId, description)
 
         context.success()
     }
@@ -63,7 +68,9 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val versionName = params.getString("name") ?: throw ServiceException("Game version name is empty")
         val url = params.getString("url") ?: throw ServiceException("URL is empty")
 
-        service.publishGameVersion(gameId, versionName, url)
+        val auth: Auth = context.user() ?: throw ServiceException("Permission deny, please login")
+
+        service.publishGameVersion(auth, gameId, versionName, url)
 
         context.success()
     }

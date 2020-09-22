@@ -17,6 +17,10 @@ typealias Auth = io.vertx.ext.auth.User
 val Auth.username
     get() = this.principal().getString("username")
 
+fun Auth.isAuthorized(permission: String): Boolean {
+    return this.principal().getJsonArray("permissions").contains(permission)
+}
+
 data class UserRole(
     val user: User,
     val roles: List<String>
