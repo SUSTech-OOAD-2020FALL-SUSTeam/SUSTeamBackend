@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS game_version
 CREATE TABLE IF NOT EXISTS `comment`
 (
     username     VARCHAR(255) NOT NULL,
-    game_id      VARCHAR(255) NOT NULL,
+    game_id      INT          NOT NULL,
     comment_time DATETIME(3)  NOT NULL,
     content      VARCHAR(255) NOT NULL,
     score        INT          NOT NULL,
