@@ -6,76 +6,85 @@ import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
+import susteam.user.Auth
 
 class GameController @Inject constructor(private val service: GameService) : CoroutineController() {
 
     override fun route(router: Router) {
-        router.get("/game/:gameName").coroutineHandler(::handleGetGame)
-        router.get("/game/:gameName/version/:versionName").coroutineHandler(::handleGetVersion)
-
+        router.get("/game/:gameId").coroutineHandler(::handleGetGame)
         router.post("/game").coroutineHandler(::handlePublishGame)
-        router.post("/gameVersion").coroutineHandler(::handlePublishGameVersion)
-        router.post("/game").coroutineHandler(::handleUpdateDescription)
-        // TODO 这几个path我不清楚我写的对不对
+        router.put("/game/:gameId").coroutineHandler(::handleUpdateDescription)
+
+        router.get("/game/:gameId/version/:versionName").coroutineHandler(::handleGetVersion)
+        router.post("/game/:gameId/version").coroutineHandler(::handlePublishGameVersion)
     }
 
-    suspend fun handlePublishGame(context: RoutingContext) {
+    private suspend fun handleGetGame(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+
+        val game: Game = service.getGame(gameId)
+
+        context.success(
+            jsonObjectOf(
+                "game" to game.toJson()
+            )
+        )
+    }
+
+    private suspend fun handlePublishGame(context: RoutingContext) {
         val params = context.bodyAsJson
-        val gameName = params.getString("gameName") ?: throw ServiceException("Game name is empty")
+        val name = params.getString("name") ?: throw ServiceException("Game name is empty")
         val price = params.getInteger("price") ?: throw ServiceException("Price is empty")
-        val author = params.getString("author") ?: throw ServiceException("Author is empty")
         val description = params.getString("description")
 
-        service.publishGame(gameName, price, author, description)
+        val auth: Auth = context.user() ?: throw ServiceException("Permission deny, please login")
 
-        context.success()
-    }
-
-    suspend fun handlePublishGameVersion(context: RoutingContext) {
-        val params = context.bodyAsJson
-        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game ID is empty")
-        val versionName = params.getString("versionName") ?: throw ServiceException("Game version name is empty")
-        val url = params.getString("url") ?: throw ServiceException("URL is empty")
-
-        service.publishGameVersion(gameId, versionName, url)
+        service.publishGame(auth, name, price, description)
 
         context.success()
     }
 
     suspend fun handleUpdateDescription(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
+
         val params = context.bodyAsJson
-        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game ID is empty")
         val description = params.getString("description")
 
-        service.updateDescription(gameId, description)
+        val auth: Auth = context.user() ?: throw ServiceException("Permission deny, please login")
+
+        service.updateDescription(auth, gameId, description)
 
         context.success()
     }
 
-    suspend fun handleGetGame(context: RoutingContext) {
+    suspend fun handlePublishGameVersion(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
+
         val params = context.bodyAsJson
-        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game ID not found")
+        val versionName = params.getString("name") ?: throw ServiceException("Game version name is empty")
+        val url = params.getString("url") ?: throw ServiceException("URL is empty")
 
-        val game: Game = service.getGame(gameId)
+        val auth: Auth = context.user() ?: throw ServiceException("Permission deny, please login")
 
-        context.success(
-                jsonObjectOf(
-                        "game" to game.toJson()
-                )
-        )
+        service.publishGameVersion(auth, gameId, versionName, url)
+
+        context.success()
     }
 
     suspend fun handleGetVersion(context: RoutingContext) {
-        val params = context.bodyAsJson
-        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game ID not found")
-        val versionName = params.getString("versionName") ?: throw ServiceException("Version name not found")
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+        val versionName = request.getParam("versionName") ?: throw ServiceException("Version name not found")
 
         val gameVersion: GameVersion = service.getGameVersion(gameId, versionName)
 
         context.success(
-                jsonObjectOf(
-                        "gameVersion" to gameVersion.toJson()
-                )
+            jsonObjectOf(
+                "gameVersion" to gameVersion.toJson()
+            )
         )
     }
 
