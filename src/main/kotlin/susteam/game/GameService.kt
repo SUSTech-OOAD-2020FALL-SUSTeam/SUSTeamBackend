@@ -33,7 +33,7 @@ class GameService @Inject constructor(
         }
 
         if (!auth.isAuthorized("role:admin") && !auth.isAuthorized("role:developer")) {
-            throw ServiceException("Permission deny")
+            throw ServiceException("Permission denied")
         }
 
         val publishDate: Instant = Instant.now()
@@ -55,7 +55,7 @@ class GameService @Inject constructor(
         }
 
         if (!auth.isAuthorized("role:admin") && !auth.isAuthorized("role:developer")) {
-            throw ServiceException("Permission deny")
+            throw ServiceException("Permission denied")
         }
 
         repository.createVersion(gameId, versionName, url)
@@ -66,7 +66,7 @@ class GameService @Inject constructor(
         gameId: Int,
         description: String?
     ) {
-        val game = repository.getById(gameId) ?: throw ServiceException("Game not exist")
+        val game = repository.getById(gameId) ?: throw ServiceException("Game does not exist")
 
         val havePermission = when {
             auth.isAuthorized("role:admin") -> true
@@ -76,7 +76,7 @@ class GameService @Inject constructor(
             else -> false
         }
         if (!havePermission) {
-            throw ServiceException("Permission deny")
+            throw ServiceException("Permission denied")
         }
 
         repository.updateDescription(gameId, description)

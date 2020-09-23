@@ -38,7 +38,7 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val price = params.getInteger("price") ?: throw ServiceException("Price is empty")
         val description = params.getString("description")
 
-        val auth: Auth = context.user() ?: throw ServiceException("Permission deny, please login")
+        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
         service.publishGame(auth, name, price, description)
 
@@ -52,7 +52,7 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val params = context.bodyAsJson
         val description = params.getString("description")
 
-        val auth: Auth = context.user() ?: throw ServiceException("Permission deny, please login")
+        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
         service.updateDescription(auth, gameId, description)
 
@@ -67,7 +67,7 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val versionName = params.getString("name") ?: throw ServiceException("Game version name is empty")
         val url = params.getString("url") ?: throw ServiceException("URL is empty")
 
-        val auth: Auth = context.user() ?: throw ServiceException("Permission deny, please login")
+        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
         service.publishGameVersion(auth, gameId, versionName, url)
 
