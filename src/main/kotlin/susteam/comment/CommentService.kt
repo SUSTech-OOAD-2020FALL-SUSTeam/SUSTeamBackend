@@ -3,7 +3,9 @@ package susteam.comment
 import com.google.inject.Inject
 import susteam.ServiceException
 import susteam.game.GameRepository
+import susteam.user.Auth
 import susteam.user.UserRepository
+import susteam.user.username
 import java.time.Instant
 
 class CommentService @Inject constructor(
@@ -21,7 +23,7 @@ class CommentService @Inject constructor(
     }
 
     suspend fun createComment(
-        username: String,
+        auth: Auth,
         gameId: Int,
         content: String,
         score: Int
@@ -35,12 +37,12 @@ class CommentService @Inject constructor(
         if (score !in 0..5) {
             throw ServiceException("Invalid score")
         }
-        userRepository.get(username) ?: throw ServiceException("User does not exist")
+        userRepository.get(auth.username) ?: throw ServiceException("User does not exist")
         gameRepository.getById(gameId) ?: throw ServiceException("Game does not exist")
 
         val commentTime: Instant = Instant.now()
 
-        commentRepository.create(username, gameId, commentTime, content, score)
+        commentRepository.create(auth.username, gameId, commentTime, content, score)
     }
 
 }
