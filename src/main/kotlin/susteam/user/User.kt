@@ -21,6 +21,9 @@ fun Auth.isAuthorized(permission: String): Boolean {
     return this.principal().getJsonArray("permissions").contains(permission)
 }
 
+fun Auth.isAdmin() = this.isAuthorized("role:admin")
+fun Auth.isDeveloper() = this.isAuthorized("role:developer")
+
 data class UserRole(
     val user: User,
     val roles: List<String>

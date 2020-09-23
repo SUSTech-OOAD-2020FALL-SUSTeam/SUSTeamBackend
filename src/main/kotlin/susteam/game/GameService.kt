@@ -3,7 +3,8 @@ package susteam.game
 import com.google.inject.Inject
 import susteam.ServiceException
 import susteam.user.Auth
-import susteam.user.isAuthorized
+import susteam.user.isAdmin
+import susteam.user.isDeveloper
 import susteam.user.username
 import java.time.Instant
 
@@ -32,7 +33,7 @@ class GameService @Inject constructor(
             throw ServiceException("Price is less than zero")
         }
 
-        if (!auth.isAuthorized("role:admin") && !auth.isAuthorized("role:developer")) {
+        if (!auth.isAdmin() && !auth.isDeveloper()) {
             throw ServiceException("Permission denied")
         }
 
@@ -54,7 +55,7 @@ class GameService @Inject constructor(
             throw ServiceException("URL is blank")
         }
 
-        if (!auth.isAuthorized("role:admin") && !auth.isAuthorized("role:developer")) {
+        if (!auth.isAdmin() && !auth.isDeveloper()) {
             throw ServiceException("Permission denied")
         }
 
@@ -69,8 +70,8 @@ class GameService @Inject constructor(
         val game = repository.getById(gameId) ?: throw ServiceException("Game does not exist")
 
         val havePermission = when {
-            auth.isAuthorized("role:admin") -> true
-            auth.isAuthorized("role:developer") -> {
+            auth.isAdmin() -> true
+            auth.isDeveloper() -> {
                 game.author == auth.username
             }
             else -> false
