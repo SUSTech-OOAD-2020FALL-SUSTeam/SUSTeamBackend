@@ -8,6 +8,7 @@ import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import kotlinx.coroutines.coroutineScope
 import susteam.Controller
+import susteam.game.GameController
 import susteam.user.UserController
 import susteam.web.handler.TokenUserHandler
 
@@ -22,15 +23,15 @@ class APIServerVerticle : CoroutineVerticle() {
 
         config.getJsonObject("webserver_config").getString("cors_origin")?.let {
             router.route().handler(
-                CorsHandler.create(it)
-                    .allowedHeader("Access-Control-Allow-Method")
-                    .allowedHeader("Access-Control-Allow-Origin")
-                    .allowedHeader("Content-Type")
-                    .allowedMethod(HttpMethod.GET)
-                    .allowedMethod(HttpMethod.POST)
-                    .allowedMethod(HttpMethod.HEAD)
-                    .allowedMethod(HttpMethod.OPTIONS)
-                    .allowedMethod(HttpMethod.DELETE)
+                    CorsHandler.create(it)
+                            .allowedHeader("Access-Control-Allow-Method")
+                            .allowedHeader("Access-Control-Allow-Origin")
+                            .allowedHeader("Content-Type")
+                            .allowedMethod(HttpMethod.GET)
+                            .allowedMethod(HttpMethod.POST)
+                            .allowedMethod(HttpMethod.HEAD)
+                            .allowedMethod(HttpMethod.OPTIONS)
+                            .allowedMethod(HttpMethod.DELETE)
             )
         }
 
@@ -47,7 +48,7 @@ class APIServerVerticle : CoroutineVerticle() {
         router.route().handler(injector.getInstance(TokenUserHandler::class.java))
 
         val controllers: List<Controller> = listOf(
-            injector.getInstance(UserController::class.java)
+                injector.getInstance(UserController::class.java), injector.getInstance(GameController::class.java)
         )
         for (controller in controllers) {
             controller.route(router)

@@ -1,0 +1,77 @@
+## create game
+POST {{host}}/api/game
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "name": "hyldajksldf",
+  "price": 1000,
+  "description": "Nice game"
+}
+
+###
+POST {{host}}/api/game
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "name": "lol",
+  "price": 0,
+  "description": "Nice game"
+}
+
+###
+POST {{host}}/api/game
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "name": "nba2k21",
+  "price": 16,
+  "description": "Nice game"
+}
+
+###
+
+#create game version
+
+POST {{host}}/api/game/1/version
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "gameId": 1,
+  "name": "v1.1",
+  "url": "https://www.google.com/"
+}
+
+###
+
+GET {{host}}/api/game/1
+
+###
+
+GET {{host}}/api/game/1/version/v1.1
+
+###
+
+PUT {{host}}/api/game/1
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "gameId": 1,
+  "description": "Cool game"
+}
+
+###
+
+GET {{host}}/api/game/allGames/qq
+
+###
+
+GET {{host}}/api/game/allGames/publishDate
+
+###
+
+GET {{host}}/api/game/randomGames/2

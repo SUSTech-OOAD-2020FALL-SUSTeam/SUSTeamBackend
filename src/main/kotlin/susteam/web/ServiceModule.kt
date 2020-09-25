@@ -9,6 +9,9 @@ import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.kotlin.ext.sql.closeAwait
+import susteam.game.GameController
+import susteam.game.GameRepository
+import susteam.game.GameService
 import susteam.user.UserController
 import susteam.user.UserRepository
 import susteam.user.UserService
@@ -51,6 +54,10 @@ class ServiceModule(
         bind(UserController::class.java)
         bind(UserService::class.java)
         bind(UserRepository::class.java)
+
+        bind(GameController::class.java)
+        bind(GameService::class.java)
+        bind(GameRepository::class.java)
     }
 
     suspend fun close() {

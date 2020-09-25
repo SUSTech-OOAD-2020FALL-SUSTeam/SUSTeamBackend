@@ -7,9 +7,10 @@ import susteam.user.isAdmin
 import susteam.user.isDeveloper
 import susteam.user.username
 import java.time.Instant
+import java.time.LocalDateTime
 
 class GameService @Inject constructor(
-    private val repository: GameRepository
+        private val repository: GameRepository
 ) {
 
     suspend fun getGame(gameId: Int): Game {
@@ -21,10 +22,10 @@ class GameService @Inject constructor(
     }
 
     suspend fun publishGame(
-        auth: Auth,
-        gameName: String,
-        price: Int,
-        description: String?
+            auth: Auth,
+            gameName: String,
+            price: Int,
+            description: String?
     ) {
         if (gameName.isBlank()) {
             throw ServiceException("Game name is blank")
@@ -37,16 +38,15 @@ class GameService @Inject constructor(
             throw ServiceException("Permission denied")
         }
 
-        val publishDate: Instant = Instant.now()
-
+        val publishDate: LocalDateTime = LocalDateTime.now()
         repository.createGame(gameName, price, publishDate, auth.username, description)
     }
 
     suspend fun publishGameVersion(
-        auth: Auth,
-        gameId: Int,
-        versionName: String,
-        url: String
+            auth: Auth,
+            gameId: Int,
+            versionName: String,
+            url: String
     ) {
         if (versionName.isBlank()) {
             throw ServiceException("Game version name is blank")
@@ -63,9 +63,9 @@ class GameService @Inject constructor(
     }
 
     suspend fun updateDescription(
-        auth: Auth,
-        gameId: Int,
-        description: String?
+            auth: Auth,
+            gameId: Int,
+            description: String?
     ) {
         val game = repository.getById(gameId) ?: throw ServiceException("Game does not exist")
 
@@ -81,6 +81,19 @@ class GameService @Inject constructor(
         }
 
         repository.updateDescription(gameId, description)
+    }
+
+    suspend fun getAllGamesOrderByPublishDate(): ArrayList<Game>? {
+        return repository.getAllGamesOrderByPublishDate()
+    }
+
+    suspend fun getAllGames(): ArrayList<Game>? {
+        return repository.getAllGames()
+    }
+
+    suspend fun getRandomGames( numberOfGames: Int ): ArrayList<Game>? {
+        if( numberOfGames <= 0 ) throw ServiceException("Number of Games must be greater than zero")
+        return repository.getRandomGames(numberOfGames)
     }
 
 }
