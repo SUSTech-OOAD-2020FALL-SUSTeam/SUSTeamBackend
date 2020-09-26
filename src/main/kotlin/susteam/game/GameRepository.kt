@@ -13,20 +13,21 @@ import susteam.ServiceException
 import java.sql.SQLIntegrityConstraintViolationException
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter.ISO_INSTANT
 
 class GameRepository @Inject constructor(private val database: JDBCClient) {
 
     suspend fun createGame(
             name: String,
             price: Int,
-            publishDate: LocalDateTime,
+            publishDate: Instant,
             author: String,
             description: String?
     ): Int {
         try {
             return database.updateWithParamsAwait(
                     """INSERT INTO game (name, price, publish_date, author, description) VALUES (?, ?, ?, ?, ?);""",
-                    jsonArrayOf(name, price, publishDate, author, description)
+                    jsonArrayOf(name, price, ISO_INSTANT.format(publishDate), author, description)
             ).keys.getInteger(0)
         } catch (e: SQLIntegrityConstraintViolationException) {
             if (e.message?.contains("game.name") == true) {

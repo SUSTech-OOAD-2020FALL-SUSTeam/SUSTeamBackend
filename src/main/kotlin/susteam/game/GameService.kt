@@ -38,7 +38,7 @@ class GameService @Inject constructor(
             throw ServiceException("Permission denied")
         }
 
-        val publishDate: LocalDateTime = LocalDateTime.now()
+        val publishDate: Instant = Instant.now()
         repository.createGame(gameName, price, publishDate, auth.username, description)
     }
 
