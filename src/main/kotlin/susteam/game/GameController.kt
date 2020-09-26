@@ -12,7 +12,7 @@ import susteam.user.Auth
 class GameController @Inject constructor(private val service: GameService) : CoroutineController() {
 
     override fun route(router: Router) {
-        //router.get("/game/:gameId").coroutineHandler(::handleGetGame)
+        router.get("/game/:gameId").coroutineHandler(::handleGetGame)
         router.post("/game").coroutineHandler(::handlePublishGame)
         router.put("/game/:gameId").coroutineHandler(::handleUpdateDescription)
         router.get("/game/allGames/:order").coroutineHandler(::handleGetAllGames)
