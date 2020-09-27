@@ -12,7 +12,6 @@ import susteam.user.Auth
 class CommentController @Inject constructor(private val service: CommentService) : CoroutineController() {
 
     override fun route(router: Router) {
-        // TODO: Check if paths are correct.
         router.get("/comment/user/:username").coroutineHandler(::handleGetCommentsByUser)
         router.get("/comment/:gameId").coroutineHandler(::handleGetCommentsByGame)
 
@@ -25,7 +24,6 @@ class CommentController @Inject constructor(private val service: CommentService)
 
         val comments: List<Comment> = service.getCommentsByUser(username)
 
-        // TODO: Check if the mapping is correct.
         context.success(
             jsonObjectOf(
                 "comments" to JsonArray(comments.map { comment -> comment.toJson() })
@@ -39,7 +37,6 @@ class CommentController @Inject constructor(private val service: CommentService)
 
         val comments: List<Comment> = service.getCommentsByGame(gameId)
 
-        // TODO: Check if the mapping is correct.
         context.success(
             jsonObjectOf(
                 "comments" to JsonArray(comments.map { comment -> comment.toJson() })

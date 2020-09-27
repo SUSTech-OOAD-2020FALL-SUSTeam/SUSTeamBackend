@@ -24,7 +24,7 @@ class CommentRepository @Inject constructor(private val database: JDBCClient) {
                     INSERT INTO `comment` (username, game_id, comment_time, content, score) 
                     VALUES (?, ?, ?, ?, ?);
                 """.trimIndent(),
-                jsonArrayOf(username, gameId, commentTime, content, score)
+                jsonArrayOf(username, gameId, commentTime.toString(), content, score)
             ).keys.getInteger(0)
         } catch (e: SQLIntegrityConstraintViolationException) {
             throw ServiceException("Comment failed", e)
