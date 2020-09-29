@@ -1,0 +1,11 @@
+POST {{host}}/api/store
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Authorization: Bearer {{admin-token}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name="default avatar"; filename="default.jpg"
+
+< ../../main/resources/default.jpg
+--WebAppBoundary--
+
+###

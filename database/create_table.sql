@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS user, user_roles, game, game_version;
+DROP TABLE IF EXISTS user, user_roles, game, game_version, comment;
 
 CREATE TABLE user
 (
