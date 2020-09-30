@@ -3,6 +3,7 @@ package susteam.web
 import com.google.inject.AbstractModule
 import com.google.inject.BindingAnnotation
 import io.vertx.core.Vertx
+import io.vertx.core.file.FileSystem
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.PubSecKeyOptions
 import io.vertx.ext.auth.jwt.JWTAuth
@@ -41,9 +42,7 @@ class ServiceModule(
     override fun configure() {
         bind(Vertx::class.java).toInstance(vertx)
         bind(JsonObject::class.java).annotatedWith(Config::class.java).toInstance(config)
-        bind(JDBCClient::class.java).toInstance(
-            database
-        )
+        bind(JDBCClient::class.java).toInstance(database)
         bind(JWTAuth::class.java).toInstance(
             JWTAuth.create(
                 vertx, JWTAuthOptions().addPubSecKey(
@@ -51,6 +50,7 @@ class ServiceModule(
                 )
             )
         )
+        bind(FileSystem::class.java).toInstance(vertx.fileSystem())
 
         bind(TokenUserHandler::class.java)
 
