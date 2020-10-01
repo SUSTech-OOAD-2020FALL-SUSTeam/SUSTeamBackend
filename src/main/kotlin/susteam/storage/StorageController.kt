@@ -18,11 +18,9 @@ class StorageController @Inject constructor(private val service: StorageService)
 
     suspend fun handleStore(context: RoutingContext) {
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
-        //TODO: 鉴权
-        val fileUploads = context.fileUploads()
-        val urlList = ArrayList<String>()
-        for (file in fileUploads) {
-            urlList.add(service.upload(file))
+        // TODO: permission verification & `is_public'
+        val urlList = context.fileUploads().map {
+            service.upload(auth, it)
         }
 
         context.success(

@@ -17,15 +17,15 @@ class CommentRepository @Inject constructor(private val database: JDBCClient) {
         commentTime: Instant,
         content: String,
         score: Int
-    ): Int {
+    ) {
         try {
-            return database.updateWithParamsAwait(
+            database.updateWithParamsAwait(
                 """
                     INSERT INTO `comment` (username, game_id, comment_time, content, score) 
                     VALUES (?, ?, ?, ?, ?);
                 """.trimIndent(),
                 jsonArrayOf(username, gameId, commentTime.toString(), content, score)
-            ).keys.getInteger(0)
+            )
         } catch (e: SQLIntegrityConstraintViolationException) {
             throw ServiceException("Comment failed", e)
         }
