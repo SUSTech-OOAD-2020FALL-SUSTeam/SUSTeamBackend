@@ -95,7 +95,7 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val request = context.request()
         val order = request.getParam("order")
 
-        val gamesList: ArrayList<Game>?
+        val gamesList: List<Game>
         if (order == "publishDate") {
             gamesList = service.getAllGamesOrderByPublishDate()
         } else {
@@ -114,7 +114,7 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val numberOfGames = request.getParam("numberOfGames")?.toIntOrNull()
                 ?: throw ServiceException("Number of games not found")
 
-        val gamesList: ArrayList<Game>? = service.getRandomGames(numberOfGames)
+        val gamesList: List<Game> = service.getRandomGames(numberOfGames)
 
         context.success(
                 jsonObjectOf(

@@ -83,15 +83,15 @@ class GameService @Inject constructor(
         repository.updateDescription(gameId, description)
     }
 
-    suspend fun getAllGamesOrderByPublishDate(): ArrayList<Game>? {
+    suspend fun getAllGamesOrderByPublishDate(): List<Game> {
         return repository.getAllGamesOrderByPublishDate()
     }
 
-    suspend fun getAllGames(): ArrayList<Game>? {
+    suspend fun getAllGames(): List<Game> {
         return repository.getAllGames()
     }
 
-    suspend fun getRandomGames( numberOfGames: Int ): ArrayList<Game>? {
+    suspend fun getRandomGames( numberOfGames: Int ): List<Game> {
         if( numberOfGames <= 0 ) throw ServiceException("Number of Games must be greater than zero")
         return repository.getRandomGames(numberOfGames)
     }

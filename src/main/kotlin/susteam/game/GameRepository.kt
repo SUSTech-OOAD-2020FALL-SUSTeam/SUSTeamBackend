@@ -96,49 +96,29 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         }
     }
 
-    suspend fun getAllGamesOrderByPublishDate(): ArrayList<Game>? {
-        val gameList: ArrayList<Game>? = ArrayList()
-        val resultSet: ResultSet? = database.queryAwait(
-                """SELECT game_id gameId, name, price, publish_date publishDate, author, description FROM game ORDER BY publish_date desc;"""
-        )
-        val allGames: ArrayList<JsonObject>? = resultSet?.getRows() as ArrayList<JsonObject>?
-        if (allGames != null) {
-            for (i in allGames)
-                if (gameList != null) {
-                    gameList.add(i.toGame())
-                }
-        }
-        return gameList
+    suspend fun getAllGamesOrderByPublishDate(): List<Game> {
+        return database.queryAwait(
+            """SELECT game_id gameId, name, price, publish_date publishDate, author, description 
+                   FROM game 
+                   ORDER BY publish_date desc;""".trimIndent()
+        ).rows.map{ it.toGame() }
     }
 
-    suspend fun getAllGames(): ArrayList<Game>? {
-        val gameList: ArrayList<Game>? = ArrayList()
-        val resultSet: ResultSet? = database.queryAwait(
-                """SELECT game_id gameId, name, price, publish_date publishDate, author, description FROM game;"""
-        )
-        val allGames: ArrayList<JsonObject>? = resultSet?.getRows() as ArrayList<JsonObject>?
-        if (allGames != null) {
-            for (i in allGames)
-                if (gameList != null) {
-                    gameList.add(i.toGame())
-                }
-        }
-        return gameList
+    suspend fun getAllGames(): List<Game> {
+        return database.queryAwait(
+            """SELECT game_id gameId, name, price, publish_date publishDate, author, description 
+                   ROM game;""".trimIndent()
+        ).rows.map{ it.toGame() }
     }
 
-    suspend fun getRandomGames(numberOfGames: Int): ArrayList<Game>? {
-        val gameList: ArrayList<Game>? = ArrayList()
-        val resultSet: ResultSet? = database.queryWithParamsAwait(
-                """SELECT game_id gameId, name, price, publish_date publishDate, author, description FROM game ORDER BY rand() LIMIT ?;""", jsonArrayOf(numberOfGames)
-        )
-        val randomGames: ArrayList<JsonObject>? = resultSet?.getRows() as ArrayList<JsonObject>?
-        if (randomGames != null) {
-            for (i in randomGames)
-                if (gameList != null) {
-                    gameList.add(i.toGame())
-                }
-        }
-        return gameList
+    suspend fun getRandomGames(numberOfGames: Int): List<Game> {
+        return database.queryWithParamsAwait(
+            """SELECT game_id gameId, name, price, publish_date publishDate, author, description 
+                   FROM game 
+                   ORDER BY rand() 
+                   LIMIT ?;""".trimIndent(), jsonArrayOf(numberOfGames)
+        ).rows.map{ it.toGame() }
     }
+
 
 }
