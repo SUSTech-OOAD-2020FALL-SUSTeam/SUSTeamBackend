@@ -75,12 +75,16 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
 
     suspend fun getById(id: Int): Game? {
         return database.querySingleWithParamsAwait(
-                """SELECT game_id, name, price, publish_date, author, description FROM game WHERE game_id = ?;""",
+                """
+                    SELECT game_id, name, price, publish_date, author, introduction, description 
+                    FROM game 
+                    WHERE game_id = ?;""".trimIndent(),
                 jsonArrayOf(id)
         )?.let {
             Game(
                     it.getInteger(0), it.getString(1), it.getInteger(2),
-                    it.getInstant(3), it.getString(4), it.getString(5)
+                    it.getInstant(3), it.getString(4), it.getString(5),
+                    it.getString(6)
             )
         }
     }
