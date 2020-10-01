@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS game
     price        INT          NOT NULL,
     publish_date DATETIME(0)  NOT NULL,
     author       VARCHAR(255) NOT NULL,
+    introduction VARCHAR(255),
     description  VARCHAR(4095),
 
     PRIMARY KEY (game_id),
