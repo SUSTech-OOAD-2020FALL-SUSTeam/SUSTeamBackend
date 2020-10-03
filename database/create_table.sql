@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage;
+DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage, game_image;
 
 CREATE TABLE user
 (
@@ -79,3 +79,10 @@ CREATE TABLE IF NOT EXISTS `storage`
     PRIMARY KEY (uuid),
     FOREIGN KEY (uploader) REFERENCES user (username)
 );
+
+CREATE TABLE IF NOT EXISTS 'game_image'
+(
+    game_id INT NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    type VARCHAR(20) NOT NULL
+)
