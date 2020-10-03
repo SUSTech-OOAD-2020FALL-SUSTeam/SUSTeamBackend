@@ -34,9 +34,8 @@ data class GameProfile(
         val publishDate: Instant,
         val author: String,
         val introduction: String?,
-        // description数据量比较大，GameProfile 中没有 description
-        val imageFullSize: String,
-        val imageCardSize: String
+        val imageFullSize: String?,
+        val imageCardSize: String?
 )
 
 data class GameDetail(

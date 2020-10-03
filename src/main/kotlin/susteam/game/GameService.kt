@@ -103,9 +103,9 @@ class GameService @Inject constructor(
         return repository.getAllGameProfile()
     }
 
-    suspend fun getRandomGames(numberOfGames: Int): List<Game> {
+    suspend fun getRandomGameProfile(numberOfGames: Int): List<GameProfile> {
         if (numberOfGames <= 0) throw ServiceException("Number of Games must be greater than zero")
-        return repository.getRandomGames(numberOfGames)
+        return repository.getRandomGameProfile(numberOfGames)
     }
 
 }

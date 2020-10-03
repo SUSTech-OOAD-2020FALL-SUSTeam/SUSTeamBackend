@@ -141,7 +141,7 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val request = context.request()
         val numberOfGames = request.getParam("number")?.toIntOrNull() ?: 6
 
-        val gamesList: List<Game> = service.getRandomGames(numberOfGames)
+        val gamesList: List<GameProfile> = service.getRandomGameProfile(numberOfGames)
 
         context.success(
             jsonObjectOf(

@@ -106,8 +106,8 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         return getAllGameProfile("name" to "ASC")
     }
 
-    suspend fun getAllGameProfile(vararg order: Pair<String, String>): List<GameProfile> {
-        val orderString = order.joinToString(", ") { "${it.first} ${it.second}"}
+    suspend fun getAllGameProfile(vararg order: Pair<String, String>, limit: Int? = null): List<GameProfile> {
+        val orderString = order.joinToString(", ") { "${it.first} ${it.second}" }
         return database.queryAwait(
             """
                 SELECT game.game_id gameId,
@@ -119,22 +119,16 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
                        gi1.url      imageFullSize,
                        gi2.url      imageCardSize
                 FROM game
-                         JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
-                         JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
-                ${ if (order.isEmpty()) "" else "ORDER BY $orderString"};
+                         LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
+                         LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
+                ${if (order.isEmpty()) "" else "ORDER BY $orderString"}
+                ${if (limit == null) "" else "LIMIT $limit"};
             """.trimIndent()
         ).rows.map { it.toGameProfile() }
     }
 
-    suspend fun getRandomGames(numberOfGames: Int): List<Game> {
-        return database.queryWithParamsAwait(
-            """
-                SELECT game_id gameId, name, price, publish_date publishDate, author, introduction, description 
-                FROM game
-                ORDER BY rand() 
-                LIMIT ?;
-            """.trimIndent(), jsonArrayOf(numberOfGames)
-        ).rows.map { it.toGame() }
+    suspend fun getRandomGameProfile(limit: Int): List<GameProfile> {
+        return getAllGameProfile("rand()" to "", limit = limit)
     }
 
     suspend fun getGameProfile(gameId: Int): GameProfile? {
@@ -149,8 +143,8 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
                        gi1.url      imageFullSize,
                        gi2.url      imageCardSize
                 FROM game
-                         JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
-                         JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C';
+                         LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
+                         LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C';
             """.trimIndent(),
             jsonArrayOf(gameId)
         )?.let {
