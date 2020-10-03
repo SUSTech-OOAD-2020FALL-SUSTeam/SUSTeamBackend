@@ -12,12 +12,12 @@ class GameController @Inject constructor(private val service: GameService) : Cor
 
     override fun route(router: Router) {
         router.get("/game/:gameId").coroutineHandler(::handleGetGame)
-        router.get("/game/:gameId").coroutineHandler(::handleGetGameProfile)
-        router.get("/game/:gameId").coroutineHandler(::handleGetGameDetail)
+        router.get("/game/:gameId/profile").coroutineHandler(::handleGetGameProfile)
+        router.get("/game/:gameId/detail").coroutineHandler(::handleGetGameDetail)
         router.post("/game").coroutineHandler(::handlePublishGame)
         router.put("/game/:gameId").coroutineHandler(::handleUpdateDescription)
-        router.get("/game/allGames/:order").coroutineHandler(::handleGetAllGames)
-        router.get("/game/randomGames/:numberOfGames").coroutineHandler(::handleGetRandomGames)
+        router.get("/games/").coroutineHandler(::handleGetAllGames)
+        router.get("/games/recommend").coroutineHandler(::handleGetRecommendGames)
 
         router.get("/game/:gameId/version/:versionName").coroutineHandler(::handleGetVersion)
         router.post("/game/:gameId/version").coroutineHandler(::handlePublishGameVersion)
@@ -122,12 +122,12 @@ class GameController @Inject constructor(private val service: GameService) : Cor
     suspend fun handleGetAllGames(context: RoutingContext) {
         val request = context.request()
         val order = request.getParam("order")
+        println(order) // TODO delete it
 
-        val gamesList: List<Game>
-        if (order == "publishDate") {
-            gamesList = service.getAllGamesOrderByPublishDate()
-        } else {
-            gamesList = service.getAllGames()
+        val gamesList: List<GameProfile> = when (order) {
+            "publishDate" -> { service.getAllGameProfileOrderByPublishDate() }
+            "name" -> { service.getAllGameProfileOrderByName() }
+            else -> { service.getAllGameProfile()  }
         }
 
         context.success(
@@ -137,10 +137,9 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         )
     }
 
-    suspend fun handleGetRandomGames(context: RoutingContext) {
+    suspend fun handleGetRecommendGames(context: RoutingContext) {
         val request = context.request()
-        val numberOfGames = request.getParam("numberOfGames")?.toIntOrNull()
-            ?: throw ServiceException("Number of games not found")
+        val numberOfGames = request.getParam("number")?.toIntOrNull() ?: 6
 
         val gamesList: List<Game> = service.getRandomGames(numberOfGames)
 

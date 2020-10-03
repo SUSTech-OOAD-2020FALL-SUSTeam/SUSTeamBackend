@@ -98,23 +98,32 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         }
     }
 
-    suspend fun getAllGamesOrderByPublishDate(): List<Game> {
-        return database.queryAwait(
-            """
-                SELECT game_id gameId, name, price, publish_date publishDate, author, introduction, description 
-                FROM game 
-                ORDER BY publish_date desc;
-            """.trimIndent()
-        ).rows.map { it.toGame() }
+    suspend fun getAllGameProfileOrderByPublishDate(): List<GameProfile> {
+        return getAllGameProfile("publish_date" to "DESC")
     }
 
-    suspend fun getAllGames(): List<Game> {
+    suspend fun getAllGameProfileOrderByName(): List<GameProfile> {
+        return getAllGameProfile("name" to "ASC")
+    }
+
+    suspend fun getAllGameProfile(vararg order: Pair<String, String>): List<GameProfile> {
+        val orderString = order.joinToString(", ") { "${it.first} ${it.second}"}
         return database.queryAwait(
             """
-                SELECT game_id gameId, name, price, publish_date publishDate, author, introduction, description 
-                FROM game;
+                SELECT game.game_id gameId,
+                       name,
+                       price,
+                       publish_date publishDate,
+                       author,
+                       introduction,
+                       gi1.url      imageFullSize,
+                       gi2.url      imageCardSize
+                FROM game
+                         JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
+                         JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
+                ${ if (order.isEmpty()) "" else "ORDER BY $orderString"};
             """.trimIndent()
-        ).rows.map { it.toGame() }
+        ).rows.map { it.toGameProfile() }
     }
 
     suspend fun getRandomGames(numberOfGames: Int): List<Game> {

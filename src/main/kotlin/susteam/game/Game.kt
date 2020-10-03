@@ -93,7 +93,7 @@ fun JsonObject.toGameProfile(): GameProfile = GameProfile(
         getInteger("price"),
         getInstant("publishDate"),
         getString("author"),
-        getString("description"),
+        getString("introduction"),
         getString("imageFullSize"),
         getString("imageCardSize")
 )

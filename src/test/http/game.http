@@ -66,12 +66,12 @@ Authorization: Bearer {{admin-token}}
 
 ###
 
-GET {{host}}/api/game/allGames/qq
+GET {{host}}/api/games/
 
 ###
 
-GET {{host}}/api/game/allGames/publishDate
+GET {{host}}/api/games/?order=publishDate
 
 ###
 
-GET {{host}}/api/game/randomGames/2
+GET {{host}}/api/games/recommend/

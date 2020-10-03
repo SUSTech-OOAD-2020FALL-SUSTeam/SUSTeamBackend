@@ -91,12 +91,16 @@ class GameService @Inject constructor(
         repository.updateDescription(gameId, description)
     }
 
-    suspend fun getAllGamesOrderByPublishDate(): List<Game> {
-        return repository.getAllGamesOrderByPublishDate()
+    suspend fun getAllGameProfileOrderByPublishDate(): List<GameProfile> {
+        return repository.getAllGameProfileOrderByPublishDate()
     }
 
-    suspend fun getAllGames(): List<Game> {
-        return repository.getAllGames()
+    suspend fun getAllGameProfileOrderByName(): List<GameProfile> {
+        return repository.getAllGameProfileOrderByName()
+    }
+
+    suspend fun getAllGameProfile(): List<GameProfile> {
+        return repository.getAllGameProfile()
     }
 
     suspend fun getRandomGames(numberOfGames: Int): List<Game> {
