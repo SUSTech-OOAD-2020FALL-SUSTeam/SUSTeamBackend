@@ -3,7 +3,6 @@ package susteam.game
 import com.google.inject.Inject
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
-import io.vertx.kotlin.core.json.jsonArrayOf
 import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
@@ -13,6 +12,8 @@ class GameController @Inject constructor(private val service: GameService) : Cor
 
     override fun route(router: Router) {
         router.get("/game/:gameId").coroutineHandler(::handleGetGame)
+        router.get("/game/:gameId").coroutineHandler(::handleGetGameProfile)
+        router.get("/game/:gameId").coroutineHandler(::handleGetGameDetail)
         router.post("/game").coroutineHandler(::handlePublishGame)
         router.put("/game/:gameId").coroutineHandler(::handleUpdateDescription)
         router.get("/game/allGames/:order").coroutineHandler(::handleGetAllGames)
@@ -29,9 +30,35 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val game: Game = service.getGame(gameId)
 
         context.success(
-                jsonObjectOf(
-                        "game" to game.toJson()
-                )
+            jsonObjectOf(
+                "game" to game.toJson()
+            )
+        )
+    }
+
+    private suspend fun handleGetGameProfile(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+
+        val gameProfile: GameProfile = service.getGameProfile(gameId)
+
+        context.success(
+            jsonObjectOf(
+                "gameProfile" to gameProfile.toJson()
+            )
+        )
+    }
+
+    private suspend fun handleGetGameDetail(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+
+        val gameDetail: GameDetail = service.getGameDetail(gameId)
+
+        context.success(
+            jsonObjectOf(
+                "gameDetail" to gameDetail.toJson()
+            )
         )
     }
 
@@ -39,11 +66,12 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val params = context.bodyAsJson
         val name = params.getString("name") ?: throw ServiceException("Game name is empty")
         val price = params.getInteger("price") ?: throw ServiceException("Price is empty")
+        val introduction = params.getString("introduction")
         val description = params.getString("description")
 
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
-        service.publishGame(auth, name, price, description)
+        service.publishGame(auth, name, price, introduction, description)
 
         context.success()
     }
@@ -85,9 +113,9 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         val gameVersion: GameVersion = service.getGameVersion(gameId, versionName)
 
         context.success(
-                jsonObjectOf(
-                        "gameVersion" to gameVersion.toJson()
-                )
+            jsonObjectOf(
+                "gameVersion" to gameVersion.toJson()
+            )
         )
     }
 
@@ -103,23 +131,23 @@ class GameController @Inject constructor(private val service: GameService) : Cor
         }
 
         context.success(
-                jsonObjectOf(
-                        "games" to gamesList
-                )
+            jsonObjectOf(
+                "games" to gamesList
+            )
         )
     }
 
     suspend fun handleGetRandomGames(context: RoutingContext) {
         val request = context.request()
         val numberOfGames = request.getParam("numberOfGames")?.toIntOrNull()
-                ?: throw ServiceException("Number of games not found")
+            ?: throw ServiceException("Number of games not found")
 
         val gamesList: List<Game> = service.getRandomGames(numberOfGames)
 
         context.success(
-                jsonObjectOf(
-                        "games" to gamesList
-                )
+            jsonObjectOf(
+                "games" to gamesList
+            )
         )
     }
 

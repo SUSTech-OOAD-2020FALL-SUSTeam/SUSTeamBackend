@@ -7,7 +7,6 @@ import susteam.user.isAdmin
 import susteam.user.isDeveloper
 import susteam.user.username
 import java.time.Instant
-import java.time.LocalDateTime
 
 class GameService @Inject constructor(
         private val repository: GameRepository
@@ -15,6 +14,14 @@ class GameService @Inject constructor(
 
     suspend fun getGame(gameId: Int): Game {
         return repository.getById(gameId) ?: throw ServiceException("Game does not exist")
+    }
+
+    suspend fun getGameProfile(gameId: Int): GameProfile {
+        return repository.getGameProfile(gameId) ?: throw ServiceException("Game does not exist")
+    }
+
+    suspend fun getGameDetail(gameId: Int): GameDetail {
+        return repository.getGameDetail(gameId)
     }
 
     suspend fun getGameVersion(gameId: Int, versionName: String): GameVersion {
@@ -25,6 +32,7 @@ class GameService @Inject constructor(
             auth: Auth,
             gameName: String,
             price: Int,
+            introduction: String?,
             description: String?
     ) {
         if (gameName.isBlank()) {
@@ -39,7 +47,7 @@ class GameService @Inject constructor(
         }
 
         val publishDate: Instant = Instant.now()
-        repository.createGame(gameName, price, publishDate, auth.username, description)
+        repository.createGame(gameName, price, publishDate, auth.username, introduction, description)
     }
 
     suspend fun publishGameVersion(

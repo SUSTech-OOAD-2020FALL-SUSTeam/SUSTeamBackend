@@ -1,9 +1,7 @@
 package susteam.game
 
 import com.google.inject.Inject
-import io.vertx.core.json.JsonObject
 import io.vertx.ext.jdbc.JDBCClient
-import io.vertx.ext.sql.ResultSet
 import io.vertx.kotlin.core.json.jsonArrayOf
 import io.vertx.kotlin.ext.jdbc.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.queryAwait
@@ -12,7 +10,6 @@ import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.ServiceException
 import java.sql.SQLIntegrityConstraintViolationException
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter.ISO_INSTANT
 
 class GameRepository @Inject constructor(private val database: JDBCClient) {
@@ -22,12 +19,13 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
             price: Int,
             publishDate: Instant,
             author: String,
+            introduction: String?,
             description: String?
     ): Int {
         try {
             return database.updateWithParamsAwait(
-                    """INSERT INTO game (name, price, publish_date, author, description) VALUES (?, ?, ?, ?, ?);""",
-                    jsonArrayOf(name, price, ISO_INSTANT.format(publishDate), author, description)
+                    """INSERT INTO game (name, price, publish_date, author, introduction, description) VALUES (?, ?, ?, ?, ?, ?);""",
+                    jsonArrayOf(name, price, ISO_INSTANT.format(publishDate), author, introduction, description)
             ).keys.getInteger(0)
         } catch (e: SQLIntegrityConstraintViolationException) {
             if (e.message?.contains("game.name") == true) {
@@ -103,7 +101,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
     suspend fun getAllGamesOrderByPublishDate(): List<Game> {
         return database.queryAwait(
             """
-                SELECT game_id gameId, name, price, publish_date publishDate, author, description 
+                SELECT game_id gameId, name, price, publish_date publishDate, author, introduction, description 
                 FROM game 
                 ORDER BY publish_date desc;
             """.trimIndent()
@@ -113,7 +111,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
     suspend fun getAllGames(): List<Game> {
         return database.queryAwait(
             """
-                SELECT game_id gameId, name, price, publish_date publishDate, author, description 
+                SELECT game_id gameId, name, price, publish_date publishDate, author, introduction, description 
                 FROM game;
             """.trimIndent()
         ).rows.map{ it.toGame() }
@@ -122,7 +120,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
     suspend fun getRandomGames(numberOfGames: Int): List<Game> {
         return database.queryWithParamsAwait(
             """
-                SELECT game_id gameId, name, price, publish_date publishDate, author, description 
+                SELECT game_id gameId, name, price, publish_date publishDate, author, introduction, description 
                 FROM game
                 ORDER BY rand() 
                 LIMIT ?;
@@ -130,5 +128,39 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         ).rows.map{ it.toGame() }
     }
 
+    suspend fun getGameProfile(gameId: Int): GameProfile? {
+        //TODO type was named as ‘full’ and 'card'.
+        // Database will return null if these two image doesn't occur together.
+        return database.querySingleWithParamsAwait(
+            """
+                WITH sub AS(
+                    SELECT g.game_id, g.name, g.price, g.publish_date, g.author, introduction, gi.file_name, gi.type
+                    FROM game g
+                    JOIN game_image gi ON g.game_id = gi.game_id
+                    WHERE game_id = ?
+                )
+                SELECT s1.game_id, s1.name, s1.price, s1.publish_date, s1.author, s1.introduction, s1.file_name, s2.file_name
+                FROM sub s1
+                JOIN sub s2 on s1.type = 'full' and s2.type = 'card'
+                LIMIT 1
+            """.trimIndent(),
+            jsonArrayOf(gameId)
+        )?.let {
+            GameProfile(
+                it.getInteger(0), it.getString(1), it.getInteger(2),
+                it.getInstant(3), it.getString(4), it.getString(5),
+                it.getString(6), it.getString(7)
+            )
+        }
+    }
 
+    suspend fun getGameDetail(gameId: Int): GameDetail {
+        return GameDetail(
+            getById(gameId)?: throw ServiceException("Game does not exist"),
+            database.queryWithParamsAwait(
+                """SELECT file_name FROM game_image where game_id = ?;""",
+                jsonArrayOf(gameId)
+            ).rows.map{ it.toString() }
+        )
+    }
 }
