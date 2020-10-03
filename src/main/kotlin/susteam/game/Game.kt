@@ -20,6 +20,14 @@ data class GameVersion(
         val url: String
 )
 
+data class GameImage(
+        val gameId: Int,
+        val fileName: String,
+        //TODO this value uncertain
+        val type: String
+
+)
+
 data class GameProfile(
         val id: Int,
         val name: String,
@@ -35,7 +43,7 @@ data class GameProfile(
 data class GameDetail(
         val game: Game,
         val images: List<String>
-        //TODO 还没写一个类覆盖string，格式暂时用String存
+        //TODO type of this List uncertain
 )
 
 fun Game.toJson(): JsonObject = jsonObjectOf(
@@ -99,5 +107,17 @@ fun GameDetail.toJson(): JsonObject = jsonObjectOf(
 
 fun JsonObject.toGameDetail(): GameDetail = GameDetail(
         getJsonObject("game").toGame(),
-        getJsonArray("images").map{ it.toString() }
+        getJsonArray("images").map { it.toString() }
+)
+
+fun GameImage.toJson(): JsonObject = jsonObjectOf(
+        "gameId" to gameId,
+        "fileName" to fileName,
+        "type" to type
+)
+
+fun JsonObject.toGameImage(): GameImage = GameImage(
+        getInteger("gameId"),
+        getString("fileName"),
+        getString("type")
 )
