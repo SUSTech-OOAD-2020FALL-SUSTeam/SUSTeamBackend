@@ -80,9 +80,12 @@ CREATE TABLE IF NOT EXISTS `storage`
     FOREIGN KEY (uploader) REFERENCES user (username)
 );
 
-CREATE TABLE IF NOT EXISTS 'game_image'
+CREATE TABLE IF NOT EXISTS `game_image`
 (
-    game_id INT NOT NULL,
-    file_name VARCHAR(255) NOT NULL,
-    type VARCHAR(20) NOT NULL
+    game_id INT          NOT NULL,
+    url     VARCHAR(255) NOT NULL,
+    type    CHAR(1)      NOT NULL,
+
+    INDEX (game_id, type),
+    FOREIGN KEY (game_id) REFERENCES game (game_id)
 )

@@ -1,5 +1,6 @@
 package susteam.game
 
+import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.jsonObjectOf
 import java.time.Instant
@@ -22,10 +23,8 @@ data class GameVersion(
 
 data class GameImage(
         val gameId: Int,
-        val fileName: String,
-        //TODO this value uncertain
+        val url: String,
         val type: String
-
 )
 
 data class GameProfile(
@@ -42,8 +41,7 @@ data class GameProfile(
 
 data class GameDetail(
         val game: Game,
-        val images: List<String>
-        //TODO type of this List uncertain
+        val images: List<GameImage>
 )
 
 fun Game.toJson(): JsonObject = jsonObjectOf(
@@ -102,22 +100,22 @@ fun JsonObject.toGameProfile(): GameProfile = GameProfile(
 
 fun GameDetail.toJson(): JsonObject = jsonObjectOf(
         "game" to game.toJson(),
-        "images" to images
+        "images" to JsonArray(images.map { it.toJson() })
 )
 
 fun JsonObject.toGameDetail(): GameDetail = GameDetail(
         getJsonObject("game").toGame(),
-        getJsonArray("images").map { it.toString() }
+        getJsonArray("images").map { (it as JsonObject).toGameImage() }
 )
 
 fun GameImage.toJson(): JsonObject = jsonObjectOf(
         "gameId" to gameId,
-        "fileName" to fileName,
+        "url" to url,
         "type" to type
 )
 
 fun JsonObject.toGameImage(): GameImage = GameImage(
         getInteger("gameId"),
-        getString("fileName"),
+        getString("url"),
         getString("type")
 )

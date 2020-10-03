@@ -9,7 +9,7 @@ import susteam.user.username
 import java.time.Instant
 
 class GameService @Inject constructor(
-        private val repository: GameRepository
+    private val repository: GameRepository
 ) {
 
     suspend fun getGame(gameId: Int): Game {
@@ -21,7 +21,7 @@ class GameService @Inject constructor(
     }
 
     suspend fun getGameDetail(gameId: Int): GameDetail {
-        return repository.getGameDetail(gameId)
+        return repository.getGameDetail(gameId) ?: throw ServiceException("Game does not exist")
     }
 
     suspend fun getGameVersion(gameId: Int, versionName: String): GameVersion {
@@ -29,11 +29,11 @@ class GameService @Inject constructor(
     }
 
     suspend fun publishGame(
-            auth: Auth,
-            gameName: String,
-            price: Int,
-            introduction: String?,
-            description: String?
+        auth: Auth,
+        gameName: String,
+        price: Int,
+        introduction: String?,
+        description: String?
     ) {
         if (gameName.isBlank()) {
             throw ServiceException("Game name is blank")
@@ -51,10 +51,10 @@ class GameService @Inject constructor(
     }
 
     suspend fun publishGameVersion(
-            auth: Auth,
-            gameId: Int,
-            versionName: String,
-            url: String
+        auth: Auth,
+        gameId: Int,
+        versionName: String,
+        url: String
     ) {
         if (versionName.isBlank()) {
             throw ServiceException("Game version name is blank")
@@ -71,9 +71,9 @@ class GameService @Inject constructor(
     }
 
     suspend fun updateDescription(
-            auth: Auth,
-            gameId: Int,
-            description: String?
+        auth: Auth,
+        gameId: Int,
+        description: String?
     ) {
         val game = repository.getById(gameId) ?: throw ServiceException("Game does not exist")
 
@@ -99,8 +99,8 @@ class GameService @Inject constructor(
         return repository.getAllGames()
     }
 
-    suspend fun getRandomGames( numberOfGames: Int ): List<Game> {
-        if( numberOfGames <= 0 ) throw ServiceException("Number of Games must be greater than zero")
+    suspend fun getRandomGames(numberOfGames: Int): List<Game> {
+        if (numberOfGames <= 0) throw ServiceException("Number of Games must be greater than zero")
         return repository.getRandomGames(numberOfGames)
     }
 

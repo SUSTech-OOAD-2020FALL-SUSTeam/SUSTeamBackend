@@ -15,17 +15,17 @@ import java.time.format.DateTimeFormatter.ISO_INSTANT
 class GameRepository @Inject constructor(private val database: JDBCClient) {
 
     suspend fun createGame(
-            name: String,
-            price: Int,
-            publishDate: Instant,
-            author: String,
-            introduction: String?,
-            description: String?
+        name: String,
+        price: Int,
+        publishDate: Instant,
+        author: String,
+        introduction: String?,
+        description: String?
     ): Int {
         try {
             return database.updateWithParamsAwait(
-                    """INSERT INTO game (name, price, publish_date, author, introduction, description) VALUES (?, ?, ?, ?, ?, ?);""",
-                    jsonArrayOf(name, price, ISO_INSTANT.format(publishDate), author, introduction, description)
+                """INSERT INTO game (name, price, publish_date, author, introduction, description) VALUES (?, ?, ?, ?, ?, ?);""",
+                jsonArrayOf(name, price, ISO_INSTANT.format(publishDate), author, introduction, description)
             ).keys.getInteger(0)
         } catch (e: SQLIntegrityConstraintViolationException) {
             if (e.message?.contains("game.name") == true) {
@@ -37,24 +37,24 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
     }
 
     suspend fun updateDescription(
-            gameId: Int,
-            description: String?
+        gameId: Int,
+        description: String?
     ): Boolean {
         return database.updateWithParamsAwait(
-                """UPDATE game SET description = ? WHERE game_id = ?;""",
-                jsonArrayOf(description, gameId)
+            """UPDATE game SET description = ? WHERE game_id = ?;""",
+            jsonArrayOf(description, gameId)
         ).updated == 1
     }
 
     suspend fun createVersion(
-            gameId: Int,
-            versionName: String,
-            url: String
+        gameId: Int,
+        versionName: String,
+        url: String
     ) {
         try {
             database.updateWithParamsAwait(
-                    """INSERT INTO game_version (game_id, name, url) VALUES (?, ?, ?);""",
-                    jsonArrayOf(gameId, versionName, url)
+                """INSERT INTO game_version (game_id, name, url) VALUES (?, ?, ?);""",
+                jsonArrayOf(gameId, versionName, url)
             )
         } catch (e: SQLIntegrityConstraintViolationException) {
             val message = e.message ?: throw e
@@ -73,27 +73,27 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
 
     suspend fun getById(id: Int): Game? {
         return database.querySingleWithParamsAwait(
-                """
+            """
                     SELECT game_id, name, price, publish_date, author, introduction, description 
                     FROM game 
                     WHERE game_id = ?;""".trimIndent(),
-                jsonArrayOf(id)
+            jsonArrayOf(id)
         )?.let {
             Game(
-                    it.getInteger(0), it.getString(1), it.getInteger(2),
-                    it.getInstant(3), it.getString(4), it.getString(5),
-                    it.getString(6)
+                it.getInteger(0), it.getString(1), it.getInteger(2),
+                it.getInstant(3), it.getString(4), it.getString(5),
+                it.getString(6)
             )
         }
     }
 
     suspend fun getVersion(gameId: Int, versionName: String): GameVersion? {
         return database.querySingleWithParamsAwait(
-                """SELECT game_id, name, url FROM game_version WHERE name = ? AND game_id = ?;""",
-                jsonArrayOf(versionName, gameId)
+            """SELECT game_id, name, url FROM game_version WHERE name = ? AND game_id = ?;""",
+            jsonArrayOf(versionName, gameId)
         )?.let {
             GameVersion(
-                    it.getInteger(0), it.getString(1), it.getString(2)
+                it.getInteger(0), it.getString(1), it.getString(2)
             )
         }
     }
@@ -105,7 +105,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
                 FROM game 
                 ORDER BY publish_date desc;
             """.trimIndent()
-        ).rows.map{ it.toGame() }
+        ).rows.map { it.toGame() }
     }
 
     suspend fun getAllGames(): List<Game> {
@@ -114,7 +114,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
                 SELECT game_id gameId, name, price, publish_date publishDate, author, introduction, description 
                 FROM game;
             """.trimIndent()
-        ).rows.map{ it.toGame() }
+        ).rows.map { it.toGame() }
     }
 
     suspend fun getRandomGames(numberOfGames: Int): List<Game> {
@@ -125,24 +125,23 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
                 ORDER BY rand() 
                 LIMIT ?;
             """.trimIndent(), jsonArrayOf(numberOfGames)
-        ).rows.map{ it.toGame() }
+        ).rows.map { it.toGame() }
     }
 
     suspend fun getGameProfile(gameId: Int): GameProfile? {
-        //TODO type was named as ‘full’ and 'card'.
-        // Database will return null if these two image doesn't occur together.
         return database.querySingleWithParamsAwait(
             """
-                WITH sub AS(
-                    SELECT g.game_id, g.name, g.price, g.publish_date, g.author, introduction, gi.file_name, gi.type
-                    FROM game g
-                    JOIN game_image gi ON g.game_id = gi.game_id
-                    WHERE game_id = ?
-                )
-                SELECT s1.game_id, s1.name, s1.price, s1.publish_date, s1.author, s1.introduction, s1.file_name, s2.file_name
-                FROM sub s1
-                JOIN sub s2 on s1.type = 'full' and s2.type = 'card'
-                LIMIT 1
+                SELECT game.game_id gameId,
+                       name,
+                       price,
+                       publish_date publishDate,
+                       author,
+                       introduction,
+                       gi1.url      imageFullSize,
+                       gi2.url      imageCardSize
+                FROM game
+                         JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
+                         JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C';
             """.trimIndent(),
             jsonArrayOf(gameId)
         )?.let {
@@ -154,13 +153,14 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         }
     }
 
-    suspend fun getGameDetail(gameId: Int): GameDetail {
+    suspend fun getGameDetail(gameId: Int): GameDetail? {
+        val game = getById(gameId) ?: return null
         return GameDetail(
-            getById(gameId)?: throw ServiceException("Game does not exist"),
+            game,
             database.queryWithParamsAwait(
-                """SELECT file_name FROM game_image where game_id = ?;""",
+                """SELECT game_id gameId, url, type FROM game_image where game_id = ?;""",
                 jsonArrayOf(gameId)
-            ).rows.map{ it.toString() }
+            ).rows.map { it.toGameImage() }
         )
     }
 }
