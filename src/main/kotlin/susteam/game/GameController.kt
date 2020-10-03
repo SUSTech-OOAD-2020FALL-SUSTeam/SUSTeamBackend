@@ -122,7 +122,6 @@ class GameController @Inject constructor(private val service: GameService) : Cor
     suspend fun handleGetAllGames(context: RoutingContext) {
         val request = context.request()
         val order = request.getParam("order")
-        println(order) // TODO delete it
 
         val gamesList: List<GameProfile> = when (order) {
             "publishDate" -> { service.getAllGameProfileOrderByPublishDate() }
