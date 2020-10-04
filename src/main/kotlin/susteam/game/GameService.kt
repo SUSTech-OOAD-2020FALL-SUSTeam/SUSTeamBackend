@@ -2,6 +2,7 @@ package susteam.game
 
 import com.google.inject.Inject
 import susteam.ServiceException
+import susteam.storage.StorageImage
 import susteam.user.Auth
 import susteam.user.isAdmin
 import susteam.user.isDeveloper
@@ -106,6 +107,29 @@ class GameService @Inject constructor(
     suspend fun getRandomGameProfile(numberOfGames: Int): List<GameProfile> {
         if (numberOfGames <= 0) throw ServiceException("Number of Games must be greater than zero")
         return repository.getRandomGameProfile(numberOfGames)
+    }
+
+    suspend fun uploadGameImage(gameId: Int, image: StorageImage, type: String) {
+        when (type) {
+            "N" -> repository.createGameImage(gameId, image.id, type)
+            "F" -> {
+                val profile = getGameProfile(gameId)
+                if (profile.imageFullSize != null){
+                    repository.updateGameImage(gameId, image.id, type)
+                } else {
+                    repository.createGameImage(gameId, image.id, type)
+                }
+            }
+            "C" -> {
+                val profile = getGameProfile(gameId)
+                if (profile.imageCardSize != null){
+                    repository.updateGameImage(gameId, image.id, type)
+                } else {
+                    repository.createGameImage(gameId, image.id, type)
+                }
+            }
+            else -> throw ServiceException("Cannot recognize game image type '${type}'")
+        }
     }
 
 }

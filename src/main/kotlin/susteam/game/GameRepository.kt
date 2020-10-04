@@ -144,7 +144,8 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
                        gi2.url      imageCardSize
                 FROM game
                          LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
-                         LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C';
+                         LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
+                WHERE game.game_id = ?;
             """.trimIndent(),
             jsonArrayOf(gameId)
         )?.let {
@@ -165,5 +166,19 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
                 jsonArrayOf(gameId)
             ).rows.map { it.toGameImage() }
         )
+    }
+
+    suspend fun createGameImage(gameId: Int, url: String, type: String): Boolean {
+        return database.updateWithParamsAwait(
+            """INSERT INTO game_image (game_id, url, type) VALUES (?, ?, ?);""",
+            jsonArrayOf(gameId, url, type)
+        ).updated == 1
+    }
+
+    suspend fun updateGameImage(gameId: Int, url: String, type: String): Boolean {
+        return database.updateWithParamsAwait(
+            """UPDATE game_image SET url = ? WHERE game_id = ? AND type = ?;""",
+            jsonArrayOf(url, gameId, type)
+        ).updated == 1
     }
 }

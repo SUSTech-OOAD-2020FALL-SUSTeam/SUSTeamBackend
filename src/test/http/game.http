@@ -75,3 +75,22 @@ GET {{host}}/api/games/?order=publishDate
 ###
 
 GET {{host}}/api/games/recommend/
+
+### upload game image
+
+POST {{host}}/api/game/1/image
+Authorization: Bearer {{admin-token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="FullSize"; filename="img_full.jpg"
+
+< ../../../img_full.jpg
+
+--WebAppBoundary
+Content-Disposition: form-data; name="CardSize"; filename="img_card.jpg"
+
+< ../../../img_card.jpg
+--WebAppBoundary--
+
+###

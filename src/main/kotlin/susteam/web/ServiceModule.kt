@@ -14,6 +14,7 @@ import susteam.game.GameController
 import susteam.game.GameRepository
 import susteam.game.GameService
 import susteam.storage.StorageController
+import susteam.storage.StorageImageFactory
 import susteam.storage.StorageRepository
 import susteam.storage.StorageService
 import susteam.user.UserController
@@ -40,17 +41,26 @@ class ServiceModule(
     private val database = JDBCClient.create(vertx, config.getJsonObject("database_config"))
 
     override fun configure() {
+        val webConfig = config.getJsonObject("webserver_config")
+
         bind(Vertx::class.java).toInstance(vertx)
         bind(JsonObject::class.java).annotatedWith(Config::class.java).toInstance(config)
         bind(JDBCClient::class.java).toInstance(database)
         bind(JWTAuth::class.java).toInstance(
             JWTAuth.create(
                 vertx, JWTAuthOptions().addPubSecKey(
-                    PubSecKeyOptions(config.getJsonObject("webserver_config").getJsonObject("rsa_key"))
+                    PubSecKeyOptions(webConfig.getJsonObject("rsa_key"))
                 )
             )
         )
         bind(FileSystem::class.java).toInstance(vertx.fileSystem())
+
+        bind(StorageImageFactory::class.java).toInstance(
+            StorageImageFactory(
+                "http://${webConfig.getString("host")}:${webConfig.getInteger("port")}/api/image",
+                "storage/image"
+            )
+        )
 
         bind(TokenUserHandler::class.java)
 
