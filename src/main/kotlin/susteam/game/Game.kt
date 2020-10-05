@@ -28,7 +28,7 @@ data class GameImage(
 )
 
 data class GameProfile(
-        val id: Int,
+        val gameId: Int,
         val name: String,
         val price: Int,
         val publishDate: Instant,
@@ -76,7 +76,7 @@ fun JsonObject.toGameVersion(): GameVersion = GameVersion(
 )
 
 fun GameProfile.toJson(): JsonObject = jsonObjectOf(
-        "id" to id,
+        "gameId" to gameId,
         "name" to name,
         "price" to price,
         "publishDate" to publishDate,
