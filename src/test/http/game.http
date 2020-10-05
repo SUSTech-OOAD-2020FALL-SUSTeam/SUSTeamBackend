@@ -6,6 +6,7 @@ Authorization: Bearer {{admin-token}}
 {
   "name": "hyldajksldf",
   "price": 1000,
+  "introduction": "nice",
   "description": "Nice game"
 }
 
@@ -17,6 +18,7 @@ Authorization: Bearer {{admin-token}}
 {
   "name": "lol",
   "price": 0,
+  "introduction": "nice",
   "description": "Nice game"
 }
 
@@ -28,6 +30,7 @@ Authorization: Bearer {{admin-token}}
 {
   "name": "nba2k21",
   "price": 16,
+  "introduction": "nice",
   "description": "Nice game"
 }
 
@@ -48,6 +51,14 @@ Authorization: Bearer {{admin-token}}
 ###
 
 GET {{host}}/api/game/1
+
+###
+
+GET {{host}}/api/game/1
+
+###
+
+GET {{host}}/api/game/1/detail
 
 ###
 
@@ -86,11 +97,49 @@ Content-Type: multipart/form-data; boundary=WebAppBoundary
 Content-Disposition: form-data; name="FullSize"; filename="img_full.jpg"
 
 < ../../../img_full.jpg
+//< C:/Users/26376/Downloads/2kfull.jpg
 
 --WebAppBoundary
 Content-Disposition: form-data; name="CardSize"; filename="img_card.jpg"
 
 < ../../../img_card.jpg
+//< C:/Users/26376/Downloads/2kcard.jpg
 --WebAppBoundary--
+
+###
+
+POST {{host}}/api/game/1/tag
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "tag": "fight"
+}
+###
+POST {{host}}/api/game/1/tag
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "tag": "puzzle"
+}
+
+###
+
+GET {{host}}/api/game/1/tag
+
+###
+
+GET {{host}}/api/tags
+
+###
+
+GET {{host}}/api/tags/getGame
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "tagName" : ["fight","puzzle"]
+}
 
 ###

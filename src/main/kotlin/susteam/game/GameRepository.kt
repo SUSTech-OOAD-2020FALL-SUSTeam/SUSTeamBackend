@@ -1,6 +1,7 @@
 package susteam.game
 
 import com.google.inject.Inject
+import io.vertx.core.json.JsonArray
 import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.kotlin.core.json.jsonArrayOf
 import io.vertx.kotlin.ext.jdbc.querySingleWithParamsAwait
@@ -153,7 +154,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
             GameProfile(
                 it.getInteger(0), it.getString(1), it.getInteger(2),
                 it.getInstant(3), it.getString(4), it.getString(5),
-                it.getStorageImage(6), it.getStorageImage(7)
+               it.getStorageImage(6), it.getStorageImage(7)
             )
         }
     }
@@ -181,5 +182,73 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
             """UPDATE game_image SET url = ? WHERE game_id = ? AND type = ?;""",
             jsonArrayOf(url, gameId, type)
         ).updated == 1
+    }
+
+    suspend fun getTag(gameId: Int): List<String>? {
+        val game = getById(gameId) ?: return null
+        //返回list为空时不能判断是因为游戏不存在还是游戏本来就没tag
+        return database.queryWithParamsAwait(
+            """SELECT tag from game_tag where game_id = ?;""",
+            jsonArrayOf(gameId)
+        ).rows.map { it.getString("tag").toString() }
+    }
+
+    suspend fun getAllTag(): List<String> {
+        return database.queryAwait(
+            """SELECT DISTINCT tag from game_tag;"""
+        ).rows.map { it.getString("tag").toString() }
+    }
+
+    suspend fun getGameProfileWithTags(tags: List<String>): List<GameProfile> {
+        val tagSize: Int = tags.size
+        if (tagSize == 0) return getAllGameProfile()
+
+        var Inputs: String = ""
+        for (i in 1..tagSize) {
+            if (i != 1) Inputs = ", " + Inputs
+            Inputs = "?" + Inputs
+        }
+        val sql =
+            """
+                WITH sub AS (
+                    SELECT game_id, COUNT(*) cnt FROM game_tag WHERE tag IN ($Inputs)
+                    GROUP BY game_id
+                )
+                SELECT game.game_id gameId,
+                       name,
+                       price,
+                       publish_date publishDate,
+                       author,
+                       introduction,
+                       gi1.url      imageFullSize,
+                       gi2.url      imageCardSize,
+                       sub.cnt
+                FROM game
+                         LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
+                         LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
+                         JOIN sub ON game.game_id = sub.game_id
+                         having max(cnt) = ($tagSize)
+                ORDER BY sub.cnt DESC;
+            """.trimIndent()
+        return database.queryWithParamsAwait(
+            sql, JsonArray(tags)
+        ).rows.map { it.toGameProfile() }
+    }
+
+    suspend fun addTag(gameId: Int, tag: String) {
+        try {
+            database.updateWithParamsAwait(
+                """INSERT INTO game_tag (game_id, tag) VALUES (?, ?);""",
+                jsonArrayOf(gameId, tag)
+            )
+        } catch (e: SQLIntegrityConstraintViolationException) {
+            val message = e.message ?: throw e
+
+            if (message.contains("FOREIGN KEY (`game_id`)")) {
+                throw ServiceException("Cannot create tag '$tag' for game '$gameId', game '$gameId' do not exist")
+            } else {
+                throw e
+            }
+        }
     }
 }

@@ -132,4 +132,31 @@ class GameService @Inject constructor(
         }
     }
 
+    suspend fun getTag(gameId: Int): List<String> {
+        return repository.getTag(gameId) ?: throw ServiceException("Game does not exist")
+    }
+
+    suspend fun getAllTag(): List<String> {
+        return repository.getAllTag()
+    }
+
+    suspend fun getGameProfileWithTags(tags: List<String>): List<GameProfile> {
+        return repository.getGameProfileWithTags(tags)
+    }
+
+    suspend fun addTag(
+        auth: Auth,
+        gameId: Int,
+        tag: String
+    ) {
+        if (tag.isBlank()) {
+            throw ServiceException("Tag is blank")
+        }
+
+        if (!auth.isAdmin() && !auth.isDeveloper()) {
+            throw ServiceException("Permission denied")
+        }
+
+        repository.addTag(gameId, tag)
+    }
 }

@@ -45,6 +45,11 @@ data class GameDetail(
         val images: List<GameImage>
 )
 
+data class GameTag(
+        val gameId: Int,
+        val tag: String
+)
+
 fun Game.toJson(): JsonObject = jsonObjectOf(
         "id" to id,
         "name" to name,
@@ -119,4 +124,14 @@ fun JsonObject.toGameImage(): GameImage = GameImage(
         getInteger("gameId"),
         getString("url"),
         getString("type")
+)
+
+fun GameTag.toJson(): JsonObject = jsonObjectOf(
+        "gameId" to gameId,
+        "tag" to tag
+)
+
+fun JsonObject.toGameTag(): GameTag = GameTag(
+        getInteger("gameId"),
+        getString("tag")
 )

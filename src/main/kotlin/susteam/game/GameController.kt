@@ -27,13 +27,18 @@ class GameController @Inject constructor(
         router.get("/game/:gameId/detail").coroutineHandler(::handleGetGameDetail)
         router.post("/game").coroutineHandler(::handlePublishGame)
         router.put("/game/:gameId").coroutineHandler(::handleUpdateDescription)
-        router.get("/games/").coroutineHandler(::handleGetAllGames)
+        router.get("/games").coroutineHandler(::handleGetAllGames)
         router.get("/games/recommend").coroutineHandler(::handleGetRecommendGames)
 
         router.get("/game/:gameId/version/:versionName").coroutineHandler(::handleGetVersion)
         router.post("/game/:gameId/version").coroutineHandler(::handlePublishGameVersion)
 
         router.post("/game/:gameId/image").coroutineHandler(::handleUploadGameImage)
+
+        router.get("/game/:gameId/tag").coroutineHandler(::handleGetTag)
+        router.get("/tags").coroutineHandler(::handleGetAllTag)
+        router.get("/tags/:tagName").coroutineHandler(::handleGetGameProfileWithTags)
+        router.post("/game/:gameId/tag").coroutineHandler(::handleAddTag)
     }
 
     private suspend fun handleGetGame(context: RoutingContext) {
@@ -144,6 +149,7 @@ class GameController @Inject constructor(
                 service.getAllGameProfileOrderByName()
             }
             else -> {
+                println("asd")
                 service.getAllGameProfile()
             }
         }
@@ -206,6 +212,7 @@ class GameController @Inject constructor(
             store
         }
 
+        println(1)
         context.success(
             jsonObjectOf(
                 "images" to JsonArray(stores.map { it.url })
@@ -214,4 +221,52 @@ class GameController @Inject constructor(
 
     }
 
+    private suspend fun handleGetTag(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+
+        val tags: List<String> = service.getTag(gameId)
+
+        context.success(
+            jsonObjectOf(
+                "tags" to JsonArray(tags.map { it })
+            )
+        )
+    }
+
+    private suspend fun handleGetAllTag(context: RoutingContext) {
+        val tags: List<String> = service.getAllTag()
+
+        context.success(
+            jsonObjectOf(
+                "tags" to JsonArray(tags.map { it })
+            )
+        )
+    }
+
+    suspend fun handleGetGameProfileWithTags(context: RoutingContext) {
+        val params = context.bodyAsJson
+        val tags: List<String> = params.getJsonArray("tagName").map{ it.toString() }
+        val gamesList: List<GameProfile> = service.getGameProfileWithTags(tags)
+
+        context.success(
+            jsonObjectOf(
+                "games" to JsonArray(gamesList.map{ it.toJson() })
+            )
+        )
+    }
+
+    suspend fun handleAddTag(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
+
+        val params = context.bodyAsJson
+        val tag = params.getString("tag") ?: throw ServiceException("Tag is empty")
+
+        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
+
+        service.addTag(auth, gameId, tag)
+
+        context.success()
+    }
 }
