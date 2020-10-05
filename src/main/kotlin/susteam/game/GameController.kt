@@ -149,7 +149,6 @@ class GameController @Inject constructor(
                 service.getAllGameProfileOrderByName()
             }
             else -> {
-                println("asd")
                 service.getAllGameProfile()
             }
         }
@@ -212,7 +211,6 @@ class GameController @Inject constructor(
             store
         }
 
-        println(1)
         context.success(
             jsonObjectOf(
                 "images" to JsonArray(stores.map { it.url })
