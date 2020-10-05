@@ -55,12 +55,13 @@ class ServiceModule(
         )
         bind(FileSystem::class.java).toInstance(vertx.fileSystem())
 
-        bind(StorageImageFactory::class.java).toInstance(
-            StorageImageFactory(
-                "http://${webConfig.getString("host")}:${webConfig.getInteger("port")}/api/image",
-                "storage/image"
-            )
-        )
+
+        StorageImageFactory.urlPrefix = """
+            http://${webConfig.getString("host")}:${webConfig.getInteger("port")}/api/image
+        """.trimIndent()
+        StorageImageFactory.pathPrefix = "storage/image"
+
+        bind(StorageImageFactory::class.java).toInstance(StorageImageFactory)
 
         bind(TokenUserHandler::class.java)
 

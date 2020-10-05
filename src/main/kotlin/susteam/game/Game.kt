@@ -3,6 +3,8 @@ package susteam.game
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.jsonObjectOf
+import susteam.storage.StorageImage
+import susteam.storage.getStorageImage
 import java.time.Instant
 
 data class Game(
@@ -34,8 +36,8 @@ data class GameProfile(
         val publishDate: Instant,
         val author: String,
         val introduction: String?,
-        val imageFullSize: String?,
-        val imageCardSize: String?
+        val imageFullSize: StorageImage?,
+        val imageCardSize: StorageImage?
 )
 
 data class GameDetail(
@@ -82,8 +84,8 @@ fun GameProfile.toJson(): JsonObject = jsonObjectOf(
         "publishDate" to publishDate,
         "author" to author,
         "introduction" to introduction,
-        "imageFullSize" to imageFullSize,
-        "imageCardSize" to imageCardSize
+        "imageFullSize" to imageFullSize?.url,
+        "imageCardSize" to imageCardSize?.url
 )
 
 fun JsonObject.toGameProfile(): GameProfile = GameProfile(
@@ -93,8 +95,8 @@ fun JsonObject.toGameProfile(): GameProfile = GameProfile(
         getInstant("publishDate"),
         getString("author"),
         getString("introduction"),
-        getString("imageFullSize"),
-        getString("imageCardSize")
+        getStorageImage("imageFullSize"),
+        getStorageImage("imageCardSize")
 )
 
 fun GameDetail.toJson(): JsonObject = jsonObjectOf(

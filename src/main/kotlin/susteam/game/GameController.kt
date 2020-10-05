@@ -150,7 +150,7 @@ class GameController @Inject constructor(
 
         context.success(
             jsonObjectOf(
-                "games" to gamesList
+                "games" to JsonArray(gamesList.map { it.toJson() })
             )
         )
     }
@@ -163,7 +163,7 @@ class GameController @Inject constructor(
 
         context.success(
             jsonObjectOf(
-                "games" to gamesList
+                "games" to JsonArray(gamesList.map { it.toJson() })
             )
         )
     }

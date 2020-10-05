@@ -8,6 +8,7 @@ import io.vertx.kotlin.ext.sql.queryAwait
 import io.vertx.kotlin.ext.sql.queryWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.ServiceException
+import susteam.storage.getStorageImage
 import java.sql.SQLIntegrityConstraintViolationException
 import java.time.Instant
 import java.time.format.DateTimeFormatter.ISO_INSTANT
@@ -152,7 +153,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
             GameProfile(
                 it.getInteger(0), it.getString(1), it.getInteger(2),
                 it.getInstant(3), it.getString(4), it.getString(5),
-                it.getString(6), it.getString(7)
+                it.getStorageImage(6), it.getStorageImage(7)
             )
         }
     }
