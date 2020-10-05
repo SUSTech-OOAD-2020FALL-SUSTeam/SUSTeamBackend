@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage, game_image;
+DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage, game_image, game_tag;
 
 CREATE TABLE user
 (
@@ -88,4 +88,13 @@ CREATE TABLE IF NOT EXISTS `game_image`
 
     INDEX (game_id, type),
     FOREIGN KEY (game_id) REFERENCES game (game_id)
+);
+
+CREATE TABLE IF NOT EXISTS `game_tag`
+(
+    game_id INT          NOT NULL,
+    tag     VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (game_id, tag),
+    FOREIGN KEY(game_id) REFERENCES game (game_id)
 )
