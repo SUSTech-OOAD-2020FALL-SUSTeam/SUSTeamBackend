@@ -36,6 +36,6 @@ object StorageImageFactory {
 
 fun String.toStorageImage() = StorageImageFactory.from(this)
 
-fun JsonObject.getStorageImage(key: String) = StorageImageFactory.from(this.getString(key))
+fun JsonObject.getStorageImage(key: String) = this.getString(key)?.let { StorageImageFactory.from(it) }
 
-fun JsonArray.getStorageImage(key: Int) = StorageImageFactory.from(this.getString(key))
+fun JsonArray.getStorageImage(key: Int) = this.getString(key)?.let { StorageImageFactory.from(it) }
