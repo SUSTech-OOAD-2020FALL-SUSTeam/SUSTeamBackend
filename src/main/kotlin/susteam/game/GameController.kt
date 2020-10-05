@@ -27,7 +27,7 @@ class GameController @Inject constructor(
         router.get("/game/:gameId/detail").coroutineHandler(::handleGetGameDetail)
         router.post("/game").coroutineHandler(::handlePublishGame)
         router.put("/game/:gameId").coroutineHandler(::handleUpdateDescription)
-        router.get("/games/").coroutineHandler(::handleGetAllGames)
+        router.get("/games").coroutineHandler(::handleGetAllGames)
         router.get("/games/recommend").coroutineHandler(::handleGetRecommendGames)
 
         router.get("/game/:gameId/version/:versionName").coroutineHandler(::handleGetVersion)
