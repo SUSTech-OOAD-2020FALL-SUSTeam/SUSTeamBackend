@@ -50,14 +50,15 @@ class StorageRepository @Inject constructor(
 
     suspend fun store(uploadPath: String, fileSuffix: String) = storeImpl(uploadPath, fileSuffix, storeRoot)
 
-    suspend fun storeImage(uploadPath: String): String {
+    suspend fun storeImage(uploadPath: String, extension: String = ""): String {
         val md5 = md5(fileSystem.readFileAwait(uploadPath).bytes)
-        val storePath = Path.of(imageRoot, md5).toString()
+        val id = if (extension.isBlank()) md5 else "${md5}.${extension}"
+        val storePath = Path.of(imageRoot, id).toString()
 
         if (!fileSystem.existsAwait(storePath)) {
             fileSystem.moveAwait(uploadPath, storePath)
         }
-        return md5
+        return id
     }
 
     suspend fun storeImpl(uploadPath: String, fileSuffix: String, rootPath: String): String {
@@ -74,7 +75,7 @@ class StorageRepository @Inject constructor(
         return storePath
     }
 
-    fun md5(bytes: ByteArray): String {
+    private fun md5(bytes: ByteArray): String {
         val md = MessageDigest.getInstance("MD5")
         md.update(bytes)
         val digest = md.digest()

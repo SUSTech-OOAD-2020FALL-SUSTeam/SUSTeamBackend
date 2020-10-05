@@ -11,7 +11,7 @@ class StorageService @Inject constructor(
 ) {
     suspend fun upload(file: FileStorage, auth: Auth, isPublic: Boolean): String {
         return if (file.isImage) {
-            repository.storeImage(file.uploadName)
+            repository.storeImage(file.uploadName, file.suffix)
         } else {
             repository.record(
                 file.uuid, file.fileName, auth.username, Instant.now(), isPublic
@@ -21,7 +21,7 @@ class StorageService @Inject constructor(
     }
 
     suspend fun uploadImage(file: FileStorage): StorageImage {
-        val id = repository.storeImage(file.uploadName)
+        val id = repository.storeImage(file.uploadName, file.suffix)
         return imageFactory.fromId(id)
     }
 }
