@@ -37,7 +37,7 @@ class GameController @Inject constructor(
 
         router.get("/game/:gameId/tag").coroutineHandler(::handleGetTag)
         router.get("/tags").coroutineHandler(::handleGetAllTag)
-        router.get("/tags/:tagName").coroutineHandler(::handleGetGameProfileWithTags)
+        router.get("/games/tags").coroutineHandler(::handleGetGameProfileWithTags)
         router.post("/game/:gameId/tag").coroutineHandler(::handleAddTag)
     }
 
@@ -243,8 +243,7 @@ class GameController @Inject constructor(
     }
 
     suspend fun handleGetGameProfileWithTags(context: RoutingContext) {
-        val params = context.bodyAsJson
-        val tags: List<String> = params.getJsonArray("tagName").map{ it.toString() }
+        val tags: List<String> = context.queryParam("tag")
         val gamesList: List<GameProfile> = service.getGameProfileWithTags(tags)
 
         context.success(

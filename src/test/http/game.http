@@ -1,72 +1,47 @@
-## create game
+# create game
 POST {{host}}/api/game
 Content-Type: application/json
 Authorization: Bearer {{admin-token}}
 
 {
-  "name": "hyldajksldf",
+  "name": "TestGame",
   "price": 1000,
   "introduction": "nice",
   "description": "Nice game"
 }
 
 ###
-POST {{host}}/api/game
-Content-Type: application/json
-Authorization: Bearer {{admin-token}}
-
-{
-  "name": "lol",
-  "price": 0,
-  "introduction": "nice",
-  "description": "Nice game"
-}
-
-###
-POST {{host}}/api/game
-Content-Type: application/json
-Authorization: Bearer {{admin-token}}
-
-{
-  "name": "nba2k21",
-  "price": 16,
-  "introduction": "nice",
-  "description": "Nice game"
-}
-
-###
-
 #create game version
 
-POST {{host}}/api/game/1/version
+POST {{host}}/api/game/10/version
 Content-Type: application/json
 Authorization: Bearer {{admin-token}}
 
 {
-  "gameId": 1,
+  "gameId": 10,
   "name": "v1.1",
   "url": "https://www.google.com/"
 }
 
 ###
 
-GET {{host}}/api/game/1
+GET {{host}}/api/game/10
 
 ###
 
-GET {{host}}/api/game/1
+GET {{host}}/api/game/10/profile
 
 ###
 
-GET {{host}}/api/game/1/detail
+GET {{host}}/api/game/10/detail
 
 ###
 
-GET {{host}}/api/game/1/version/v1.1
+GET {{host}}/api/game/10/version/v1.1
 
 ###
 
-PUT {{host}}/api/game/1
+PUT {{host}}/api/game/10
 Content-Type: application/json
 Authorization: Bearer {{admin-token}}
 
@@ -89,7 +64,7 @@ GET {{host}}/api/games/recommend/
 
 ### upload game image
 
-POST {{host}}/api/game/1/image
+POST {{host}}/api/game/10/image
 Authorization: Bearer {{admin-token}}
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
@@ -97,36 +72,26 @@ Content-Type: multipart/form-data; boundary=WebAppBoundary
 Content-Disposition: form-data; name="FullSize"; filename="img_full.jpg"
 
 < ../../../img_full.jpg
-//< C:/Users/26376/Downloads/2kfull.jpg
 
 --WebAppBoundary
 Content-Disposition: form-data; name="CardSize"; filename="img_card.jpg"
 
 < ../../../img_card.jpg
-//< C:/Users/26376/Downloads/2kcard.jpg
 --WebAppBoundary--
 
 ###
 
-POST {{host}}/api/game/1/tag
+POST {{host}}/api/game/10/tag
 Content-Type: application/json
 Authorization: Bearer {{admin-token}}
 
 {
-  "tag": "fight"
-}
-###
-POST {{host}}/api/game/1/tag
-Content-Type: application/json
-Authorization: Bearer {{admin-token}}
-
-{
-  "tag": "puzzle"
+  "tag": "冒险"
 }
 
 ###
 
-GET {{host}}/api/game/1/tag
+GET {{host}}/api/game/10/tag
 
 ###
 
@@ -134,12 +99,6 @@ GET {{host}}/api/tags
 
 ###
 
-GET {{host}}/api/tags/getGame
-Content-Type: application/json
-Authorization: Bearer {{admin-token}}
-
-{
-  "tagName" : ["fight","puzzle"]
-}
+GET {{host}}/api/games/tags?tag=冒险&tag=动作
 
 ###
