@@ -55,10 +55,7 @@ class ServiceModule(
         )
         bind(FileSystem::class.java).toInstance(vertx.fileSystem())
 
-
-        StorageImageFactory.urlPrefix = """
-            http://${webConfig.getString("host")}:${webConfig.getInteger("port")}/api/image
-        """.trimIndent()
+        StorageImageFactory.urlPrefix = "${webConfig.getString("server_url")}/api/image"
         StorageImageFactory.pathPrefix = "storage/image"
 
         bind(StorageImageFactory::class.java).toInstance(StorageImageFactory)

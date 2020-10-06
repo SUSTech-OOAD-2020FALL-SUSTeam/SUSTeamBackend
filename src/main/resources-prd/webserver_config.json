@@ -1,6 +1,7 @@
 {
   "port": 8080,
   "host": "susteam.gogo.moe",
+  "server_url": "http://susteam.gogo.moe",
   "cors_origin": "*",
   "rsa_key": {
     "algorithm": "RS256",
