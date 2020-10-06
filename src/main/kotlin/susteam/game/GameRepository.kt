@@ -154,7 +154,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
             GameProfile(
                 it.getInteger(0), it.getString(1), it.getInteger(2),
                 it.getInstant(3), it.getString(4), it.getString(5),
-               it.getStorageImage(6), it.getStorageImage(7)
+                it.getStorageImage(6), it.getStorageImage(7)
             )
         }
     }
@@ -203,15 +203,13 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         val tagSize: Int = tags.size
         if (tagSize == 0) return getAllGameProfile()
 
-        var Inputs: String = ""
-        for (i in 1..tagSize) {
-            if (i != 1) Inputs = ", " + Inputs
-            Inputs = "?" + Inputs
-        }
+        val inputs = List(tagSize) { "?" }.joinToString(", ")
         val sql =
             """
                 WITH sub AS (
-                    SELECT game_id, COUNT(*) cnt FROM game_tag WHERE tag IN ($Inputs)
+                    SELECT game_id, COUNT(*) cnt
+                    FROM game_tag
+                    WHERE tag IN ($inputs)
                     GROUP BY game_id
                 )
                 SELECT game.game_id gameId,
@@ -227,8 +225,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
                          LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
                          LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
                          JOIN sub ON game.game_id = sub.game_id
-                         having max(cnt) = ($tagSize)
-                ORDER BY sub.cnt DESC;
+                WHERE cnt = $tagSize
             """.trimIndent()
         return database.queryWithParamsAwait(
             sql, JsonArray(tags)
