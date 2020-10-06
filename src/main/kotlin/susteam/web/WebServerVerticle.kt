@@ -2,6 +2,7 @@ package susteam.web
 
 import io.vertx.core.DeploymentOptions
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.handler.StaticHandler
 import io.vertx.kotlin.core.deployVerticleAwait
 import io.vertx.kotlin.core.file.readFileAwait
 import io.vertx.kotlin.core.http.listenAwait
@@ -26,6 +27,8 @@ class WebServerVerticle : CoroutineVerticle() {
             context.response().putHeader("Content-Type", "image/jpeg")
             context.response().end(defaultAvatar)
         }
+
+        router.route().handler(StaticHandler.create())
 
         val webConfig = config.getJsonObject("webserver_config")
 
