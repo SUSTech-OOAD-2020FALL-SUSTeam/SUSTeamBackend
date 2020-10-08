@@ -4,7 +4,7 @@ import com.google.inject.Inject
 import io.vertx.core.json.JsonArray
 import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.kotlin.core.json.jsonArrayOf
-import io.vertx.kotlin.ext.jdbc.querySingleWithParamsAwait
+import io.vertx.kotlin.ext.sql.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.queryAwait
 import io.vertx.kotlin.ext.sql.queryWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
@@ -166,7 +166,11 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
             database.queryWithParamsAwait(
                 """SELECT game_id gameId, url, type FROM game_image where game_id = ?;""",
                 jsonArrayOf(gameId)
-            ).rows.map { it.toGameImage() }
+            ).rows.map { it.toGameImage() },
+            database.queryWithParamsAwait(
+                """SELECT tag FROM game_tag WHERE game_id = ?;""",
+                jsonArrayOf(gameId)
+            ).results.map { it.getString(0) }
         )
     }
 

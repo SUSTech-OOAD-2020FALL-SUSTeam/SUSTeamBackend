@@ -42,7 +42,8 @@ data class GameProfile(
 
 data class GameDetail(
         val game: Game,
-        val images: List<GameImage>
+        val images: List<GameImage>,
+        val tags: List<String>
 )
 
 data class GameTag(
@@ -112,7 +113,8 @@ fun GameDetail.toJson(): JsonObject = jsonObjectOf(
         "author" to game.author,
         "introduction" to game.introduction,
         "description" to game.description,
-        "images" to JsonArray(images.map { it.toJson() })
+        "images" to JsonArray(images.map { it.toJson() }),
+        "tags" to JsonArray(tags)
 )
 
 fun JsonObject.toGameDetail(): GameDetail {
@@ -121,7 +123,8 @@ fun JsonObject.toGameDetail(): GameDetail {
 
     return GameDetail(
             obj.toGame(),
-            getJsonArray("images").map { (it as JsonObject).toGameImage() }
+            getJsonArray("images").map { (it as JsonObject).toGameImage() },
+            getJsonArray("tags").map { it as String }
     )
 }
 
