@@ -25,7 +25,7 @@ data class GameVersion(
 
 data class GameImage(
         val gameId: Int,
-        val url: String,
+        val url: StorageImage,
         val type: String
 )
 
@@ -105,24 +105,35 @@ fun JsonObject.toGameProfile(): GameProfile = GameProfile(
 )
 
 fun GameDetail.toJson(): JsonObject = jsonObjectOf(
-        "game" to game.toJson(),
+        "gameId" to game.id,
+        "name" to game.name,
+        "price" to game.price,
+        "publishDate" to game.publishDate,
+        "author" to game.author,
+        "introduction" to game.introduction,
+        "description" to game.description,
         "images" to JsonArray(images.map { it.toJson() })
 )
 
-fun JsonObject.toGameDetail(): GameDetail = GameDetail(
-        getJsonObject("game").toGame(),
-        getJsonArray("images").map { (it as JsonObject).toGameImage() }
-)
+fun JsonObject.toGameDetail(): GameDetail {
+    val obj = this.copy()
+    obj.put("id", obj.getInteger("gameId"))
+
+    return GameDetail(
+            obj.toGame(),
+            getJsonArray("images").map { (it as JsonObject).toGameImage() }
+    )
+}
 
 fun GameImage.toJson(): JsonObject = jsonObjectOf(
         "gameId" to gameId,
-        "url" to url,
+        "url" to url.url,
         "type" to type
 )
 
 fun JsonObject.toGameImage(): GameImage = GameImage(
         getInteger("gameId"),
-        getString("url"),
+        getStorageImage("url")!!,
         getString("type")
 )
 
