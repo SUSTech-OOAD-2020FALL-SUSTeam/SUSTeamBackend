@@ -1,0 +1,27 @@
+POST {{host}}/api/announcement
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "gameId": 1,
+  "title": "create v1.1",
+  "content": "a new version 1.1"
+}
+
+###
+
+POST {{host}}/api/announcement
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "gameId": 1,
+  "title": "create v1.2",
+  "content": "a new version 1.2"
+}
+
+####
+
+GET {{host}}/api/announcement/1
+
+###
