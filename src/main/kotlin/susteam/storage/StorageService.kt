@@ -1,6 +1,7 @@
 package susteam.storage
 
 import com.google.inject.Inject
+import susteam.ServiceException
 import susteam.user.Auth
 import susteam.user.username
 import java.time.Instant
@@ -16,7 +17,7 @@ class StorageService @Inject constructor(
             repository.record(
                 file.uuid, file.fileName, auth.username, Instant.now(), isPublic
             )
-            repository.store(file.uploadName, file.suffix)
+            repository.store(file.uploadName)
         }
     }
 
@@ -24,4 +25,7 @@ class StorageService @Inject constructor(
         val id = repository.storeImage(file.uploadName, file.suffix)
         return imageFactory.fromId(id)
     }
+
+    suspend fun getFileName(uuid: String) =
+        repository.getFileName(uuid) ?: throw ServiceException("File not found")
 }

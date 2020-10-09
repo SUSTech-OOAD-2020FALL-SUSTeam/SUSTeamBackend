@@ -7,6 +7,7 @@ import io.vertx.kotlin.core.file.existsAwait
 import io.vertx.kotlin.core.file.moveAwait
 import io.vertx.kotlin.core.file.readFileAwait
 import io.vertx.kotlin.core.json.jsonArrayOf
+import io.vertx.kotlin.ext.sql.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.ServiceException
 import java.nio.file.Path
@@ -48,7 +49,22 @@ class StorageRepository @Inject constructor(
         }
     }
 
-    suspend fun store(uploadPath: String, fileSuffix: String) = storeImpl(uploadPath, fileSuffix, storeRoot)
+    suspend fun getFileName(uuid: String): String? {
+        return database.querySingleWithParamsAwait(
+            """
+                SELECT file_name
+                FROM storage
+                WHERE uuid = ?;
+            """.trimIndent(), jsonArrayOf(uuid)
+        )?.getString(0)
+    }
+
+    suspend fun store(uploadPath: String): String {
+        val filename = Path.of(uploadPath).fileName.toString()
+        val storePath = Path.of(storeRoot, filename).toString()
+        fileSystem.moveAwait(uploadPath, storePath)
+        return storePath
+    }
 
     suspend fun storeImage(uploadPath: String, extension: String = ""): String {
         val md5 = md5(fileSystem.readFileAwait(uploadPath).bytes)
@@ -59,20 +75,6 @@ class StorageRepository @Inject constructor(
             fileSystem.moveAwait(uploadPath, storePath)
         }
         return id
-    }
-
-    suspend fun storeImpl(uploadPath: String, fileSuffix: String, rootPath: String): String {
-        val filename = Path.of(uploadPath).fileName.toString().let {
-            if (fileSuffix.isNotBlank()) {
-                "$it.$fileSuffix"
-            } else {
-                it
-            }
-        }
-        val storePath = Path.of(rootPath, filename).toString()
-
-        fileSystem.moveAwait(uploadPath, storePath)
-        return storePath
     }
 
     private fun md5(bytes: ByteArray): String {
