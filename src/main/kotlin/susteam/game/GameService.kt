@@ -122,7 +122,7 @@ class GameService @Inject constructor(
             "N" -> repository.createGameImage(gameId, image.id, type)
             "F" -> {
                 val profile = getGameProfile(gameId)
-                if (profile.imageFullSize != null){
+                if (profile.imageFullSize != null) {
                     repository.updateGameImage(gameId, image.id, type)
                 } else {
                     repository.createGameImage(gameId, image.id, type)
@@ -130,7 +130,7 @@ class GameService @Inject constructor(
             }
             "C" -> {
                 val profile = getGameProfile(gameId)
-                if (profile.imageCardSize != null){
+                if (profile.imageCardSize != null) {
                     repository.updateGameImage(gameId, image.id, type)
                 } else {
                     repository.createGameImage(gameId, image.id, type)

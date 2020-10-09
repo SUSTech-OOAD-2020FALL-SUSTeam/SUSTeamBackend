@@ -3,7 +3,10 @@ package susteam.announcement
 import com.google.inject.Inject
 import susteam.ServiceException
 import susteam.game.GameRepository
-import susteam.user.*
+import susteam.user.Auth
+import susteam.user.isAdmin
+import susteam.user.isDeveloper
+import susteam.user.username
 import java.time.Instant
 
 class AnnouncementService @Inject constructor(
@@ -23,14 +26,11 @@ class AnnouncementService @Inject constructor(
     ) {
         if (content.isBlank()) {
             throw ServiceException("Content is blank")
-        }
-        else if (title.isBlank()) {
+        } else if (title.isBlank()) {
             throw ServiceException("Title is blank")
-        }
-        else if (content.length > 4095) {
+        } else if (content.length > 4095) {
             throw ServiceException("Content is too long")
-        }
-        else if (title.length > 255) {
+        } else if (title.length > 255) {
             throw ServiceException("Title is too long")
         }
         val game = gameRepository.getById(gameId) ?: throw ServiceException("Game does not exist")

@@ -38,7 +38,7 @@ class UserService @Inject constructor(
 
     }
 
-    suspend fun signUpUser(username: String, password: String, mail:String) {
+    suspend fun signUpUser(username: String, password: String, mail: String) {
         if (username.isBlank() || password.isBlank() || mail.isBlank()) {
             throw ServiceException("Username, password or mail is blank")
         }
@@ -46,7 +46,7 @@ class UserService @Inject constructor(
         val salt = hashingStrategy.generateSalt()
         val hash = hashingStrategy.hash("sha512", emptyMap(), salt, password)
 
-        repository.create(username, hash,mail)
+        repository.create(username, hash, mail)
     }
 
     suspend fun getUser(username: String): User {

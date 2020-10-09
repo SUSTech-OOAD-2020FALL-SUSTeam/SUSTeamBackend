@@ -20,7 +20,7 @@ class UserRepository @Inject constructor(private val database: JDBCClient) {
         } catch (e: SQLIntegrityConstraintViolationException) {
             if (e.message?.contains("user.PRIMARY") == true) {
                 throw ServiceException("Cannot create user '$username'", e)
-            }else if (e.message?.contains("user.mail") == true) {
+            } else if (e.message?.contains("user.mail") == true) {
                 throw ServiceException("Cannot create user '$username', mail '$mail' already exist", e)
             } else {
                 throw e
