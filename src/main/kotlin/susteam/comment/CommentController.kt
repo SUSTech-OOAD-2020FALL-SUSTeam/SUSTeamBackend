@@ -12,8 +12,8 @@ import susteam.user.Auth
 class CommentController @Inject constructor(private val service: CommentService) : CoroutineController() {
 
     override fun route(router: Router) {
-        router.get("/comment/user/:username").coroutineHandler(::handleGetCommentsByUser)
-        router.get("/comment/:gameId").coroutineHandler(::handleGetCommentsByGame)
+        router.get("/user/:username/comment").coroutineHandler(::handleGetCommentsByUser)
+        router.get("/game/:gameId/comment").coroutineHandler(::handleGetCommentsByGame)
 
         router.post("/comment").coroutineHandler(::handleCreateComment)
     }

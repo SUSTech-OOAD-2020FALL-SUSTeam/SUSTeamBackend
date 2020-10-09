@@ -25,6 +25,11 @@ INSERT INTO user (username, password)
 VALUES ('admin',
         '$sha512$$58255bd09ab4938bfdfa636fe1a3254be1985762f2ccef2556d67998c9925695$ujJTh2rta8ItSm/1PYQGxq2GQZXtFEq1yHYhtsIztUi66uaVbfNG7IwX9eoQ817jy8UUeX7X3dMUVGTioLq0Ew==');
 
+# default password for test001: test001
+INSERT INTO user (username, password)
+VALUES ('test001',
+        '$sha512$$2e40a83fe4eea63f1f30bc2d1425aa69b4b09bf614c19ce5db0d04daed1f2362$JqOOMgATFHFhi0CMGSHqa0JCqhOZ5UOEm3d+e6XsvfjUCe2TRd8JhbYLhNE1CIDFDuyiWgvX5KoNrwRhUq3J+A==');
+
 INSERT INTO user_roles
 VALUES ('admin', 'admin');
 
@@ -101,9 +106,9 @@ CREATE TABLE IF NOT EXISTS `game_tag`
 
 CREATE TABLE IF NOT EXISTS `announcement`
 (
-    game_id       INT          NOT NULL,
-    announce_time DATETIME(3)  NOT NULL,
-    title         VARCHAR(255) NOT NULL,
+    game_id       INT           NOT NULL,
+    announce_time DATETIME(3)   NOT NULL,
+    title         VARCHAR(255)  NOT NULL,
     content       VARCHAR(4095) NOT NULL,
 
     PRIMARY KEY (game_id, title),
@@ -128,7 +133,8 @@ VALUES (1, '模拟'),
        (1, '科幻'),
        (1, '动漫');
 
-UPDATE game SET description = '
+UPDATE game
+SET description = '
 ### 挑战全新领域，VANILLAWARE最新作登场！
 
 ATLUS×VANILLAWARE曾创作出『公主之冕』、『奥丁领域』、『龙之皇冠』等极具特色的奇幻世界，进而树立了该类游戏领域的标杆。现在，VANILLAWARE神谷盛治全力创作的新作在此登场！体验这绝美壮丽的模拟冒险游戏吧！
@@ -170,7 +176,8 @@ ATLUS×VANILLAWARE曾创作出『公主之冕』、『奥丁领域』、『龙�
 ##### 驾驶「机兵」迎战世界危机
 
 「近距离格斗型」、「万能型」、「远距离型」、「飞行支援型」，编组并驾驶这4种类「机兵」，与攻击城镇的神秘敌人「怪兽」作战。游玩方式为爽快的模拟战斗类型！
-' WHERE game_id = 1;
+'
+WHERE game_id = 1;
 
 INSERT INTO game (game_id, name, price, publish_date, author, introduction)
 VALUES (2,
@@ -189,7 +196,8 @@ VALUES (2, '角色扮演'),
        (2, '冒险'),
        (2, '动作');
 
-UPDATE game SET description = '
+UPDATE game
+SET description = '
 《巫师：狂猎》是一款情节驱动的开放世界角色扮演游戏。本作的故事发生在一个令人目眩神迷的奇幻宇宙里，玩家做出的每一个选择都意义重大，同时也要面对影响深远的后果。在《巫师》这个广袤的开放世界中，您可以尽情探索商业都市、海盗岛屿、危险的山隘和被遗忘的洞窟。
 
 ### 扮演一名训练有素，收钱办事的怪物杀手
@@ -221,7 +229,8 @@ UPDATE game SET description = '
 - 专为次世代硬件量身打造的 REDengine 3，把《巫师》的逼真奇幻世界渲染得细腻生动。
 - 动态的天气系统和日夜循环，将会改变城镇居民以及野外怪兽的行为模式。
 - 通过主线和支线的丰富剧情选择，玩家可以通过前所未有的方式，影响这个宏大的开放世界。
-' WHERE game_id = 2;
+'
+WHERE game_id = 2;
 
 INSERT INTO game (game_id, name, price, publish_date, author, introduction)
 VALUES (3,
@@ -240,13 +249,15 @@ VALUES (3, '模拟'),
        (3, '角色扮演'),
        (3, '休闲');
 
-UPDATE game SET description = '
+UPDATE game
+SET description = '
 你继承了你爷爷在星露谷留下的老旧农场。带着爷爷留下的残旧工具和几枚硬币开始了你的新生活。
 你能适应这小镇上的生活并且将这个杂草丛生的老旧农场变成一个繁荣的家吗？这不是一件容易的事情。
 尤其是当Joja企业进驻镇上，导致以前旧的生活方式都消失了。
 交流中心这个以前举办过众多活动并充满活力的地方现在变成再也无人愿意踏进的一片废墟。
 但这山谷似乎充满机会，只要做出一点奉献你就可能是会成为让星露谷重回繁荣的人之一！
-' WHERE game_id = 3;
+'
+WHERE game_id = 3;
 
 INSERT INTO game (game_id, name, price, publish_date, author, introduction)
 VALUES (4,
@@ -266,7 +277,8 @@ VALUES (4, '射击'),
        (4, '动作'),
        (4, '合作');
 
-UPDATE game SET description = '
+UPDATE game
+SET description = '
 让大家翘首以盼的的《求生之路 2》（L4D2）以僵尸大灾难为背景，是 2008 年最受欢迎且屡获殊荣的合作游戏《求生之路》的续集。
 
 这个第一人称射击恐怖合作动作游戏将带领玩家和好友穿过美国南部的城市、沼泽和墓地，从萨凡纳到新奥尔良，沿途经过五个漫长的战役。
@@ -288,7 +300,8 @@ UPDATE game SET description = '
 - “不寻常”的普通感染者。 五个新战役的每一个都至少有一种该战役专属的“不寻常”普通感染者。
 - AI 总监 2.0：被称为“AI 总监”的先进技术，推进了《求生之路》独特的游戏玩法， 根据玩家的表现自定义敌人的数量、效果和音乐。 《求生之路 2》则以 AI 总监 2.0 为特点，扩展了总监系统的能力，可以自定义关卡布局、游戏世界内的物体、天气和照明来反映一天中的不同时间。
 - 统计、排名和奖励系统促使玩家们合作游戏。
-' WHERE game_id = 4;
+'
+WHERE game_id = 4;
 
 INSERT INTO game (game_id, name, price, publish_date, author, introduction)
 VALUES (5,
@@ -306,7 +319,8 @@ INSERT INTO game_tag(game_id, tag)
 VALUES (5, '模拟'),
        (5, '体育');
 
-UPDATE game SET description = '
+UPDATE game
+SET description = '
 ### 再下一程
 经过长时间发展进化，《NBA 2K》系列俨然已成为超越篮球模拟游戏的存在。
 《NBA 2K20》不但拥有顶级的图像画面与游戏性、还拥有创新的游戏模式和无与伦比的球员操纵及自定义，重新定义了体育游戏的全新可能。
@@ -353,7 +367,8 @@ NBA 2K梦幻卡片收集模式。本模式含每日目标、卡片升级、全�
 ### 2KTV——第六季
 作为NBA 2K的新闻中心，由Alexis Morgan和Chris Manning主持的新一季2KTV再度回归。
 它将呈现2K社区成员、NBA及WNBA球星的独家采访、直接来自开发者的最新《2K20》新闻、要点及见解，以及周度精彩片段！
-' WHERE game_id = 5;
+'
+WHERE game_id = 5;
 
 INSERT INTO game (game_id, name, price, publish_date, author, introduction)
 VALUES (6,
@@ -372,7 +387,8 @@ VALUES (6, '动作'),
        (6, '射击'),
        (6, '冒险');
 
-UPDATE game SET description = '
+UPDATE game
+SET description = '
 一个初涉江湖的街头新丁、一个洗手多年的银行劫匪和一个丧心病狂的杀人狂魔，误打误撞中深陷犯罪集团、美国政府和娱乐产业之间盘根错杂的恐怖困境。
 他们必须齐心协力，接连完成九死一生的惊天劫案，才能在这个冷血无情的城市中苟延残喘。不要相信任何人，尤其是你的同伙！
 
@@ -393,7 +409,8 @@ Rockstar 编辑器的导演模式能让玩家使用故事模式中的主要角�
 游戏原声音乐的创作者 The Alchemist 和 Oh No 同时回归游戏，作为 The Lab FM 电台的主持人。
 这个电台主打二者以游戏原声音乐为灵感创作的全新独家曲目，合作艺人包括 Earl Sweatshirt、Freddie Gibbs、Little Dragon、Killer Mike、Future Islands 的 Sam Herring 等等。
 此外，玩家也可以在洛桑托斯市和布雷恩郡寻幽探胜之际，通过由个人电台创建的自定义歌单，聆听属于自己的音乐。
-' WHERE game_id = 6;
+'
+WHERE game_id = 6;
 
 INSERT INTO game (game_id, name, price, publish_date, author, introduction)
 VALUES (7,
@@ -411,7 +428,8 @@ INSERT INTO game_tag(game_id, tag)
 VALUES (7, '沙盒'),
        (7, '冒险');
 
-UPDATE game SET description = '
+UPDATE game
+SET description = '
 ### 世界任您创造
 准备好体验拥有无限可能的冒险，您可以尽情建造、挖掘、与生物战斗、探索千变万化的 Minecraft 景观。
 
@@ -435,7 +453,8 @@ UPDATE game SET description = '
 
 ### 建造令人惊奇的作品
 发现红石粉的各种使用方法，从而提升您的创造作品，让作品栩栩如生，或让作品引入注目。
-' WHERE game_id = 7;
+'
+WHERE game_id = 7;
 
 INSERT INTO game (game_id, name, price, publish_date, author, introduction)
 VALUES (8,
@@ -454,7 +473,8 @@ VALUES (8, '解密'),
        (8, '节奏'),
        (8, '冒险');
 
-UPDATE game SET description = '
+UPDATE game
+SET description = '
 ### 全球突破2000万下载数的奇幻节奏游戏
 
 拥有多采多姿的乐曲和美丽的图像，
@@ -486,7 +506,8 @@ UPDATE game SET description = '
 以及取回记忆的少女，他们的结局究竟为何？
 
 这是两人之间奇妙而又有些令人不捨的故事──
-' WHERE game_id = 8;
+'
+WHERE game_id = 8;
 
 INSERT INTO game (game_id, name, price, publish_date, author, introduction)
 VALUES (9,
@@ -506,7 +527,8 @@ VALUES (9, '音乐'),
        (9, '休闲'),
        (9, '动漫');
 
-UPDATE game SET description = '
+UPDATE game
+SET description = '
 和三位可爱的小姐姐一起修复被镜像代码篡改的世界谱吧！
 这里是狂拽跑酷和传统音游结合的世界★——Muse Dash!!
 是的没错
@@ -528,4 +550,5 @@ UPDATE game SET description = '
 - 精心设计的台词，日语声优配音。
 
 (๑•ㅂ•́)و✧
-' WHERE game_id = 9;
+'
+WHERE game_id = 9;

@@ -1,0 +1,86 @@
+# test game
+POST {{host}}/api/game
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "name": "TestGame",
+  "price": 1000,
+  "introduction": "nice",
+  "description": "Nice game"
+}
+
+###
+# create game version
+
+POST {{host}}/api/game/10/version
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "gameId": 10,
+  "name": "v1.1",
+  "url": "https://www.google.com/"
+}
+
+###
+# test comment
+# ordinary case
+
+POST {{host}}/api/comment
+Authorization: Bearer {{test001-token}}
+Content-Type: application/json
+
+{
+  "gameId": 10,
+  "content": "Excellent!",
+  "score": 5
+}
+
+###
+# error case 1: not logged in
+
+POST {{host}}/api/comment
+Content-Type: application/json
+
+{
+  "gameId": 10,
+  "content": "Are we good?",
+  "score": 5
+}
+
+###
+# error case 2: invalid score
+
+POST {{host}}/api/comment
+Authorization: Bearer {{test001-token}}
+Content-Type: application/json
+
+{
+  "gameId": 10,
+  "content": "Any question so far?",
+  "score": 6
+}
+
+###
+# error case 3: duplicate comment
+
+POST {{host}}/api/comment
+Authorization: Bearer {{test001-token}}
+Content-Type: application/json
+
+{
+  "gameId": 10,
+  "content": "Great!",
+  "score": 5
+}
+
+###
+# get comment by user
+
+GET {{host}}/api/user/test001/comment
+
+###
+# get comment by game
+
+GET {{host}}/api/game/10/comment

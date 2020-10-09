@@ -34,7 +34,7 @@ class CommentRepository @Inject constructor(private val database: JDBCClient) {
     suspend fun getByUser(username: String): List<Comment> {
         return database.queryWithParamsAwait(
             """
-                SELECT username, game_id, comment_time, content, score
+                SELECT username, game_id gameId, comment_time commentTime, content, score
                 FROM `comment`
                 WHERE username = ?;
             """.trimIndent(),
@@ -46,7 +46,7 @@ class CommentRepository @Inject constructor(private val database: JDBCClient) {
     suspend fun getByGame(gameId: Int): List<Comment> {
         return database.queryWithParamsAwait(
             """
-                SELECT username, game_id, comment_time, content, score
+                SELECT username, game_id gameId, comment_time commentTime, content, score
                 FROM `comment`
                 WHERE game_id = ?;
             """.trimIndent(),

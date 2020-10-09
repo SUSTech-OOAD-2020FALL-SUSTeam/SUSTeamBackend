@@ -8,6 +8,7 @@ import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.kotlin.coroutines.CoroutineVerticle
 import kotlinx.coroutines.coroutineScope
 import susteam.Controller
+import susteam.comment.CommentController
 import susteam.game.GameController
 import susteam.storage.StorageController
 import susteam.user.UserController
@@ -51,7 +52,8 @@ class APIServerVerticle : CoroutineVerticle() {
         val controllers: List<Controller> = listOf(
             injector.getInstance(UserController::class.java),
             injector.getInstance(GameController::class.java),
-            injector.getInstance(StorageController::class.java)
+            injector.getInstance(StorageController::class.java),
+            injector.getInstance(CommentController::class.java),
         )
         for (controller in controllers) {
             controller.route(router)
