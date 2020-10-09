@@ -30,6 +30,7 @@ class APIServerVerticle : CoroutineVerticle() {
                     .allowedHeader("Access-Control-Allow-Method")
                     .allowedHeader("Access-Control-Allow-Origin")
                     .allowedHeader("Content-Type")
+                    .allowedHeader("Authorization")
                     .allowedMethod(HttpMethod.GET)
                     .allowedMethod(HttpMethod.POST)
                     .allowedMethod(HttpMethod.HEAD)
