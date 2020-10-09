@@ -54,7 +54,7 @@ class UserRepository @Inject constructor(private val database: JDBCClient) {
         ).rows
 
         val user = result.firstOrNull()?.toUser() ?: return null
-        val roles = result.map { it.getString("role") }
+        val roles = result.mapNotNull { it.getString("role") }
 
         return UserRole(user, roles)
     }
