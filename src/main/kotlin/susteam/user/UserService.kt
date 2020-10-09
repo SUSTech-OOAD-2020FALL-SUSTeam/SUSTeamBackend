@@ -53,6 +53,10 @@ class UserService @Inject constructor(
         return repository.get(username) ?: throw ServiceException("User does not exist")
     }
 
+    suspend fun getUserRole(user: Auth): UserRole {
+        return repository.getRole(user.username) ?: throw ServiceException("User does not exist")
+    }
+
     private fun HashingStrategy.generateSalt() = Random.nextBytes(32).toHexString()
 
     private fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }

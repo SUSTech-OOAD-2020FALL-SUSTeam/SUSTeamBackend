@@ -50,6 +50,7 @@ fun UserRole.toJson(): JsonObject = jsonObjectOf(
     "mail" to user.mail,
     "avatar" to (user.avatar ?: defaultAvatar()),
     "description" to user.description,
+    "balance" to user.balance,
     "roles" to json { array(roles) }
 )
 

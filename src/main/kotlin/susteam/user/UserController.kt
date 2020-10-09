@@ -29,8 +29,14 @@ class UserController @Inject constructor(private val service: UserService) : Cor
             return
         }
 
+        val userRole = service.getUserRole(user)
+
         context.success(
-            jsonObjectOf("token" to true).mergeIn(user.principal())
+            jsonObjectOf(
+                "token" to true,
+                "tokenInfo" to user.principal(),
+                "userRole" to userRole.toJson()
+            )
         )
     }
 
