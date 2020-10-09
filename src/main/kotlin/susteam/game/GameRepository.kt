@@ -188,9 +188,7 @@ class GameRepository @Inject constructor(private val database: JDBCClient) {
         ).updated == 1
     }
 
-    suspend fun getTag(gameId: Int): List<String>? {
-        val game = getById(gameId) ?: return null
-        //返回list为空时不能判断是因为游戏不存在还是游戏本来就没tag
+    suspend fun getTag(gameId: Int): List<String> {
         return database.queryWithParamsAwait(
             """SELECT tag from game_tag where game_id = ?;""",
             jsonArrayOf(gameId)

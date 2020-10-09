@@ -141,7 +141,9 @@ class GameService @Inject constructor(
     }
 
     suspend fun getTag(gameId: Int): List<String> {
-        return repository.getTag(gameId) ?: throw ServiceException("Game does not exist")
+        val game = repository.getById(gameId) ?: throw ServiceException("Game does not exist")
+
+        return repository.getTag(gameId)
     }
 
     suspend fun getAllTag(): List<String> {
