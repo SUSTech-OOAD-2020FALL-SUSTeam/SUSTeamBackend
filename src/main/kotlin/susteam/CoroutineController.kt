@@ -18,7 +18,7 @@ abstract class CoroutineController() : Controller {
 
     private val coroutineScope: CoroutineScope = CoroutineScope(CoroutineName("${this.javaClass.name}_scope"))
 
-    open fun Route.coroutineHandler(fn: suspend (RoutingContext) -> Unit) {
+    open fun Route.coroutineHandler(fn: suspend (RoutingContext) -> Unit) =
         handler { ctx ->
             coroutineScope.launch(ctx.vertx().dispatcher()) {
                 try {
@@ -31,7 +31,7 @@ abstract class CoroutineController() : Controller {
                 }
             }
         }
-    }
+
 
     open fun RoutingContext.success(jsonObject: JsonObject = JsonObject(), statusCode: Int = 200) {
         response().statusCode = statusCode

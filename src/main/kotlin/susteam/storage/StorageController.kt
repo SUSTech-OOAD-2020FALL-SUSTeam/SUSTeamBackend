@@ -12,8 +12,6 @@ class StorageController @Inject constructor(private val service: StorageService)
             val request = context.request()
             val filename = service.getFileName(request.getParam("uuid"))
             context.response().putHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
-            context.next()
-        }
-        router.get("/store/*").handler(StaticHandler.create("storage/store"))
+        }.handler(StaticHandler.create("storage/store"))
     }
 }
