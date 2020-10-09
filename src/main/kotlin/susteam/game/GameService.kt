@@ -64,8 +64,15 @@ class GameService @Inject constructor(
             throw ServiceException("URL is blank")
         }
 
-        // FIXME check game.author == auth.username
-        if (!auth.isAdmin() && !auth.isDeveloper()) {
+        val game = repository.getById(gameId) ?: throw ServiceException("Game does not exist")
+        val havePermission = when {
+            auth.isAdmin() -> true
+            auth.isDeveloper() -> {
+                game.author == auth.username
+            }
+            else -> false
+        }
+        if (!havePermission) {
             throw ServiceException("Permission denied")
         }
 
