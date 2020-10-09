@@ -28,10 +28,33 @@ class CommentService @Inject constructor(
         content: String,
         score: Int
     ) {
+        checkComment(content, score, auth, gameId)
+        val commentTime: Instant = Instant.now()
+        commentRepository.create(auth.username, gameId, commentTime, content, score)
+    }
+
+    suspend fun modifyComment(
+        auth: Auth,
+        gameId: Int,
+        newContent: String,
+        newScore: Int
+    ) {
+        checkComment(newContent, newScore, auth, gameId)
+        commentRepository.getExists(auth.username, gameId)
+            ?: throw ServiceException("No such comment for given user and game")
+        val commentTime: Instant = Instant.now()
+        commentRepository.modify(auth.username, gameId, commentTime, newContent, newScore)
+    }
+
+    private suspend fun checkComment(
+        content: String,
+        score: Int,
+        auth: Auth,
+        gameId: Int
+    ) {
         if (content.isBlank()) {
             throw ServiceException("Content is blank")
-        }
-        else if (content.length > 255) {
+        } else if (content.length > 255) {
             throw ServiceException("Content is too long")
         }
         if (score !in 0..5) {
@@ -39,10 +62,6 @@ class CommentService @Inject constructor(
         }
         userRepository.get(auth.username) ?: throw ServiceException("User does not exist")
         gameRepository.getById(gameId) ?: throw ServiceException("Game does not exist")
-
-        val commentTime: Instant = Instant.now()
-
-        commentRepository.create(auth.username, gameId, commentTime, content, score)
     }
 
 }

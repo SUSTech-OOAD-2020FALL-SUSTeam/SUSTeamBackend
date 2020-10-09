@@ -83,3 +83,29 @@ GET {{host}}/api/user/test001/comment
 # get comment by game
 
 GET {{host}}/api/game/10/comment
+
+###
+# test edit comment
+
+PUT {{host}}/api/comment
+Authorization: Bearer {{test001-token}}
+Content-Type: application/json
+
+{
+  "gameId": 10,
+  "content": "Ah-ha!",
+  "score": 5
+}
+
+###
+# error case: no such comment
+
+PUT {{host}}/api/comment
+Authorization: Bearer {{test001-token}}
+Content-Type: application/json
+
+{
+  "gameId": 1,
+  "content": "LOL",
+  "score": 5
+}

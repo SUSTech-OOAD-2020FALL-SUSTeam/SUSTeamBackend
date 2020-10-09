@@ -16,6 +16,8 @@ class CommentController @Inject constructor(private val service: CommentService)
         router.get("/game/:gameId/comment").coroutineHandler(::handleGetCommentsByGame)
 
         router.post("/comment").coroutineHandler(::handleCreateComment)
+
+        router.put("/comment").coroutineHandler(::handleEditComment)
     }
 
     suspend fun handleGetCommentsByUser(context: RoutingContext) {
@@ -26,7 +28,7 @@ class CommentController @Inject constructor(private val service: CommentService)
 
         context.success(
             jsonObjectOf(
-                "comments" to JsonArray(comments.map { comment -> comment.toJson() })
+                "comments" to JsonArray(comments.map { it.toJson() })
             )
         )
     }
@@ -39,7 +41,7 @@ class CommentController @Inject constructor(private val service: CommentService)
 
         context.success(
             jsonObjectOf(
-                "comments" to JsonArray(comments.map { comment -> comment.toJson() })
+                "comments" to JsonArray(comments.map { it.toJson() })
             )
         )
     }
@@ -53,6 +55,19 @@ class CommentController @Inject constructor(private val service: CommentService)
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
         service.createComment(auth, gameId, content, score)
+
+        context.success()
+    }
+
+    suspend fun handleEditComment(context: RoutingContext) {
+        val params = context.bodyAsJson
+        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game ID is invalid")
+        val content = params.getString("content") ?: throw ServiceException("Content is empty")
+        val score = params.getInteger("score") ?: throw ServiceException("Score is invalid")
+
+        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
+
+        service.modifyComment(auth, gameId, content, score)
 
         context.success()
     }

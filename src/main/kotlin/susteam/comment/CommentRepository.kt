@@ -3,6 +3,7 @@ package susteam.comment
 import com.google.inject.Inject
 import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.kotlin.core.json.jsonArrayOf
+import io.vertx.kotlin.ext.sql.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.queryWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.ServiceException
@@ -28,6 +29,41 @@ class CommentRepository @Inject constructor(private val database: JDBCClient) {
             )
         } catch (e: SQLIntegrityConstraintViolationException) {
             throw ServiceException("Comment failed", e)
+        }
+    }
+
+    suspend fun getExists(username: String, gameId: Int): Int? {
+        return database.querySingleWithParamsAwait(
+            """
+                SELECT 1
+                FROM `comment`
+                WHERE username = ? and game_id = ?;
+            """.trimIndent(),
+            jsonArrayOf(username, gameId)
+        )?.getInteger(0)
+    }
+
+    suspend fun modify(
+        username: String,
+        gameId: Int,
+        commentTime: Instant,
+        newContent: String,
+        newScore: Int
+    ) {
+        try {
+            database.updateWithParamsAwait(
+                """
+                UPDATE `comment`
+                SET comment_time = ?,
+                    content      = ?,
+                    score        = ?
+                WHERE username = ?
+                  and game_id = ?;
+            """.trimIndent(),
+                jsonArrayOf(commentTime.toString(), newContent, newScore, username, gameId)
+            )
+        } catch (e: SQLIntegrityConstraintViolationException) {
+            throw ServiceException("Cannot update comment", e)
         }
     }
 
