@@ -52,8 +52,9 @@ class UserController @Inject constructor(private val service: UserService) : Cor
         val params = context.bodyAsJson
         val username = params.getString("username") ?: throw ServiceException("Username is empty")
         val password = params.getString("password") ?: throw ServiceException("Password is empty")
+        val mail = params.getString("mail") ?: throw ServiceException("Mail is empty")
 
-        service.signUpUser(username, password)
+        service.signUpUser(username, password, mail)
 
         context.success()
     }

@@ -11,15 +11,17 @@ import java.sql.SQLIntegrityConstraintViolationException
 
 class UserRepository @Inject constructor(private val database: JDBCClient) {
 
-    suspend fun create(username: String, password: String) {
+    suspend fun create(username: String, password: String, mail: String) {
         try {
             database.updateWithParamsAwait(
-                """INSERT INTO user (username, password) VALUES (?, ?);""",
-                jsonArrayOf(username, password)
+                """INSERT INTO user (username, password, mail) VALUES (?, ?, ?);""",
+                jsonArrayOf(username, password, mail)
             )
         } catch (e: SQLIntegrityConstraintViolationException) {
             if (e.message?.contains("user.PRIMARY") == true) {
                 throw ServiceException("Cannot create user '$username'", e)
+            }else if (e.message?.contains("user.mail") == true) {
+                throw ServiceException("Cannot create user '$username', mail '$mail' already exist", e)
             } else {
                 throw e
             }
@@ -28,9 +30,9 @@ class UserRepository @Inject constructor(private val database: JDBCClient) {
 
     suspend fun get(username: String): User? {
         return database.querySingleWithParamsAwait(
-            """SELECT username, avatar, description, balance FROM user WHERE username = ?;""",
+            """SELECT username, mail, avatar, description, balance FROM user WHERE username = ?;""",
             jsonArrayOf(username)
-        )?.let { User(it.getString(0), it.getString(1), it.getString(2), it.getInteger(3)) }
+        )?.let { User(it.getString(0), it.getString(1), it.getString(2), it.getString(3), it.getInteger(4)) }
     }
 
     suspend fun getPasswordHash(username: String): String? {
@@ -43,7 +45,7 @@ class UserRepository @Inject constructor(private val database: JDBCClient) {
     suspend fun getRole(username: String): UserRole? {
         val result = database.queryWithParamsAwait(
             """
-                SELECT u.username, u.avatar, u.description, u.balance, ur.role
+                SELECT u.username, u.mail, u.avatar, u.description, u.balance, ur.role
                 FROM user u
                 LEFT JOIN user_roles ur on u.username = ur.username
                 WHERE u.username = ?;

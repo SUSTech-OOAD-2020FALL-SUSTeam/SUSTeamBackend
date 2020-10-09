@@ -35,5 +35,6 @@ Content-Type: application/json
 
 {
   "username": "gogo",
-  "password": "123456"
+  "password": "123456",
+  "mail": "gogo@susteam.com"
 }

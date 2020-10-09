@@ -4,11 +4,13 @@ CREATE TABLE user
 (
     username    VARCHAR(255) NOT NULL,
     password    VARCHAR(255) NOT NULL,
+    mail        VARCHAR(255) NOT NULL,
     description VARCHAR(255),
     avatar      VARCHAR(255),
     balance     INT DEFAULT 0, -- Stored in Cents
 
-    PRIMARY KEY (username)
+    PRIMARY KEY (username),
+    UNIQUE (mail)
 );
 
 CREATE TABLE IF NOT EXISTS user_roles
@@ -21,14 +23,16 @@ CREATE TABLE IF NOT EXISTS user_roles
 );
 
 # default password for admin: 123456
-INSERT INTO user (username, password)
+INSERT INTO user (username, password, mail)
 VALUES ('admin',
-        '$sha512$$58255bd09ab4938bfdfa636fe1a3254be1985762f2ccef2556d67998c9925695$ujJTh2rta8ItSm/1PYQGxq2GQZXtFEq1yHYhtsIztUi66uaVbfNG7IwX9eoQ817jy8UUeX7X3dMUVGTioLq0Ew==');
+        '$sha512$$58255bd09ab4938bfdfa636fe1a3254be1985762f2ccef2556d67998c9925695$ujJTh2rta8ItSm/1PYQGxq2GQZXtFEq1yHYhtsIztUi66uaVbfNG7IwX9eoQ817jy8UUeX7X3dMUVGTioLq0Ew==',
+        'admin@susteam.com');
 
 # default password for test001: test001
-INSERT INTO user (username, password)
+INSERT INTO user (username, password, mail)
 VALUES ('test001',
-        '$sha512$$2e40a83fe4eea63f1f30bc2d1425aa69b4b09bf614c19ce5db0d04daed1f2362$JqOOMgATFHFhi0CMGSHqa0JCqhOZ5UOEm3d+e6XsvfjUCe2TRd8JhbYLhNE1CIDFDuyiWgvX5KoNrwRhUq3J+A==');
+        '$sha512$$2e40a83fe4eea63f1f30bc2d1425aa69b4b09bf614c19ce5db0d04daed1f2362$JqOOMgATFHFhi0CMGSHqa0JCqhOZ5UOEm3d+e6XsvfjUCe2TRd8JhbYLhNE1CIDFDuyiWgvX5KoNrwRhUq3J+A==',
+        'test001@susteam.com');
 
 INSERT INTO user_roles
 VALUES ('admin', 'admin');
