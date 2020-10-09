@@ -43,7 +43,7 @@ abstract class CoroutineController() : Controller {
         response().statusCode = statusCode
         val obj = jsonObjectOf(
             "success" to false,
-            "error" to jsonObjectOf("message" to message)
+            "error" to message
         )
         response().end(obj.encode())
     }
