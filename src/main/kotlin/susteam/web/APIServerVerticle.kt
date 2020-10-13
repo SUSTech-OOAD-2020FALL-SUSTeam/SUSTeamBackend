@@ -36,6 +36,7 @@ class APIServerVerticle : CoroutineVerticle() {
                     .allowedMethod(HttpMethod.HEAD)
                     .allowedMethod(HttpMethod.OPTIONS)
                     .allowedMethod(HttpMethod.DELETE)
+                    .allowedMethod(HttpMethod.PUT)
             )
         }
 
