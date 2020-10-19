@@ -19,10 +19,7 @@ import susteam.comment.CommentService
 import susteam.game.GameController
 import susteam.game.GameRepository
 import susteam.game.GameService
-import susteam.storage.StorageController
-import susteam.storage.StorageImageFactory
-import susteam.storage.StorageRepository
-import susteam.storage.StorageService
+import susteam.storage.*
 import susteam.user.UserController
 import susteam.user.UserRepository
 import susteam.user.UserService
@@ -63,6 +60,8 @@ class ServiceModule(
 
         StorageImageFactory.urlPrefix = "${webConfig.getString("server_url")}/api/image"
         StorageImageFactory.pathPrefix = "storage/image"
+        StorageFileFactory.urlPrefix = "${webConfig.getString("server_url")}/api/store"
+        StorageFileFactory.pathPrefix = "storage/store"
 
         bind(StorageImageFactory::class.java).toInstance(StorageImageFactory)
 
