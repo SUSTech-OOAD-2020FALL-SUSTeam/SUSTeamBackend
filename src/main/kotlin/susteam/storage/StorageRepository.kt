@@ -14,6 +14,7 @@ import java.nio.file.Path
 import java.security.MessageDigest
 import java.sql.SQLIntegrityConstraintViolationException
 import java.time.Instant
+import java.util.*
 
 
 class StorageRepository @Inject constructor(
@@ -49,21 +50,26 @@ class StorageRepository @Inject constructor(
         }
     }
 
-    suspend fun getFileName(uuid: String): String? {
+    suspend fun getStorage(uuid: String): Storage? {
         return database.querySingleWithParamsAwait(
             """
-                SELECT file_name
+                SELECT uuid, file_name, uploader, upload_time, is_public
                 FROM storage
                 WHERE uuid = ?;
             """.trimIndent(), jsonArrayOf(uuid)
-        )?.getString(0)
+        )?.let {
+            Storage(
+                it.getString(0), it.getString(1), it.getString(2),
+                it.getInstant(3), it.getBoolean(4)
+            )
+        }
     }
 
     suspend fun store(uploadPath: String): String {
-        val filename = Path.of(uploadPath).fileName.toString()
-        val storePath = Path.of(storeRoot, filename).toString()
+        val id = UUID.randomUUID().toString()
+        val storePath = Path.of(storeRoot, id).toString()
         fileSystem.moveAwait(uploadPath, storePath)
-        return storePath
+        return id
     }
 
     suspend fun storeImage(uploadPath: String, extension: String = ""): String {

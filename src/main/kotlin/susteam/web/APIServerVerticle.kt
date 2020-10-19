@@ -40,7 +40,7 @@ class APIServerVerticle : CoroutineVerticle() {
             )
         }
 
-        router.route().handler(BodyHandler.create())
+        router.route().handler(BodyHandler.create().setDeleteUploadedFilesOnEnd(true))
 
 
         router.route().handler { routingContext ->
