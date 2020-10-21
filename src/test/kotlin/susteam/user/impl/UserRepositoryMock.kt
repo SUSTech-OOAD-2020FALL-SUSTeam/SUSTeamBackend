@@ -1,5 +1,6 @@
 package susteam.user.impl
 
+import susteam.ServiceException
 import susteam.user.User
 import susteam.user.UserRepository
 import susteam.user.UserRole
@@ -22,6 +23,11 @@ class UserRepositoryMock : UserRepository {
     )
 
     override suspend fun create(username: String, password: String, mail: String) {
+        if (data.find { it.user.username == username } != null)
+            throw ServiceException("Cannot create user '$username'")
+        if (data.find { it.user.mail == mail } != null)
+            throw ServiceException("Cannot create user '$username', mail '$mail' already exist")
+
         data.add(
             UserRepositoryMockItem(
                 User(username, password, null, null, 0),

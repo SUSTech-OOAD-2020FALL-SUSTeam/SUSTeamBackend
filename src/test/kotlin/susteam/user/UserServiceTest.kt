@@ -31,10 +31,9 @@ class UserServiceTest : StringSpec() {
             service.signUpUser("test001", "test001", "test001@susteam.com")
             service.getUser("test001") shouldNotBe null
 
-//            TODO 注册失败应该有异常
-//            shouldThrow<ServiceException> {
-//                service.signUpUser("test001", "test001", "test001@susteam.com")
-//            }
+            shouldThrow<ServiceException> {
+                service.signUpUser("test001", "test001", "test001@susteam.com")
+            }
         }
 
         "test getUser" {
