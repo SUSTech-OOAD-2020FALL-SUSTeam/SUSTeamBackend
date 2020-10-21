@@ -23,6 +23,7 @@ import susteam.storage.*
 import susteam.user.UserController
 import susteam.user.UserRepository
 import susteam.user.UserService
+import susteam.user.impl.UserRepositoryImpl
 import susteam.web.handler.TokenUserHandler
 
 class ServiceModule(
@@ -63,13 +64,11 @@ class ServiceModule(
         StorageFileFactory.urlPrefix = "${webConfig.getString("server_url")}/api/store"
         StorageFileFactory.pathPrefix = "storage/store"
 
-        bind(StorageImageFactory::class.java).toInstance(StorageImageFactory)
-
         bind(TokenUserHandler::class.java)
 
         bind(UserController::class.java)
         bind(UserService::class.java)
-        bind(UserRepository::class.java)
+        bind(UserRepository::class.java).to(UserRepositoryImpl::class.java)
 
         bind(GameController::class.java)
         bind(GameService::class.java)
