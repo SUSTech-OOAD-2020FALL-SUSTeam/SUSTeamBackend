@@ -1,7 +1,7 @@
 package susteam.user.impl
 
 import com.google.inject.Inject
-import io.vertx.ext.jdbc.JDBCClient
+import io.vertx.ext.sql.SQLOperations
 import io.vertx.kotlin.core.json.jsonArrayOf
 import io.vertx.kotlin.ext.sql.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.queryWithParamsAwait
@@ -13,7 +13,7 @@ import susteam.user.UserRole
 import susteam.user.toUser
 import java.sql.SQLIntegrityConstraintViolationException
 
-class UserRepositoryImpl @Inject constructor(private val database: JDBCClient): UserRepository {
+class UserRepositoryImpl @Inject constructor(private val database: SQLOperations): UserRepository {
 
     override suspend fun create(username: String, password: String, mail: String) {
         try {

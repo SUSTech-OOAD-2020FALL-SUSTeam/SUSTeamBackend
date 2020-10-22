@@ -2,6 +2,7 @@ package susteam.web
 
 import com.google.inject.AbstractModule
 import com.google.inject.BindingAnnotation
+import com.google.inject.TypeLiteral
 import io.vertx.core.Vertx
 import io.vertx.core.file.FileSystem
 import io.vertx.core.json.JsonObject
@@ -22,12 +23,15 @@ import susteam.game.GameService
 import susteam.order.OrderController
 import susteam.order.OrderRepository
 import susteam.order.OrderService
+import susteam.repository.RepositoryProvider
+import susteam.repository.impl.RepositoryProviderImpl
 import susteam.storage.*
 import susteam.user.UserController
 import susteam.user.UserRepository
 import susteam.user.UserService
 import susteam.user.impl.UserRepositoryImpl
 import susteam.web.handler.TokenUserHandler
+import javax.inject.Provider
 
 class ServiceModule(
     private val vertx: Vertx,
@@ -72,6 +76,9 @@ class ServiceModule(
         bind(UserController::class.java)
         bind(UserService::class.java)
         bind(UserRepository::class.java).to(UserRepositoryImpl::class.java)
+        bind(object : TypeLiteral<RepositoryProvider<UserRepository>>() {}).toProvider(Provider {
+            RepositoryProviderImpl(database, ::UserRepositoryImpl)
+        })
 
         bind(GameController::class.java)
         bind(GameService::class.java)

@@ -16,7 +16,7 @@ class UserServiceTest : StringSpec() {
         val module = TestModule.create()
         val injector = Guice.createInjector(module)
 
-        val repository = UserRepositoryMock()
+        val repository = UserRepositoryMock().apply { init() }
         val jwt = injector.getInstance(JWTAuth::class.java)
         val service = UserService(repository, jwt)
 

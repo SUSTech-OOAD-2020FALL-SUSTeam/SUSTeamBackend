@@ -1,11 +1,16 @@
 package susteam.user.impl
 
 import susteam.ServiceException
+import susteam.repository.RepositoryMock
 import susteam.user.User
 import susteam.user.UserRepository
 import susteam.user.UserRole
 
-class UserRepositoryMock : UserRepository {
+class UserRepositoryMock(
+    override val dataset: Map<String, MutableList<*>> = mapOf(
+        "user" to mutableListOf<UserRepositoryMockItem>()
+    )
+) : UserRepository, RepositoryMock {
 
     data class UserRepositoryMockItem(
         val user: User,
@@ -18,9 +23,14 @@ class UserRepositoryMock : UserRepository {
         "\$sha512\$\$58255bd09ab4938bfdfa636fe1a3254be1985762f2ccef2556d67998c9925695\$ujJTh2rta8ItSm/1PYQGxq2GQZXtFEq1yHYhtsIztUi66uaVbfNG7IwX9eoQ817jy8UUeX7X3dMUVGTioLq0Ew==",
         listOf("admin")
     )
-    private val data: MutableList<UserRepositoryMockItem> = mutableListOf(
-        admin
-    )
+
+    @Suppress("UNCHECKED_CAST")
+    private val data: MutableList<UserRepositoryMockItem> = dataset["user"] as MutableList<UserRepositoryMockItem>
+
+    override fun init() {
+        data.add(admin)
+    }
+
 
     override suspend fun create(username: String, password: String, mail: String) {
         if (data.find { it.user.username == username } != null)
