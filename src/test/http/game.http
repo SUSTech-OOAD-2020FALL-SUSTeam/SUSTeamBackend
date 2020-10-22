@@ -90,7 +90,7 @@ Authorization: Bearer {{admin-token}}
 
 ###
 
-GET {{host}}/api/game/10/tag
+GET {{host}}/api/game/10/tags
 
 ###
 

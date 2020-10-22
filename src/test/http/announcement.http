@@ -10,18 +10,6 @@ Authorization: Bearer {{admin-token}}
 
 ###
 
-POST {{host}}/api/announcement
-Content-Type: application/json
-Authorization: Bearer {{admin-token}}
-
-{
-  "gameId": 1,
-  "title": "create v1.2",
-  "content": "a new version 1.2"
-}
-
-####
-
-GET {{host}}/api/announcement/1
+GET {{host}}/api/game/1/announcements
 
 ###

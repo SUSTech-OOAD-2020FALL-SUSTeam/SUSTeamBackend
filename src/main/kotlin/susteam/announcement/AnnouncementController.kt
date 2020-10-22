@@ -12,7 +12,7 @@ import susteam.user.Auth
 class AnnouncementController @Inject constructor(private val service: AnnouncementService) : CoroutineController() {
 
     override fun route(router: Router) {
-        router.get("/announcement/:gameId").coroutineHandler(::handleGetAnnouncementsByGame)
+        router.get("/game/:gameId/announcements").coroutineHandler(::handleGetAnnouncementsByGame)
 
         router.post("/announcement").coroutineHandler(::handleCreateAnnouncement)
     }

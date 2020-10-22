@@ -77,12 +77,12 @@ Content-Type: application/json
 ###
 # get comment by user
 
-GET {{host}}/api/user/test001/comment
+GET {{host}}/api/user/test001/comments
 
 ###
 # get comment by game
 
-GET {{host}}/api/game/10/comment
+GET {{host}}/api/game/10/comments
 
 ###
 # test edit comment

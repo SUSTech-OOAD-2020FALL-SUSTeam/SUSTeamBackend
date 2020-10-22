@@ -35,7 +35,7 @@ class GameController @Inject constructor(
 
         router.post("/game/:gameId/image").coroutineHandler(::handleUploadGameImage)
 
-        router.get("/game/:gameId/tag").coroutineHandler(::handleGetTag)
+        router.get("/game/:gameId/tags").coroutineHandler(::handleGetTags)
         router.get("/tags").coroutineHandler(::handleGetAllTag)
         router.get("/games/tags").coroutineHandler(::handleGetGameProfileWithTags)
         router.post("/game/:gameId/tag").coroutineHandler(::handleAddTag)
@@ -219,7 +219,7 @@ class GameController @Inject constructor(
 
     }
 
-    private suspend fun handleGetTag(context: RoutingContext) {
+    private suspend fun handleGetTags(context: RoutingContext) {
         val request = context.request()
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
 
