@@ -1,4 +1,4 @@
-package susteam.repository
+package susteam.repository.impl
 
 interface RepositoryMock {
 

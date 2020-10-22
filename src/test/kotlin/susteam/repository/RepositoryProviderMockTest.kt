@@ -2,6 +2,8 @@ package susteam.repository
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
+import susteam.repository.impl.RepositoryMock
+import susteam.repository.impl.RepositoryProviderMock
 
 class UserServiceTest : StringSpec() {
 

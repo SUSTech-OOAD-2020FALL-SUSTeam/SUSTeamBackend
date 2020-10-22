@@ -1,7 +1,7 @@
 package susteam.user.impl
 
 import susteam.ServiceException
-import susteam.repository.RepositoryMock
+import susteam.repository.impl.RepositoryMock
 import susteam.user.User
 import susteam.user.UserRepository
 import susteam.user.UserRole

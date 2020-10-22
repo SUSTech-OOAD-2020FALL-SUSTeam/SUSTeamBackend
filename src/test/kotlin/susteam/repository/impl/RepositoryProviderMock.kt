@@ -1,4 +1,7 @@
-package susteam.repository
+package susteam.repository.impl
+
+import susteam.repository.RepositoryProvider
+import susteam.repository.Transaction
 
 class RepositoryProviderMock<T : RepositoryMock>(
     val origin: T,

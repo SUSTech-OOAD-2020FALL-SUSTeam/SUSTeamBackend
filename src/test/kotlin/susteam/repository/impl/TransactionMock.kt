@@ -1,4 +1,6 @@
-package susteam.repository
+package susteam.repository.impl
+
+import susteam.repository.Transaction
 
 class TransactionMock : Transaction {
 
