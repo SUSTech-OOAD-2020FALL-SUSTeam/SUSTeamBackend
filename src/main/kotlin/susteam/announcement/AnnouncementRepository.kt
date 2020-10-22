@@ -39,7 +39,8 @@ class AnnouncementRepository @Inject constructor(private val database: JDBCClien
                     title, 
                     content
                 FROM announcement
-                WHERE game_id = ?;
+                WHERE game_id = ?
+                ORDER BY announce_time DESC;
             """.trimIndent(),
             jsonArrayOf(gameId)
         ).rows.map { it.toAnnouncement() }
