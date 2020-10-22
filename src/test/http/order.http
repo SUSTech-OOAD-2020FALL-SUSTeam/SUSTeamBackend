@@ -1,0 +1,62 @@
+# create order: succeed(order state: refundable)
+POST {{host}}/api/order
+Content-Type: application/json
+Authorization: Bearer {{test001-token}}
+
+{
+  "gameId": 1,
+  "price": 1000
+}
+
+###
+# create order: fail(have already bought)
+POST {{host}}/api/order
+Content-Type: application/json
+Authorization: Bearer {{test001-token}}
+
+{
+  "gameId": 1,
+  "price": 1000
+}
+
+###
+# create order: succeed(order state: fail since no enough blance)
+POST {{host}}/api/order
+Content-Type: application/json
+Authorization: Bearer {{test001-token}}
+
+{
+  "gameId": 1,
+  "price": 100000
+}
+
+###
+# create order: fail(not login)
+POST {{host}}/api/order
+Content-Type: application/json
+
+{
+  "gameId": 1,
+  "price": 1000
+}
+
+###
+# create order: fail(Game does not exist)
+POST {{host}}/api/order
+Content-Type: application/json
+Authorization: Bearer {{test001-token}}
+
+{
+  "gameId": 100,
+  "price": 1000
+}
+
+###
+# get order by username: succeed
+GET {{host}}/api/user/test001/orders
+
+
+###
+# get order by username: succeed
+GET {{host}}/api/game/1/orders
+

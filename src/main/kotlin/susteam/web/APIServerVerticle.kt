@@ -11,6 +11,7 @@ import susteam.Controller
 import susteam.announcement.AnnouncementController
 import susteam.comment.CommentController
 import susteam.game.GameController
+import susteam.order.OrderController
 import susteam.storage.StorageController
 import susteam.user.UserController
 import susteam.web.handler.TokenUserHandler
@@ -57,7 +58,8 @@ class APIServerVerticle : CoroutineVerticle() {
             injector.getInstance(GameController::class.java),
             injector.getInstance(StorageController::class.java),
             injector.getInstance(CommentController::class.java),
-            injector.getInstance(AnnouncementController::class.java)
+            injector.getInstance(AnnouncementController::class.java),
+            injector.getInstance(OrderController::class.java)
         )
         for (controller in controllers) {
             controller.route(router)

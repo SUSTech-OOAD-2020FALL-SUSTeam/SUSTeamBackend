@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage, game_image, game_tag, announcement;
+DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage, game_image, game_tag, announcement, `order`;
 
 CREATE TABLE user
 (
@@ -116,6 +116,19 @@ CREATE TABLE IF NOT EXISTS `announcement`
     content       VARCHAR(4095) NOT NULL,
 
     PRIMARY KEY (game_id, title),
+    FOREIGN KEY (game_id) REFERENCES game (game_id)
+);
+
+CREATE TABLE IF NOT EXISTS `order`
+(
+    username VARCHAR(255) NOT NULL,
+    game_id INT NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    purchase_time DATETIME(3) NOT NULL,
+    price INT NOT NULL,
+
+    PRIMARY KEY (username, game_id),
+    FOREIGN KEY (username) REFERENCES user (username),
     FOREIGN KEY (game_id) REFERENCES game (game_id)
 );
 

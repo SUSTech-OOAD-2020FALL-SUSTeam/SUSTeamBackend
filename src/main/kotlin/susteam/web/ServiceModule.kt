@@ -19,6 +19,9 @@ import susteam.comment.CommentService
 import susteam.game.GameController
 import susteam.game.GameRepository
 import susteam.game.GameService
+import susteam.order.OrderController
+import susteam.order.OrderRepository
+import susteam.order.OrderService
 import susteam.storage.*
 import susteam.user.UserController
 import susteam.user.UserRepository
@@ -85,6 +88,10 @@ class ServiceModule(
         bind(AnnouncementController::class.java)
         bind(AnnouncementService::class.java)
         bind(AnnouncementRepository::class.java)
+
+        bind(OrderController::class.java)
+        bind(OrderService::class.java)
+        bind(OrderRepository::class.java)
     }
 
     suspend fun close() {
