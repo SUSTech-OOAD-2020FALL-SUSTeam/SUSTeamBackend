@@ -6,5 +6,5 @@ interface UserRepository {
     suspend fun get(username: String): User?
     suspend fun getPasswordHash(username: String): String?
     suspend fun getRole(username: String): UserRole?
-
+    suspend fun updateUser(user: User)
 }

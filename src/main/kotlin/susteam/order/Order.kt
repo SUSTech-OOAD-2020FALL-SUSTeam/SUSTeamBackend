@@ -5,6 +5,7 @@ import io.vertx.kotlin.core.json.jsonObjectOf
 import java.time.Instant
 
 data class Order(
+    val id: Int,
     val username: String,
     val gameId: Int,
     val status: String,// refundable  refunded  fail  success
@@ -12,11 +13,12 @@ data class Order(
     val price: Int
 )
 
-enum class Status{
-    NULL, REFUNDABLE, REFUNDED, FAIL, SUCCESS
+enum class OrderStatus{
+    REFUNDABLE, REFUNDED, FAIL, SUCCESS
 }
 
 fun Order.toJson(): JsonObject = jsonObjectOf(
+    "orderId" to id,
     "username" to username,
     "gameId" to gameId,
     "status" to status,
@@ -25,6 +27,7 @@ fun Order.toJson(): JsonObject = jsonObjectOf(
 )
 
 fun JsonObject.toOrder(): Order = Order(
+    getInteger("orderId"),
     getString("username"),
     getInteger("gameId"),
     getString("status"),

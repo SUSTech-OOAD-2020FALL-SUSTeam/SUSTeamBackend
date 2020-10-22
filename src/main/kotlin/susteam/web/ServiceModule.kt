@@ -10,6 +10,8 @@ import io.vertx.ext.auth.PubSecKeyOptions
 import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.jdbc.JDBCClient
+import io.vertx.ext.sql.SQLClient
+import io.vertx.ext.sql.SQLOperations
 import io.vertx.kotlin.ext.sql.closeAwait
 import susteam.announcement.AnnouncementController
 import susteam.announcement.AnnouncementRepository
@@ -20,9 +22,11 @@ import susteam.comment.CommentService
 import susteam.game.GameController
 import susteam.game.GameRepository
 import susteam.game.GameService
+import susteam.game.impl.GameRepositoryImpl
 import susteam.order.OrderController
 import susteam.order.OrderRepository
 import susteam.order.OrderService
+import susteam.order.impl.OrderRepositoryImpl
 import susteam.repository.RepositoryProvider
 import susteam.repository.impl.RepositoryProviderImpl
 import susteam.storage.*
@@ -66,6 +70,8 @@ class ServiceModule(
         )
         bind(FileSystem::class.java).toInstance(vertx.fileSystem())
 
+        bind(SQLOperations::class.java).toInstance(database)
+
         StorageImageFactory.urlPrefix = "${webConfig.getString("server_url")}/api/image"
         StorageImageFactory.pathPrefix = "storage/image"
         StorageFileFactory.urlPrefix = "${webConfig.getString("server_url")}/api/store"
@@ -82,7 +88,7 @@ class ServiceModule(
 
         bind(GameController::class.java)
         bind(GameService::class.java)
-        bind(GameRepository::class.java)
+        bind(GameRepository::class.java).to(GameRepositoryImpl::class.java)
 
         bind(StorageController::class.java)
         bind(StorageService::class.java)
@@ -98,7 +104,11 @@ class ServiceModule(
 
         bind(OrderController::class.java)
         bind(OrderService::class.java)
-        bind(OrderRepository::class.java)
+        bind(OrderRepository::class.java).to(OrderRepositoryImpl::class.java)
+
+        bind(object : TypeLiteral<RepositoryProvider<OrderRepository>>() {}).toProvider(Provider {
+            RepositoryProviderImpl(database, ::OrderRepositoryImpl)
+        })
     }
 
     suspend fun close() {

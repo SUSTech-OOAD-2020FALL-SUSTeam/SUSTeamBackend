@@ -63,4 +63,17 @@ class UserRepositoryImpl @Inject constructor(private val database: SQLOperations
         return UserRole(user, roles)
     }
 
+    override suspend fun updateUser(user: User) {
+        database.updateWithParamsAwait(
+            """
+                UPDATE user
+                SET description = ?,
+                    avatar      = ?,
+                    balance     = ?
+                WHERE username = ?;
+
+            """.trimIndent(),
+            jsonArrayOf(user.description, user.avatar, user.balance, user.username)
+        )
+    }
 }

@@ -7,7 +7,6 @@ import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
-import susteam.game.toJson
 import susteam.user.Auth
 
 class OrderController @Inject constructor(private val service: OrderService) : CoroutineController() {
@@ -51,7 +50,7 @@ class OrderController @Inject constructor(private val service: OrderService) : C
         val gameId = params.getInteger("gameId")?: throw ServiceException("Game ID not found")
         val price = params.getInteger("price")?: throw ServiceException("Price not found")
 
-        val status: Status = service.createOrder(auth, gameId, price)
+        val status: OrderStatus = service.createOrder(auth, gameId, price)
 
         context.success(
             jsonObjectOf(

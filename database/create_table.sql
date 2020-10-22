@@ -121,13 +121,14 @@ CREATE TABLE IF NOT EXISTS `announcement`
 
 CREATE TABLE IF NOT EXISTS `order`
 (
+    order_id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(255) NOT NULL,
     game_id INT NOT NULL,
     status VARCHAR(255) NOT NULL,
     purchase_time DATETIME(3) NOT NULL,
     price INT NOT NULL,
 
-    PRIMARY KEY (username, game_id),
+    PRIMARY KEY (order_id),
     FOREIGN KEY (username) REFERENCES user (username),
     FOREIGN KEY (game_id) REFERENCES game (game_id)
 );

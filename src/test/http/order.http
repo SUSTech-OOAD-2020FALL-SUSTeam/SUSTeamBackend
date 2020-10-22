@@ -16,7 +16,7 @@ Authorization: Bearer {{test001-token}}
 
 {
   "gameId": 1,
-  "price": 1000
+  "price": 10
 }
 
 ###
