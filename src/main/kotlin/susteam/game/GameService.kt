@@ -35,7 +35,7 @@ class GameService @Inject constructor(
         price: Int,
         introduction: String?,
         description: String?
-    ) {
+    ): Int {
         if (gameName.isBlank()) {
             throw ServiceException("Game name is blank")
         }
@@ -48,7 +48,7 @@ class GameService @Inject constructor(
         }
 
         val publishDate: Instant = Instant.now()
-        repository.createGame(gameName, price, publishDate, auth.username, introduction, description)
+        return repository.createGame(gameName, price, publishDate, auth.username, introduction, description)
     }
 
     suspend fun publishGameVersion(
