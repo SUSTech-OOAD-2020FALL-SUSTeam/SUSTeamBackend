@@ -61,4 +61,8 @@ class UserService @Inject constructor(
 
     private fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
 
+    suspend fun updateUser(user: User) {
+        repository.get(user.username) ?: throw ServiceException("User does not exist")
+        repository.updateUser(user)
+    }
 }

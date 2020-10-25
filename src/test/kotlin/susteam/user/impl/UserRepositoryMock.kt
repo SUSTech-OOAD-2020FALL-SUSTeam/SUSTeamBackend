@@ -13,7 +13,7 @@ class UserRepositoryMock(
 ) : UserRepository, RepositoryMock {
 
     data class UserRepositoryMockItem(
-        val user: User,
+        var user: User,
         val password: String,
         val roles: List<String>
     )
@@ -61,4 +61,9 @@ class UserRepositoryMock(
         }
     }
 
+    override suspend fun updateUser(user: User) {
+        data.find{ it.user.username == user.username }?.let{
+            it.user = User(user.username, user.mail, user.avatar, user.description, user.balance)
+        }
+    }
 }

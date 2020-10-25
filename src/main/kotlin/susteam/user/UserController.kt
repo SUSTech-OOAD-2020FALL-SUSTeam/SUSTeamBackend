@@ -15,6 +15,7 @@ class UserController @Inject constructor(private val service: UserService) : Cor
 
         router.post("/user").coroutineHandler(::handleSignUp)
         router.get("/user/:username").coroutineHandler(::handleGetUser)
+        router.post("/user").coroutineHandler(::handleUpdateUser)
     }
 
     suspend fun handleGetToken(context: RoutingContext) {
@@ -76,6 +77,20 @@ class UserController @Inject constructor(private val service: UserService) : Cor
                 "user" to user.toJson()
             )
         )
+    }
+
+    suspend fun handleUpdateUser(context: RoutingContext) {
+        val params = context.bodyAsJson
+        val username = params.getString("username") ?: throw ServiceException("Username is empty")
+        val mail = params.getString("mail") ?: throw ServiceException("Mail is empty")
+        val avatar: String? = params.getString("avatar")
+        val description: String? = params.getString("description")
+        val balance: Int = params.getInteger("balance") ?: throw ServiceException("balance is empty")
+        val user: User = User(username, mail, avatar, description, balance)
+
+        service.updateUser(user)
+
+        context.success()
     }
 
 }

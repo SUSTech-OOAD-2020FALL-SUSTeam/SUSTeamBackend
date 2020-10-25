@@ -51,6 +51,17 @@ class UserServiceTest : StringSpec() {
             )
         }
 
+        "test updateUser" {
+            service.updateUser(User("admin","aaa","hi","hahaha",10))
+            val user = service.getUser("admin")
+            user.mail shouldBe "aaa"
+            user.avatar shouldBe "hi"
+            user.description shouldBe "hahaha"
+            user.balance shouldBe 10
 
+            shouldThrow<ServiceException> {
+                service.updateUser(User("benben","","","",0))
+            }
+        }
     }
 }
