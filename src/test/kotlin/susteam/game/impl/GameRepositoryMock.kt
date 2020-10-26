@@ -41,7 +41,7 @@ class GameRepositoryMock(
         val tag: String
     )
 
-    val mockGame = GameRepositoryMockItem(
+    private val mockGame = GameRepositoryMockItem(
         1, "mock", 100, Instant.now(), "admin", "MOCK", "MOCK!"
     )
 
@@ -91,9 +91,8 @@ class GameRepositoryMock(
     ): Boolean {
         if (games.find { it.id == gameId } == null)
             return false
-        games.find { it.id == gameId }!!.let {
-                it.description = description
-        }
+        games.find { it.id == gameId }!!.description = description
+
         return true
     }
 
@@ -151,9 +150,9 @@ class GameRepositoryMock(
         if (games.find { it.id == gameId } == null)
             return null
         val game = getById(gameId)!!
-        val Fsize = gameImages.find{ it.gameId == gameId && it.type == "F" }?.url
-        val Csize = gameImages.find{ it.gameId == gameId && it.type == "C" }?.url
-        return GameProfile(game.id, game.name, game.price, game.publishDate, game.author, game.introduction, Fsize?.toStorageImage(), Csize?.toStorageImage())
+        val sizeF = gameImages.find{ it.gameId == gameId && it.type == "F" }?.url
+        val sizeC = gameImages.find{ it.gameId == gameId && it.type == "C" }?.url
+        return GameProfile(game.id, game.name, game.price, game.publishDate, game.author, game.introduction, sizeF?.toStorageImage(), sizeC?.toStorageImage())
     }
 
     override suspend fun getGameDetail(gameId: Int): GameDetail? {
@@ -183,9 +182,7 @@ class GameRepositoryMock(
     override suspend fun updateGameImage(gameId: Int, url: String, type: String): Boolean {
         if (games.find { it.id == gameId } == null)
             return false
-        gameImages.find { it.gameId == gameId && it.type == type }!!.let {
-            it.url = url
-        }
+        gameImages.find { it.gameId == gameId && it.type == type }!!.url = url
         return true
     }
 

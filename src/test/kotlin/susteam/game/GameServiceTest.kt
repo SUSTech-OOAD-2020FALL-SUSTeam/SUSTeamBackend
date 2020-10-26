@@ -125,7 +125,6 @@ class GameServiceTest : StringSpec() {
         }
 
         "test getTag" {
-            val auth = injector.getInstance(Key.get(Auth::class.java, TestModule.AdminAuth::class.java))
             val list = service.getTag(1)
             list.contains("heihei") shouldBe true
             list.contains("huohuo") shouldBe true
@@ -133,7 +132,6 @@ class GameServiceTest : StringSpec() {
         }
 
         "test getAllTag" {
-            val auth = injector.getInstance(Key.get(Auth::class.java, TestModule.AdminAuth::class.java))
             val list = service.getAllTag()
             list.contains("heihei") shouldBe true
             list.contains("huohuo") shouldBe true
