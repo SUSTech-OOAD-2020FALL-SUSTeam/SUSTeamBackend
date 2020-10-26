@@ -8,10 +8,10 @@ import java.time.Instant
 
 class GameRepositoryMock(
     override val dataset: Map<String, MutableList<*>> = mapOf(
-        "game" to mutableListOf<GameRepositoryMock.GameRepositoryMockItem>(),
-        "gameVersion" to mutableListOf<GameRepositoryMock.GameVersionRepositoryMockItem>(),
-        "gameImage" to mutableListOf<GameRepositoryMock.GameImageRepositoryMockItem>(),
-        "gameTag" to mutableListOf<GameRepositoryMock.GameTagRepositoryMockItem>()
+        "game" to mutableListOf<GameRepositoryMockItem>(),
+        "gameVersion" to mutableListOf<GameVersionRepositoryMockItem>(),
+        "gameImage" to mutableListOf<GameImageRepositoryMockItem>(),
+        "gameTag" to mutableListOf<GameTagRepositoryMockItem>()
     )
 ) : GameRepository, RepositoryMock {
     data class GameRepositoryMockItem(
@@ -46,22 +46,25 @@ class GameRepositoryMock(
     )
 
     @Suppress("UNCHECKED_CAST")
-    private var games: MutableList<GameRepositoryMock.GameRepositoryMockItem> =
-        dataset["game"] as MutableList<GameRepositoryMock.GameRepositoryMockItem>
-    private var gameVersions: MutableList<GameRepositoryMock.GameVersionRepositoryMockItem> =
-        dataset["gameVersion"] as MutableList<GameRepositoryMock.GameVersionRepositoryMockItem>
-    private var gameImages: MutableList<GameRepositoryMock.GameImageRepositoryMockItem> =
-        dataset["gameImage"] as MutableList<GameRepositoryMock.GameImageRepositoryMockItem>
-    private var gameTags: MutableList<GameRepositoryMock.GameTagRepositoryMockItem> =
-        dataset["gameTag"] as MutableList<GameRepositoryMock.GameTagRepositoryMockItem>
+    private var games: MutableList<GameRepositoryMockItem> =
+        dataset["game"] as MutableList<GameRepositoryMockItem>
+    @Suppress("UNCHECKED_CAST")
+    private var gameVersions: MutableList<GameVersionRepositoryMockItem> =
+        dataset["gameVersion"] as MutableList<GameVersionRepositoryMockItem>
+    @Suppress("UNCHECKED_CAST")
+    private var gameImages: MutableList<GameImageRepositoryMockItem> =
+        dataset["gameImage"] as MutableList<GameImageRepositoryMockItem>
+    @Suppress("UNCHECKED_CAST")
+    private var gameTags: MutableList<GameTagRepositoryMockItem> =
+        dataset["gameTag"] as MutableList<GameTagRepositoryMockItem>
 
 
     override fun init() {
         games.add(mockGame)
-        gameTags.add(GameRepositoryMock.GameTagRepositoryMockItem(1, "heihei"))
-        gameTags.add(GameRepositoryMock.GameTagRepositoryMockItem(1, "huohuo"))
-        gameVersions.add(GameRepositoryMock.GameVersionRepositoryMockItem(1,"v1.0","url1"))
-        gameImages.add(GameRepositoryMock.GameImageRepositoryMockItem(1,"urlimage","F"))
+        gameTags.add(GameTagRepositoryMockItem(1, "heihei"))
+        gameTags.add(GameTagRepositoryMockItem(1, "huohuo"))
+        gameVersions.add(GameVersionRepositoryMockItem(1,"v1.0","url1"))
+        gameImages.add(GameImageRepositoryMockItem(1,"urlimage","F"))
     }
 
     override suspend fun createGame(
@@ -75,7 +78,7 @@ class GameRepositoryMock(
         if (games.find { it.name == name } != null)
             throw ServiceException("Cannot create game '$name'")
         games.add(
-            GameRepositoryMock.GameRepositoryMockItem(
+            GameRepositoryMockItem(
                 games.size + 1, name, price, publishDate, author, introduction, description
             )
         )
@@ -106,7 +109,7 @@ class GameRepositoryMock(
         if (gameVersions.find { it.url == url } != null)
             throw ServiceException("url already exist")
         gameVersions.add(
-            GameRepositoryMock.GameVersionRepositoryMockItem(
+            GameVersionRepositoryMockItem(
                 gameId, versionName, url
             )
         )
@@ -170,7 +173,7 @@ class GameRepositoryMock(
         if (games.find { it.id == gameId } == null)
             return false
         gameImages.add(
-            GameRepositoryMock.GameImageRepositoryMockItem(
+            GameImageRepositoryMockItem(
                 gameId, url, type
             )
         )
@@ -199,7 +202,7 @@ class GameRepositoryMock(
             throw ServiceException("already exist")
 
         gameTags.add(
-            GameRepositoryMock.GameTagRepositoryMockItem(
+            GameTagRepositoryMockItem(
                 gameId, tag
             )
         )
