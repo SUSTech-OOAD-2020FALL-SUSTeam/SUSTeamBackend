@@ -19,6 +19,7 @@ import susteam.announcement.AnnouncementService
 import susteam.comment.CommentController
 import susteam.comment.CommentRepository
 import susteam.comment.CommentService
+import susteam.comment.impl.CommentRepositoryImpl
 import susteam.game.GameController
 import susteam.game.GameRepository
 import susteam.game.GameService
@@ -96,7 +97,7 @@ class ServiceModule(
 
         bind(CommentController::class.java)
         bind(CommentService::class.java)
-        bind(CommentRepository::class.java)
+        bind(CommentRepository::class.java).to(CommentRepositoryImpl::class.java)
 
         bind(AnnouncementController::class.java)
         bind(AnnouncementService::class.java)

@@ -40,8 +40,9 @@ class CommentService @Inject constructor(
         newScore: Int
     ) {
         checkComment(newContent, newScore, auth, gameId)
-        commentRepository.getExists(auth.username, gameId)
-            ?: throw ServiceException("No such comment for given user and game")
+        if (!commentRepository.getExists(auth.username, gameId)) {
+            throw ServiceException("No such comment for given user and game")
+        }
         val commentTime: Instant = Instant.now()
         commentRepository.modify(auth.username, gameId, commentTime, newContent, newScore)
     }
