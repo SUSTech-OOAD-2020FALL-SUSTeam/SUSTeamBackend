@@ -3,6 +3,7 @@ package susteam.game
 import com.google.inject.Inject
 import io.vertx.core.file.FileSystem
 import io.vertx.core.json.JsonArray
+import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.file.readFileAwait
@@ -14,6 +15,7 @@ import susteam.user.Auth
 import susteam.user.isAdmin
 import susteam.user.username
 import javax.imageio.ImageIO
+
 
 class GameController @Inject constructor(
     private val service: GameService,
@@ -39,6 +41,9 @@ class GameController @Inject constructor(
         router.get("/tags").coroutineHandler(::handleGetAllTag)
         router.get("/games/tags").coroutineHandler(::handleGetGameProfileWithTags)
         router.post("/game/:gameId/tag").coroutineHandler(::handleAddTag)
+
+        router.post("/game/:gameId/:version/:isPublic/uploadVersion").coroutineHandler(::handleUploadGameVersion)
+        router.get("/game/:gameId/:version/downloadVersion").coroutineHandler(::handleDownloadGameVersion)
     }
 
     private suspend fun handleGetGame(context: RoutingContext) {
@@ -263,6 +268,52 @@ class GameController @Inject constructor(
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
         service.addTag(auth, gameId, tag)
+
+        context.success()
+    }
+
+
+
+    private fun FileUpload.extension() = this.fileName().substringAfterLast('.', "")
+
+    suspend fun handleUploadGameVersion(context: RoutingContext) {
+
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
+
+        val versionName = request.getParam("version") ?: throw ServiceException("Game version name is empty")
+        val isPublic = request.getParam("isPublic")?.toBoolean() ?: throw ServiceException("Not choosing public or not")
+        val user = context.user() ?: throw ServiceException("Permission denied, please login")
+        val game = service.getGame(gameId)
+        if (game.author != user.username) {
+            throw ServiceException("Permission denied")
+        }
+
+        val files = context.fileUploads().map {
+            val store = storage.upload(it, user, isPublic)
+            val url = store.url
+            service.publishGameVersion(user, gameId, versionName, url)
+            url
+        }
+
+        context.success(
+            jsonObjectOf(
+                "url" to JsonArray(files.map { it })
+            )
+        )
+    }
+
+//TODO download is not correct
+
+    suspend fun handleDownloadGameVersion(context: RoutingContext) {
+
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
+        val versionName = request.getParam("version") ?: throw ServiceException("Game version name is empty")
+        context.user() ?: throw ServiceException("Permission denied, please login")
+        val gameVersion = service.getGameVersion(gameId, versionName)
+        val url = gameVersion.url
+        request.response().sendFile(url)
 
         context.success()
     }

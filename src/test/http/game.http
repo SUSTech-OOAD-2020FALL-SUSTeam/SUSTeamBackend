@@ -101,3 +101,18 @@ GET {{host}}/api/tags
 GET {{host}}/api/games/tags?tag=冒险&tag=动作
 
 ###
+
+
+POST {{host}}/api/game/1/v1.4/true/uploadVersion
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Authorization: Bearer {{admin-token}}
+
+--WebAppBoundary
+Content-Disposition: form-data; name=""; filename=""
+
+--WebAppBoundary--
+
+###
+
+
+GET {{host}}/api/game/1/v1.3/downVersion
