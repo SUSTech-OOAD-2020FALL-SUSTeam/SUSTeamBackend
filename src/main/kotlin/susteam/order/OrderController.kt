@@ -22,7 +22,7 @@ class OrderController @Inject constructor(private val service: OrderService) : C
         val request = context.request()
         val username = request.getParam("username") ?: throw ServiceException("Username not found")
 
-        val orderList = service.getOrderbyUsername(username)
+        val orderList = service.getOrderByUsername(username)
 
         context.success(
             jsonObjectOf(
@@ -35,7 +35,7 @@ class OrderController @Inject constructor(private val service: OrderService) : C
         val request = context.request()
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
 
-        val orderList = service.getOrderbyGameId(gameId)
+        val orderList = service.getOrderByGameId(gameId)
 
         context.success(
             jsonObjectOf(

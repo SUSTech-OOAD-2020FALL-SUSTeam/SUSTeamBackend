@@ -4,9 +4,9 @@ import java.time.Instant
 
 interface OrderRepository {
 
-    suspend fun getOrderbyGameId(gameId: Int): List<Order>
+    suspend fun getOrderByGameId(gameId: Int): List<Order>
 
-    suspend fun getOrderbyUsername(username: String): List<Order>
+    suspend fun getOrderByUsername(username: String): List<Order>
 
     suspend fun createOrder(
         username: String,

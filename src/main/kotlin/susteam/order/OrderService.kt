@@ -3,7 +3,6 @@ package susteam.order
 
 import com.google.inject.Inject
 import io.vertx.core.Vertx
-import io.vertx.kotlin.core.json.jsonArrayOf
 import susteam.ServiceException
 import susteam.game.Game
 import susteam.game.GameRepository
@@ -13,7 +12,6 @@ import susteam.user.User
 import susteam.user.UserRepository
 import susteam.user.username
 import java.time.Instant
-import java.time.format.DateTimeFormatter
 
 class OrderService @Inject constructor(
     private val orderRepository: OrderRepository,
@@ -21,15 +19,15 @@ class OrderService @Inject constructor(
     private val gameRepository: GameRepository,
     private val orderRepositoryProvider: RepositoryProvider<OrderRepository>,
     private val userRepositoryProvider: RepositoryProvider<UserRepository>,
-    val vertx:Vertx
+    val vertx: Vertx
 ) {
 
-    suspend fun getOrderbyUsername(username: String): List<Order> {
-        return orderRepository.getOrderbyUsername(username)
+    suspend fun getOrderByUsername(username: String): List<Order> {
+        return orderRepository.getOrderByUsername(username)
     }
 
-    suspend fun getOrderbyGameId(gameId: Int): List<Order> {
-        return orderRepository.getOrderbyGameId(gameId)
+    suspend fun getOrderByGameId(gameId: Int): List<Order> {
+        return orderRepository.getOrderByGameId(gameId)
     }
 
     suspend fun createOrder(
@@ -42,7 +40,7 @@ class OrderService @Inject constructor(
         val customer: User = userRepository.get(auth.username) ?: throw ServiceException("Unknown error")
 
         val haveBoughtStatus: OrderStatus = orderRepository.checkOrder(customer.username, gameId)
-        if( haveBoughtStatus == OrderStatus.SUCCESS ) {
+        if (haveBoughtStatus == OrderStatus.SUCCESS) {
             throw ServiceException("User '${customer.username}' have already bought '${game.name}'")
         }
 
@@ -56,27 +54,26 @@ class OrderService @Inject constructor(
             val userRepo = userRepositoryProvider.provide(transaction)
 
             userRepo.updateUser(
-                customer.copy(balance = customer.balance-price )
+                customer.copy(balance = customer.balance - price)
             )
             userRepo.updateUser(
-                author.copy(balance = author.balance+price )
+                author.copy(balance = author.balance + price)
             )
             orderRepo.updateOrder(orderId, OrderStatus.REFUNDABLE)
 
             val curUser: User = userRepo.get(customer.username)!!
 
-            if( curUser.balance < 0 ) {
+            if (curUser.balance < 0) {
                 transaction.rollback()
-            }
-            else {
+            } else {
                 transaction.commit()
             }
         }
 
         val order = orderRepository.getOrder(orderId)!!
-        if( order.status == "FAIL" ) return OrderStatus.FAIL
-        if( order.status == "REFUNDABLE" ) return OrderStatus.REFUNDABLE
-        if( order.status == "REFUNDED" ) return OrderStatus.REFUNDED
+        if (order.status == "FAIL") return OrderStatus.FAIL
+        if (order.status == "REFUNDABLE") return OrderStatus.REFUNDABLE
+        if (order.status == "REFUNDED") return OrderStatus.REFUNDED
         return OrderStatus.SUCCESS
 
     }

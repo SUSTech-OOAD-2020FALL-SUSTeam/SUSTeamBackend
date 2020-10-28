@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter
 
 class OrderRepositoryImpl @Inject constructor(private val database: SQLOperations) : OrderRepository {
 
-    override suspend fun getOrderbyGameId(gameId: Int): List<Order> {
+    override suspend fun getOrderByGameId(gameId: Int): List<Order> {
         return database.queryWithParamsAwait(
             """
                 SELECT
@@ -33,7 +33,7 @@ class OrderRepositoryImpl @Inject constructor(private val database: SQLOperation
         ).rows.map { it.toOrder() }
     }
 
-    override suspend fun getOrderbyUsername(username: String): List<Order> {
+    override suspend fun getOrderByUsername(username: String): List<Order> {
         return database.queryWithParamsAwait(
             """
                 SELECT
