@@ -27,6 +27,7 @@ class StorageController @Inject constructor(private val service: StorageService)
                 // TODO no permission error handle
                 throw ServiceException("Download permission denied")
             }
-        }.handler(StaticHandler.create("storage/store"))
+        }
+        router.get("/store/*").handler(StaticHandler.create("storage/store"))
     }
 }
