@@ -2,6 +2,9 @@ package susteam.game
 
 import com.google.inject.Inject
 import susteam.ServiceException
+import susteam.order.OrderRepository
+import susteam.order.OrderStatus
+import susteam.storage.StorageFile
 import susteam.storage.StorageImage
 import susteam.user.Auth
 import susteam.user.isAdmin
@@ -10,7 +13,8 @@ import susteam.user.username
 import java.time.Instant
 
 class GameService @Inject constructor(
-    private val repository: GameRepository
+    private val repository: GameRepository,
+    private val orderRepository: OrderRepository
 ) {
 
     suspend fun getGame(gameId: Int): Game {
@@ -55,13 +59,10 @@ class GameService @Inject constructor(
         auth: Auth,
         gameId: Int,
         versionName: String,
-        url: String
+        url: StorageFile
     ) {
         if (versionName.isBlank()) {
             throw ServiceException("Game version name is blank")
-        }
-        if (url.isBlank()) {
-            throw ServiceException("URL is blank")
         }
 
         val game = repository.getById(gameId) ?: throw ServiceException("Game does not exist")
@@ -76,7 +77,7 @@ class GameService @Inject constructor(
             throw ServiceException("Permission denied")
         }
 
-        repository.createVersion(gameId, versionName, url)
+        repository.createVersion(gameId, versionName, url.id)
     }
 
     suspend fun updateDescription(
@@ -115,6 +116,19 @@ class GameService @Inject constructor(
     suspend fun getRandomGameProfile(numberOfGames: Int): List<GameProfile> {
         if (numberOfGames <= 0) throw ServiceException("Number of Games must be greater than zero")
         return repository.getRandomGameProfile(numberOfGames)
+    }
+
+    suspend fun download(auth: Auth, gameId: Int, versionName: String): StorageFile {
+        val downloadPermission = when {
+            auth.isAdmin() -> true
+            auth.username == getGame(gameId).author -> true
+            orderRepository.checkOrder(auth.username, gameId) == OrderStatus.SUCCESS -> true
+            else -> false
+        }
+        if (!downloadPermission) {
+            throw ServiceException("Permission denied, user not own the game")
+        }
+        return getGameVersion(gameId, versionName).url
     }
 
     suspend fun uploadGameImage(gameId: Int, image: StorageImage, type: String) {

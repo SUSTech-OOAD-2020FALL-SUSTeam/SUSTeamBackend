@@ -10,6 +10,7 @@ import io.vertx.kotlin.ext.sql.queryWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.ServiceException
 import susteam.game.*
+import susteam.storage.getStorageFile
 import susteam.storage.getStorageImage
 import java.sql.SQLIntegrityConstraintViolationException
 import java.time.Instant
@@ -96,7 +97,7 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient): 
             jsonArrayOf(versionName, gameId)
         )?.let {
             GameVersion(
-                it.getInteger(0), it.getString(1), it.getString(2)
+                it.getInteger(0), it.getString(1), it.getStorageFile(2)!!
             )
         }
     }

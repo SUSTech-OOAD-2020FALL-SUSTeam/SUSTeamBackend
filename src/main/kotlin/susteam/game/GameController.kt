@@ -3,7 +3,6 @@ package susteam.game
 import com.google.inject.Inject
 import io.vertx.core.file.FileSystem
 import io.vertx.core.json.JsonArray
-import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.file.readFileAwait
@@ -11,6 +10,7 @@ import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
 import susteam.storage.StorageService
+import susteam.storage.getStorageFile
 import susteam.user.Auth
 import susteam.user.isAdmin
 import susteam.user.username
@@ -34,6 +34,8 @@ class GameController @Inject constructor(
 
         router.get("/game/:gameId/version/:versionName").coroutineHandler(::handleGetVersion)
         router.post("/game/:gameId/version").coroutineHandler(::handlePublishGameVersion)
+        router.post("/game/:gameId/upload").coroutineHandler(::handleUploadGameVersion)
+        router.get("/game/:gameId/version/:versionName/download").coroutineHandler(::handleDownloadGameVersion)
 
         router.post("/game/:gameId/image").coroutineHandler(::handleUploadGameImage)
 
@@ -42,8 +44,6 @@ class GameController @Inject constructor(
         router.get("/games/tags").coroutineHandler(::handleGetGameProfileWithTags)
         router.post("/game/:gameId/tag").coroutineHandler(::handleAddTag)
 
-        router.post("/game/:gameId/:version/:isPublic/uploadVersion").coroutineHandler(::handleUploadGameVersion)
-        router.get("/game/:gameId/:version/downloadVersion").coroutineHandler(::handleDownloadGameVersion)
     }
 
     private suspend fun handleGetGame(context: RoutingContext) {
@@ -113,35 +113,6 @@ class GameController @Inject constructor(
         context.success()
     }
 
-    suspend fun handlePublishGameVersion(context: RoutingContext) {
-        val request = context.request()
-        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
-
-        val params = context.bodyAsJson
-        val versionName = params.getString("name") ?: throw ServiceException("Game version name is empty")
-        val url = params.getString("url") ?: throw ServiceException("URL is empty")
-
-        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
-
-        service.publishGameVersion(auth, gameId, versionName, url)
-
-        context.success()
-    }
-
-    suspend fun handleGetVersion(context: RoutingContext) {
-        val request = context.request()
-        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
-        val versionName = request.getParam("versionName") ?: throw ServiceException("Version name not found")
-
-        val gameVersion: GameVersion = service.getGameVersion(gameId, versionName)
-
-        context.success(
-            jsonObjectOf(
-                "gameVersion" to gameVersion.toJson()
-            )
-        )
-    }
-
     suspend fun handleGetAllGames(context: RoutingContext) {
         val request = context.request()
         val order = request.getParam("order")
@@ -177,6 +148,76 @@ class GameController @Inject constructor(
             )
         )
     }
+
+
+    suspend fun handlePublishGameVersion(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
+
+        val params = context.bodyAsJson
+        val versionName = params.getString("name") ?: throw ServiceException("Game version name is empty")
+        val url = params.getStorageFile("url") ?: throw ServiceException("URL is empty")
+
+        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
+
+        service.publishGameVersion(auth, gameId, versionName, url)
+
+        context.success()
+    }
+
+    suspend fun handleGetVersion(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+        val versionName = request.getParam("versionName") ?: throw ServiceException("Version name not found")
+
+        val gameVersion: GameVersion = service.getGameVersion(gameId, versionName)
+
+        context.success(
+            jsonObjectOf(
+                "gameVersion" to gameVersion.toJson()
+            )
+        )
+    }
+
+    suspend fun handleUploadGameVersion(context: RoutingContext) {
+
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
+
+        val user = context.user() ?: throw ServiceException("Permission denied, please login")
+        val game = service.getGame(gameId)
+
+        if (!user.isAdmin() && game.author != user.username) {
+            throw ServiceException("Permission denied")
+        }
+
+        if (context.fileUploads().size != 1) {
+            throw ServiceException("Must uploads 1 file")
+        }
+        val file = context.fileUploads().firstOrNull() ?: throw ServiceException("Must uploads 1 file")
+
+        val storageFile = storage.upload(file, user, false)
+
+        context.success(
+            jsonObjectOf(
+                "url" to storageFile.url
+            )
+        )
+    }
+
+    suspend fun handleDownloadGameVersion(context: RoutingContext) {
+
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
+        val versionName = request.getParam("versionName") ?: throw ServiceException("Game version name is empty")
+        val auth = context.user() ?: throw ServiceException("Permission denied, please login")
+
+        val storageFile = service.download(auth, gameId, versionName)
+
+        context.put("allow-storage", storageFile.id)
+        context.reroute("/api/store/${storageFile.id}")
+    }
+
 
     suspend fun handleUploadGameImage(context: RoutingContext) {
         val gameId = context.request().getParam("gameId")?.toIntOrNull()
@@ -272,49 +313,4 @@ class GameController @Inject constructor(
         context.success()
     }
 
-
-
-    private fun FileUpload.extension() = this.fileName().substringAfterLast('.', "")
-
-    suspend fun handleUploadGameVersion(context: RoutingContext) {
-
-        val request = context.request()
-        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
-
-        val versionName = request.getParam("version") ?: throw ServiceException("Game version name is empty")
-        val isPublic = request.getParam("isPublic")?.toBoolean() ?: throw ServiceException("Not choosing public or not")
-        val user = context.user() ?: throw ServiceException("Permission denied, please login")
-        val game = service.getGame(gameId)
-        if (game.author != user.username) {
-            throw ServiceException("Permission denied")
-        }
-
-        val files = context.fileUploads().map {
-            val store = storage.upload(it, user, isPublic)
-            val url = store.url
-            service.publishGameVersion(user, gameId, versionName, url)
-            url
-        }
-
-        context.success(
-            jsonObjectOf(
-                "url" to JsonArray(files.map { it })
-            )
-        )
-    }
-
-//TODO download is not correct
-
-    suspend fun handleDownloadGameVersion(context: RoutingContext) {
-
-        val request = context.request()
-        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
-        val versionName = request.getParam("version") ?: throw ServiceException("Game version name is empty")
-        context.user() ?: throw ServiceException("Permission denied, please login")
-        val gameVersion = service.getGameVersion(gameId, versionName)
-        val url = gameVersion.url
-        request.response().sendFile(url)
-
-        context.success()
-    }
 }

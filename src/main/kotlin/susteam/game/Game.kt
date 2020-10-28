@@ -3,7 +3,9 @@ package susteam.game
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.jsonObjectOf
+import susteam.storage.StorageFile
 import susteam.storage.StorageImage
+import susteam.storage.getStorageFile
 import susteam.storage.getStorageImage
 import java.time.Instant
 
@@ -20,7 +22,7 @@ data class Game(
 data class GameVersion(
     val gameId: Int,
     val name: String,
-    val url: String
+    val url: StorageFile
 )
 
 data class GameImage(
@@ -80,7 +82,7 @@ fun GameVersion.toJson(): JsonObject = jsonObjectOf(
 fun JsonObject.toGameVersion(): GameVersion = GameVersion(
     getInteger("gameId"),
     getString("name"),
-    getString("url")
+    getStorageFile("url")!!
 )
 
 fun GameProfile.toJson(): JsonObject = jsonObjectOf(

@@ -18,8 +18,8 @@ Content-Type: application/json
 Authorization: Bearer {{admin-token}}
 
 {
-  "name": "v1.1",
-  "url": "https://www.google.com/"
+  "name": "v1.0",
+  "url": "c678f433-0a14-40c2-8437-99af8dc0bd1c"
 }
 
 ###
@@ -103,16 +103,19 @@ GET {{host}}/api/games/tags?tag=冒险&tag=动作
 ###
 
 
-POST {{host}}/api/game/1/v1.4/true/uploadVersion
-Content-Type: multipart/form-data; boundary=WebAppBoundary
+POST {{host}}/api/game/10/upload
 Authorization: Bearer {{admin-token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
-Content-Disposition: form-data; name=""; filename=""
+Content-Disposition: form-data; name="upload"; filename="game.txt"
 
+< ../../../storage/store/c678f433-0a14-40c2-8437-99af8dc0bd1c
 --WebAppBoundary--
 
 ###
 
+GET {{host}}/api/game/10/version/v1.0/download
+Authorization: Bearer {{admin-token}}
 
-GET {{host}}/api/game/1/v1.3/downVersion
+###

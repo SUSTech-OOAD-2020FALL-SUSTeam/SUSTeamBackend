@@ -121,12 +121,12 @@ CREATE TABLE IF NOT EXISTS `announcement`
 
 CREATE TABLE IF NOT EXISTS `order`
 (
-    order_id INT NOT NULL AUTO_INCREMENT,
-    username VARCHAR(255) NOT NULL,
-    game_id INT NOT NULL,
-    status VARCHAR(255) NOT NULL,
-    purchase_time DATETIME(3) NOT NULL,
-    price INT NOT NULL,
+    order_id      INT          NOT NULL AUTO_INCREMENT,
+    username      VARCHAR(255) NOT NULL,
+    game_id       INT          NOT NULL,
+    status        VARCHAR(255) NOT NULL,
+    purchase_time DATETIME(3)  NOT NULL,
+    price         INT          NOT NULL,
 
     PRIMARY KEY (order_id),
     FOREIGN KEY (username) REFERENCES user (username),
@@ -570,3 +570,6 @@ SET description = '
 (๑•ㅂ•́)و✧
 '
 WHERE game_id = 9;
+
+INSERT INTO storage (uuid, file_name, uploader, upload_time, is_public)
+VALUES ('c678f433-0a14-40c2-8437-99af8dc0bd1c', 'game.txt', 'admin', NOW(), false);
