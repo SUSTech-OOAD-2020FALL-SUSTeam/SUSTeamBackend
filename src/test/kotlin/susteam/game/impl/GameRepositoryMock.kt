@@ -3,6 +3,7 @@ package susteam.game.impl
 import susteam.ServiceException
 import susteam.game.*
 import susteam.repository.impl.RepositoryMock
+import susteam.storage.toStorageFile
 import susteam.storage.toStorageImage
 import java.time.Instant
 
@@ -42,7 +43,7 @@ class GameRepositoryMock(
     )
 
     private val mockGame = GameRepositoryMockItem(
-        1, "mock", 100, Instant.now(), "admin", "MOCK", "MOCK!"
+        1, "mock", 100, Instant.now(), "author", "MOCK", "MOCK!"
     )
 
     @Suppress("UNCHECKED_CAST")
@@ -122,7 +123,7 @@ class GameRepositoryMock(
 
     override suspend fun getVersion(gameId: Int, versionName: String): GameVersion? {
         return gameVersions.find { it.name == versionName && it.gameId == gameId }?.let{
-            GameVersion(it.gameId, it.name, it.url)
+            GameVersion(it.gameId, it.name, it.url.toStorageFile() )
         }
     }
 
