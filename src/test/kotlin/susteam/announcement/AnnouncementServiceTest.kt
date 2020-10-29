@@ -1,4 +1,4 @@
-package susteam.Announcement
+package susteam.announcement
 
 import com.google.inject.Guice
 import com.google.inject.Key
@@ -9,7 +9,6 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import susteam.ServiceException
 import susteam.TestModule
-import susteam.announcement.AnnouncementService
 import susteam.announcement.impl.AnnouncementRepositoryMock
 import susteam.game.impl.GameRepositoryMock
 import susteam.user.Auth
