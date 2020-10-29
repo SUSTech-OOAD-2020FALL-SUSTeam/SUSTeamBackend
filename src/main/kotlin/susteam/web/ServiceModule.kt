@@ -16,6 +16,7 @@ import io.vertx.kotlin.ext.sql.closeAwait
 import susteam.announcement.AnnouncementController
 import susteam.announcement.AnnouncementRepository
 import susteam.announcement.AnnouncementService
+import susteam.announcement.impl.AnnouncementRepositoryImpl
 import susteam.comment.CommentController
 import susteam.comment.CommentRepository
 import susteam.comment.CommentService
@@ -101,7 +102,7 @@ class ServiceModule(
 
         bind(AnnouncementController::class.java)
         bind(AnnouncementService::class.java)
-        bind(AnnouncementRepository::class.java)
+        bind(AnnouncementRepository::class.java).to(AnnouncementRepositoryImpl::class.java)
 
         bind(OrderController::class.java)
         bind(OrderService::class.java)
