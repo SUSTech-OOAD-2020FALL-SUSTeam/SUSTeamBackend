@@ -24,11 +24,32 @@ class UserRepositoryMock(
         listOf("admin")
     )
 
+    val poorCustomer = UserRepositoryMockItem(
+        User("poorCustomer", "poor@susteam.com", null, null, 0),
+        "\$sha512\$\$58255bd09ab4938bfdfa636fe1a3254be1985762f2ccef2556d67998c9925695\$ujJTh2rta8ItSm/1PYQGxq2GQZXtFEq1yHYhtsIztUi66uaVbfNG7IwX9eoQ817jy8UUeX7X3dMUVGTioLq0Ew==",
+        listOf("poorCustomer")
+    )
+
+    val richCustomer = UserRepositoryMockItem(
+        User("richCustomer", "rich@susteam.com", null, null, 1000),
+        "\$sha512\$\$58255bd09ab4938bfdfa636fe1a3254be1985762f2ccef2556d67998c9925695\$ujJTh2rta8ItSm/1PYQGxq2GQZXtFEq1yHYhtsIztUi66uaVbfNG7IwX9eoQ817jy8UUeX7X3dMUVGTioLq0Ew==",
+        listOf("richCustomer")
+    )
+
+    val author = UserRepositoryMockItem(
+        User("author", "author@susteam.com", null, null, 0),
+        "\$sha512\$\$58255bd09ab4938bfdfa636fe1a3254be1985762f2ccef2556d67998c9925695\$ujJTh2rta8ItSm/1PYQGxq2GQZXtFEq1yHYhtsIztUi66uaVbfNG7IwX9eoQ817jy8UUeX7X3dMUVGTioLq0Ew==",
+        listOf("author")
+    )
+
     @Suppress("UNCHECKED_CAST")
     private val data: MutableList<UserRepositoryMockItem> = dataset["user"] as MutableList<UserRepositoryMockItem>
 
     override fun init() {
         data.add(admin)
+        data.add(poorCustomer)
+        data.add(richCustomer)
+        data.add(author)
     }
 
 
