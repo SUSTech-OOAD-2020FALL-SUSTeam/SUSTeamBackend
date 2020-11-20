@@ -1,0 +1,45 @@
+# success
+GET {{host}}/api/save/test001/1
+Authorization: Bearer {{test001-token}}
+#
+
+###
+
+# Permission denied, user not own the game
+GET {{host}}/api/save/test001/2
+Authorization: Bearer {{test001-token}}
+
+###
+
+# Permission denied, please login
+GET {{host}}/api/save/test002/1
+
+###
+
+POST {{host}}/api/save/test001/1/save1
+Content-Type: application/json
+Authorization: Bearer {{test001-token}}
+
+{
+
+}
+
+###
+
+# "success": true
+GET {{host}}/api/save/test001/1/save1/delete
+Authorization: Bearer {{test001-token}}
+
+
+###
+
+
+GET {{host}}/api/save/test001/1/save333/delete
+Authorization: Bearer {{test001-token}}
+
+
+###
+
+
+GET {{host}}/api/save/test001/1/save2
+Authorization: Bearer {{test001-token}}

@@ -10,7 +10,6 @@ import io.vertx.ext.auth.PubSecKeyOptions
 import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.jdbc.JDBCClient
-import io.vertx.ext.sql.SQLClient
 import io.vertx.ext.sql.SQLOperations
 import io.vertx.kotlin.ext.sql.closeAwait
 import susteam.announcement.AnnouncementController
@@ -31,6 +30,10 @@ import susteam.order.OrderService
 import susteam.order.impl.OrderRepositoryImpl
 import susteam.repository.RepositoryProvider
 import susteam.repository.impl.RepositoryProviderImpl
+import susteam.save.GameSaveController
+import susteam.save.GameSaveRepository
+import susteam.save.GameSaveService
+import susteam.save.impl.GameSaveRepositoryImpl
 import susteam.storage.*
 import susteam.user.UserController
 import susteam.user.UserRepository
@@ -111,6 +114,10 @@ class ServiceModule(
         bind(object : TypeLiteral<RepositoryProvider<OrderRepository>>() {}).toProvider(Provider {
             RepositoryProviderImpl(database, ::OrderRepositoryImpl)
         })
+
+        bind(GameSaveController::class.java)
+        bind(GameSaveService::class.java)
+        bind(GameSaveRepository::class.java).to(GameSaveRepositoryImpl::class.java)
     }
 
     suspend fun close() {
