@@ -7,6 +7,7 @@ import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
+import susteam.game.toJson
 import susteam.user.Auth
 
 class OrderController @Inject constructor(private val service: OrderService) : CoroutineController() {
@@ -15,7 +16,21 @@ class OrderController @Inject constructor(private val service: OrderService) : C
 
         router.post("/order").coroutineHandler(::handleCreateOrder)
         router.get("/user/:username/orders").coroutineHandler(::handleGetOrderbyUsername)
+        router.get("/user/:username/games").coroutineHandler(::handlegetBoughtGameByUsername)
         router.get("/game/:gameId/orders").coroutineHandler(::handleGetOrderbyGameId)
+    }
+
+    suspend fun handlegetBoughtGameByUsername(context: RoutingContext) {
+        val request = context.request()
+        val username = request.getParam("username") ?: throw ServiceException("Username not found")
+
+        val games = service.getBoughtGameByUsername(username)
+
+        context.success(
+            jsonObjectOf(
+                "games" to JsonArray(games.map { it.toJson() })
+            )
+        )
     }
 
     suspend fun handleGetOrderbyUsername(context: RoutingContext) {

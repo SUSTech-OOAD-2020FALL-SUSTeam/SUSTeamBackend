@@ -27,7 +27,7 @@ class OrderRepositoryImpl @Inject constructor(private val database: SQLOperation
                     price
                 FROM `order`
                 WHERE game_id = ?
-                ORDER BY purchaseTime DESC;;
+                ORDER BY purchaseTime DESC;
             """.trimIndent(),
             jsonArrayOf(gameId)
         ).rows.map { it.toOrder() }

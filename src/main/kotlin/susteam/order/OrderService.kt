@@ -26,6 +26,12 @@ class OrderService @Inject constructor(
         return orderRepository.getOrderByUsername(username)
     }
 
+    suspend fun getBoughtGameByUsername(username: String): List<Game> {
+        return orderRepository.getOrderByUsername(username)
+            .filter{ it.status == "SUCCESS" || it.status == "REFUNDABLE" }
+            .map{ gameRepository.getById(it.gameId)!! }
+    }
+
     suspend fun getOrderByGameId(gameId: Int): List<Order> {
         return orderRepository.getOrderByGameId(gameId)
     }

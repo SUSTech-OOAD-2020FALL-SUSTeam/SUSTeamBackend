@@ -60,3 +60,7 @@ GET {{host}}/api/user/test001/orders
 # get order by username: succeed
 GET {{host}}/api/game/1/orders
 
+
+###
+# get game by username: succeed
+GET {{host}}/api/user/test001/games
