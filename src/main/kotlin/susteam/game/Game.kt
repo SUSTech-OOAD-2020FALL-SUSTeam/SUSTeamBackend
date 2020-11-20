@@ -76,7 +76,7 @@ fun JsonObject.toGame(): Game = Game(
 fun GameVersion.toJson(): JsonObject = jsonObjectOf(
     "gameId" to gameId,
     "name" to name,
-    "url" to url
+    "url" to url.url
 )
 
 fun JsonObject.toGameVersion(): GameVersion = GameVersion(
