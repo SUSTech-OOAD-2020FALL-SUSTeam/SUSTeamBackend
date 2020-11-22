@@ -16,12 +16,12 @@ GET {{host}}/api/save/test002/1
 
 ###
 
-POST {{host}}/api/save/test001/1/save1
+POST {{host}}/api/save/test001/1
 Content-Type: application/json
 Authorization: Bearer {{test001-token}}
 
 {
-
+  "saveName": "save1"
 }
 
 ###
