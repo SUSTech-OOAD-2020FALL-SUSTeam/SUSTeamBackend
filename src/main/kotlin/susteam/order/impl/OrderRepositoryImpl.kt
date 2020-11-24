@@ -59,7 +59,13 @@ class OrderRepositoryImpl @Inject constructor(private val database: SQLOperation
     ): Int {
         return database.updateWithParamsAwait(
             """INSERT INTO `order` (username, game_id, status, purchase_time, price) VALUES (?, ?, ?, ?, ?);""",
-            jsonArrayOf(username, gameId, OrderStatus.FAIL.toString(), DateTimeFormatter.ISO_INSTANT.format(purchaseTime), price)
+            jsonArrayOf(
+                username,
+                gameId,
+                OrderStatus.FAIL.toString(),
+                DateTimeFormatter.ISO_INSTANT.format(purchaseTime),
+                price
+            )
         ).keys.getInteger(0)
     }
 
@@ -86,7 +92,7 @@ class OrderRepositoryImpl @Inject constructor(private val database: SQLOperation
             jsonArrayOf(username, gameId)
         )?.getInteger(0)
 
-        if( status == null || status == 0 ) return OrderStatus.FAIL
+        if (status == null || status == 0) return OrderStatus.FAIL
         return OrderStatus.SUCCESS
     }
 
@@ -106,6 +112,17 @@ class OrderRepositoryImpl @Inject constructor(private val database: SQLOperation
                 it.getString(3), it.getInstant(4), it.getInteger(5)
             )
         }
+    }
+
+    override suspend fun getBoughtGameByUsername(username: String): List<Int> {
+        return database.queryWithParamsAwait(
+            """
+            SELECT game_id
+            FROM `order`
+            WHERE username = ?
+              and (status = 'SUCCESS' or status = 'REFUNDABLE');
+            """.trimIndent(), jsonArrayOf(username)
+        ).results.map { it.getInteger(0) }
     }
 
 }

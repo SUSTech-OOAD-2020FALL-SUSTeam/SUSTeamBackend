@@ -28,4 +28,6 @@ interface OrderRepository {
     suspend fun getOrder(
         orderId: Int
     ): Order?
+
+    suspend fun getBoughtGameByUsername(username: String): List<Int>
 }

@@ -49,12 +49,15 @@ class GameRepositoryMock(
     @Suppress("UNCHECKED_CAST")
     private var games: MutableList<GameRepositoryMockItem> =
         dataset["game"] as MutableList<GameRepositoryMockItem>
+
     @Suppress("UNCHECKED_CAST")
     private var gameVersions: MutableList<GameVersionRepositoryMockItem> =
         dataset["gameVersion"] as MutableList<GameVersionRepositoryMockItem>
+
     @Suppress("UNCHECKED_CAST")
     private var gameImages: MutableList<GameImageRepositoryMockItem> =
         dataset["gameImage"] as MutableList<GameImageRepositoryMockItem>
+
     @Suppress("UNCHECKED_CAST")
     private var gameTags: MutableList<GameTagRepositoryMockItem> =
         dataset["gameTag"] as MutableList<GameTagRepositoryMockItem>
@@ -64,8 +67,8 @@ class GameRepositoryMock(
         games.add(mockGame)
         gameTags.add(GameTagRepositoryMockItem(1, "heihei"))
         gameTags.add(GameTagRepositoryMockItem(1, "huohuo"))
-        gameVersions.add(GameVersionRepositoryMockItem(1,"v1.0","url1"))
-        gameImages.add(GameImageRepositoryMockItem(1,"urlimage","F"))
+        gameVersions.add(GameVersionRepositoryMockItem(1, "v1.0", "url1"))
+        gameImages.add(GameImageRepositoryMockItem(1, "urlimage", "F"))
     }
 
     override suspend fun createGame(
@@ -122,8 +125,8 @@ class GameRepositoryMock(
     }
 
     override suspend fun getVersion(gameId: Int, versionName: String): GameVersion? {
-        return gameVersions.find { it.name == versionName && it.gameId == gameId }?.let{
-            GameVersion(it.gameId, it.name, it.url.toStorageFile() )
+        return gameVersions.find { it.name == versionName && it.gameId == gameId }?.let {
+            GameVersion(it.gameId, it.name, it.url.toStorageFile())
         }
     }
 
@@ -151,9 +154,18 @@ class GameRepositoryMock(
         if (games.find { it.id == gameId } == null)
             return null
         val game = getById(gameId)!!
-        val sizeF = gameImages.find{ it.gameId == gameId && it.type == "F" }?.url
-        val sizeC = gameImages.find{ it.gameId == gameId && it.type == "C" }?.url
-        return GameProfile(game.id, game.name, game.price, game.publishDate, game.author, game.introduction, sizeF?.toStorageImage(), sizeC?.toStorageImage())
+        val sizeF = gameImages.find { it.gameId == gameId && it.type == "F" }?.url
+        val sizeC = gameImages.find { it.gameId == gameId && it.type == "C" }?.url
+        return GameProfile(
+            game.id,
+            game.name,
+            game.price,
+            game.publishDate,
+            game.author,
+            game.introduction,
+            sizeF?.toStorageImage(),
+            sizeC?.toStorageImage()
+        )
     }
 
     override suspend fun getGameDetail(gameId: Int): GameDetail? {
@@ -162,9 +174,9 @@ class GameRepositoryMock(
         val game = games.find { it.id == gameId }?.let {
             Game(it.id, it.name, it.price, it.publishDate, it.author, it.introduction, it.description)
         }!!
-        val images = gameImages.filter{ it.gameId == gameId }
-            .map{ GameImage(it.gameId, it.url.toStorageImage(), it.type) }.toList()
-        val tags = gameTags.filter{ it.gameId == gameId }.map{ it.tag }.toList()
+        val images = gameImages.filter { it.gameId == gameId }
+            .map { GameImage(it.gameId, it.url.toStorageImage(), it.type) }.toList()
+        val tags = gameTags.filter { it.gameId == gameId }.map { it.tag }.toList()
 
         return GameDetail(game, images, tags)
     }
@@ -188,11 +200,11 @@ class GameRepositoryMock(
     }
 
     override suspend fun getTag(gameId: Int): List<String> {
-        return gameTags.filter{ it.gameId == gameId }.map{ it.tag }.toList()
+        return gameTags.filter { it.gameId == gameId }.map { it.tag }.toList()
     }
 
     override suspend fun getAllTag(): List<String> {
-        return gameTags.map{ it.tag }.toList()
+        return gameTags.map { it.tag }.toList()
     }
 
     override suspend fun addTag(gameId: Int, tag: String) {
@@ -204,6 +216,10 @@ class GameRepositoryMock(
                 gameId, tag
             )
         )
+    }
+
+    override suspend fun getGameProfiles(games: List<Int>): List<GameProfile> {
+        return games.mapNotNull { getGameProfile(it) }
     }
 
 }

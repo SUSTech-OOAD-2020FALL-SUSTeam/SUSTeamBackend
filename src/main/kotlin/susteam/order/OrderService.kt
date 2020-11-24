@@ -5,6 +5,7 @@ import com.google.inject.Inject
 import io.vertx.core.Vertx
 import susteam.ServiceException
 import susteam.game.Game
+import susteam.game.GameProfile
 import susteam.game.GameRepository
 import susteam.repository.RepositoryProvider
 import susteam.user.Auth
@@ -26,10 +27,9 @@ class OrderService @Inject constructor(
         return orderRepository.getOrderByUsername(username)
     }
 
-    suspend fun getBoughtGameByUsername(username: String): List<Game> {
-        return orderRepository.getOrderByUsername(username)
-            .filter{ it.status == "SUCCESS" || it.status == "REFUNDABLE" }
-            .map{ gameRepository.getById(it.gameId)!! }
+    suspend fun getBoughtGameByUsername(username: String): List<GameProfile> {
+        val games = orderRepository.getBoughtGameByUsername(username)
+        return gameRepository.getGameProfiles(games)
     }
 
     suspend fun getOrderByGameId(gameId: Int): List<Order> {

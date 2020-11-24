@@ -58,13 +58,13 @@ class OrderRepositoryMock(
     }
 
     override suspend fun getOrderByGameId(gameId: Int): List<Order> {
-        return orders.filter{ it.gameId == gameId }
-            .map{ Order(it.id, it.username, it.gameId, it.status, it.purchaseTime, it.price) }
+        return orders.filter { it.gameId == gameId }
+            .map { Order(it.id, it.username, it.gameId, it.status, it.purchaseTime, it.price) }
     }
 
     override suspend fun getOrderByUsername(username: String): List<Order> {
-        return orders.filter{ it.username == username }
-            .map{ Order(it.id, it.username, it.gameId, it.status, it.purchaseTime, it.price) }
+        return orders.filter { it.username == username }
+            .map { Order(it.id, it.username, it.gameId, it.status, it.purchaseTime, it.price) }
     }
 
     override suspend fun createOrder(
@@ -75,7 +75,7 @@ class OrderRepositoryMock(
     ): Int {
         orders.add(
             OrderRepositoryMockItem(
-                orders.size+1, username, gameId, "FAIL", purchaseTime, price
+                orders.size + 1, username, gameId, "FAIL", purchaseTime, price
             )
         )
         return orders.size
@@ -85,9 +85,11 @@ class OrderRepositoryMock(
         username: String,
         gameId: Int
     ): OrderStatus {
-        val count = orders.filter{ it.username == username && it.gameId == gameId &&
-                (it.status == "SUCCESS" || it.status == "REFUNDABLE" ) }.size
-        if( count == 0 ) return OrderStatus.FAIL
+        val count = orders.filter {
+            it.username == username && it.gameId == gameId &&
+                    (it.status == "SUCCESS" || it.status == "REFUNDABLE")
+        }.size
+        if (count == 0) return OrderStatus.FAIL
         return OrderStatus.SUCCESS
     }
 
@@ -95,14 +97,18 @@ class OrderRepositoryMock(
         orderId: Int,
         status: OrderStatus
     ) {
-        orders.find{ it.id == orderId }?.let{ it.status == status.toString() }
+        orders.find { it.id == orderId }?.let { it.status == status.toString() }
     }
 
     override suspend fun getOrder(
         orderId: Int
     ): Order? {
-        return orders.find{ it.id == orderId }?.let{
-            Order( it.id, it.username, it.gameId, it.status, it.purchaseTime, it.price )
+        return orders.find { it.id == orderId }?.let {
+            Order(it.id, it.username, it.gameId, it.status, it.purchaseTime, it.price)
         }
+    }
+
+    override suspend fun getBoughtGameByUsername(username: String): List<Int> {
+        return orders.filter { it.status == "SUCCESS" || it.status == "REFUNDABLE" }.map { it.gameId }
     }
 }

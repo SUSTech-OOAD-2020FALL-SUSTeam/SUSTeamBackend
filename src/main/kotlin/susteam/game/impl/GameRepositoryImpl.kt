@@ -16,7 +16,7 @@ import java.sql.SQLIntegrityConstraintViolationException
 import java.time.Instant
 import java.time.format.DateTimeFormatter.ISO_INSTANT
 
-class GameRepositoryImpl @Inject constructor(private val database: JDBCClient): GameRepository {
+class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) : GameRepository {
 
     override suspend fun createGame(
         name: String,
@@ -110,7 +110,7 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient): 
         return getAllGameProfile("name" to "ASC")
     }
 
-    override suspend fun getAllGameProfile(vararg order: Pair<String, String>, limit: Int? ): List<GameProfile> {
+    override suspend fun getAllGameProfile(vararg order: Pair<String, String>, limit: Int?): List<GameProfile> {
         val orderString = order.joinToString(", ") { "${it.first} ${it.second}" }
         return database.queryAwait(
             """
@@ -251,5 +251,27 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient): 
                 throw e
             }
         }
+    }
+
+    override suspend fun getGameProfiles(games: List<Int>): List<GameProfile> {
+        return database.queryWithParamsAwait(
+            """
+                SELECT game.game_id gameId,
+                       name,
+                       price,
+                       publish_date publishDate,
+                       author,
+                       introduction,
+                       gi1.url      imageFullSize,
+                       gi2.url      imageCardSize
+                FROM game
+                         LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
+                         LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
+                WHERE game.game_id IN (?);
+            """.trimIndent(),
+            jsonArrayOf(
+                games.joinToString(",")
+            )
+        ).rows.map { it.toGameProfile() }
     }
 }
