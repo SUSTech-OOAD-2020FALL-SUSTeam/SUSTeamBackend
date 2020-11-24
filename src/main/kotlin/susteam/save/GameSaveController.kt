@@ -17,7 +17,7 @@ class GameSaveController @Inject constructor(
 
     override fun route(router: Router) {
         router.get("/save/:username/:gameId").coroutineHandler(::handleGetAllGameSave)
-        router.post("/save/:username/:gameId").coroutineHandler(::handleUploadGameSave)
+        router.post("/save/:username/:gameId/:saveName").coroutineHandler(::handleUploadGameSave)
         router.get("/save/:username/:gameId/:saveName/delete").coroutineHandler(::handleDeleteGameSave)
         router.get("/save/:username/:gameId/:saveName").coroutineHandler(::handleGetGameSave)
     }
@@ -40,6 +40,7 @@ class GameSaveController @Inject constructor(
     private suspend fun handleUploadGameSave(context: RoutingContext) {
         val request = context.request()
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
+        val saveName = request.getParam("saveName")?: throw ServiceException("save name is empty")
 
         val auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
@@ -52,7 +53,7 @@ class GameSaveController @Inject constructor(
 
         val storageFile = storage.upload(file, auth, false)
 
-        service.uploadGameSave(auth, gameId, context.user().username + "-" + gameId, storageFile)
+        service.uploadGameSave(auth, gameId, saveName, storageFile)
 
         context.success(
             jsonObjectOf(
