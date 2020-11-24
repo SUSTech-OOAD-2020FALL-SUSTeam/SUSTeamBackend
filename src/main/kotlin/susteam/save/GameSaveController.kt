@@ -8,6 +8,7 @@ import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
 import susteam.storage.StorageService
+import susteam.user.username
 
 class GameSaveController @Inject constructor(
     private val service: GameSaveService,
@@ -38,9 +39,7 @@ class GameSaveController @Inject constructor(
 
     private suspend fun handleUploadGameSave(context: RoutingContext) {
         val request = context.request()
-        val params = context.bodyAsJson
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
-        val saveName = params.getString("saveName") ?: throw ServiceException("Save name is empty")
 
         val auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
@@ -53,7 +52,7 @@ class GameSaveController @Inject constructor(
 
         val storageFile = storage.upload(file, auth, false)
 
-        service.uploadGameSave(auth, gameId, saveName, storageFile)
+        service.uploadGameSave(auth, gameId, context.user().username + "-" + gameId, storageFile)
 
         context.success(
             jsonObjectOf(

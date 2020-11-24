@@ -17,17 +17,20 @@ GET {{host}}/api/save/test002/1
 ###
 
 POST {{host}}/api/save/test001/1
-Content-Type: application/json
 Authorization: Bearer {{test001-token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
 
-{
-  "saveName": "save1"
-}
+--WebAppBoundary
+Content-Disposition: form-data; name="upload"; filename="save1.txt"
+
+< ../.././storage/store/bfd71a0c-466a-4da1-b3bd-b6fdbed65805
+--WebAppBoundary--
+
 
 ###
 
 # "success": true
-GET {{host}}/api/save/test001/1/save1/delete
+GET {{host}}/api/save/test001/1/test001-1/delete
 Authorization: Bearer {{test001-token}}
 
 
@@ -41,5 +44,8 @@ Authorization: Bearer {{test001-token}}
 ###
 
 
-GET {{host}}/api/save/test001/1/save2
+GET {{host}}/api/save/test001/1/test001-1
 Authorization: Bearer {{test001-token}}
+
+###
+
