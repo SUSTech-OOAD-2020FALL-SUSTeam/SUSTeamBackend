@@ -64,7 +64,7 @@ fun Game.toJson(): JsonObject = jsonObjectOf(
 )
 
 fun JsonObject.toGame(): Game = Game(
-    getInteger("gameId"),
+    getInteger("id"),
     getString("name"),
     getInteger("price"),
     getInstant("publishDate"),
