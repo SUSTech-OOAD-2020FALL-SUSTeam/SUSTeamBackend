@@ -27,7 +27,8 @@ class GameSaveRepositoryImpl @Inject constructor(private val database: JDBCClien
                        saved_time savedTime,
                        url
                 FROM game_save 
-                WHERE username = ? and game_id = ?;
+                WHERE username = ? and game_id = ?
+                ORDER BY saved_time DESC;
             """.trimIndent(),
             jsonArrayOf(username, gameId)
         ).rows.map{ it.toGameSave() }
