@@ -20,6 +20,10 @@ import susteam.comment.CommentController
 import susteam.comment.CommentRepository
 import susteam.comment.CommentService
 import susteam.comment.impl.CommentRepositoryImpl
+import susteam.friend.FriendController
+import susteam.friend.FriendRepository
+import susteam.friend.FriendService
+import susteam.friend.impl.FriendRepositoryImpl
 import susteam.game.GameController
 import susteam.game.GameRepository
 import susteam.game.GameService
@@ -118,6 +122,10 @@ class ServiceModule(
         bind(GameSaveController::class.java)
         bind(GameSaveService::class.java)
         bind(GameSaveRepository::class.java).to(GameSaveRepositoryImpl::class.java)
+
+        bind(FriendController::class.java)
+        bind(FriendService::class.java)
+        bind(FriendRepository::class.java).to(FriendRepositoryImpl::class.java)
     }
 
     suspend fun close() {
