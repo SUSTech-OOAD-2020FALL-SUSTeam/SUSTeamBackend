@@ -81,4 +81,14 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
             it.toFriendReply()
         }
     }
+
+    override suspend fun replyTo(from: String, to: String, status: String): Boolean {
+        return database.updateWithParamsAwait(
+            """
+                UPDATE relationship SET status = ?
+                WHERE user1 = ? and user2 = ? and status = 'pending'
+            """.trimIndent(),
+            jsonArrayOf(status, to, from)
+        ).updated == 1
+    }
 }

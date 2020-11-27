@@ -17,6 +17,7 @@ class FriendController @Inject constructor(
         router.get("/friend/apply/:username").coroutineHandler(::handleAddFriend)
         router.get("/friend/apply").coroutineHandler(::handleGetFriendsApplication)
         router.get("/friend/reply").coroutineHandler(::handleGetFriendsReply)
+        router.post("/friend/reply/:username").coroutineHandler(::handleReplyTo)
     }
 
     suspend fun handleGetFriends(context: RoutingContext) {
@@ -55,6 +56,19 @@ class FriendController @Inject constructor(
                 "reply" to JsonArray(replyList.map { it.toJson() })
             )
         )
+    }
+
+    suspend fun handleReplyTo(context: RoutingContext) {
+        val request = context.request()
+        val params = context.bodyAsJson
+        val agree = params.getBoolean("agree")
+        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
+        val result = service.replyTo(auth, request.getParam("username"), agree)
+        if (result) {
+            context.success()
+        } else {
+            throw ServiceException("Reply Error")
+        }
     }
 
 

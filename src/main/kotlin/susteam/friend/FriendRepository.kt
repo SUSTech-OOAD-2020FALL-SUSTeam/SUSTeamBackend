@@ -9,4 +9,6 @@ interface FriendRepository {
     suspend fun getApplicationList(username: String): List<FriendApplication>
 
     suspend fun getReplyList(username: String): List<FriendReply>
+
+    suspend fun replyTo(from: String, to:String, status: String): Boolean
 }

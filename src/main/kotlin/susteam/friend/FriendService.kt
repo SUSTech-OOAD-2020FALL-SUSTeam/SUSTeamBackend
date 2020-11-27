@@ -27,4 +27,8 @@ class FriendService @Inject constructor(
         return repository.getReplyList(auth.username)
     }
 
+    suspend fun replyTo(auth: Auth, to: String, agree: Boolean): Boolean {
+        return repository.replyTo(auth.username, to, if (agree) "accept" else "reject")
+    }
+
 }
