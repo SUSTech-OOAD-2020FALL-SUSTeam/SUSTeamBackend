@@ -14,18 +14,26 @@ class FriendController @Inject constructor(
 ) : CoroutineController() {
     override fun route(router: Router) {
         router.get("/friend").coroutineHandler(::handleGetFriends)
+        router.get("/friend/apply/:username").coroutineHandler(::handleAddFriend)
     }
 
     suspend fun handleGetFriends(context: RoutingContext) {
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
-
         val friendList: List<Friend> = service.getFriends(auth)
-
         context.success(
             jsonObjectOf(
                 "friends" to JsonArray(friendList.map { it.toJson() })
             )
         )
+    }
+
+    suspend fun handleAddFriend(context: RoutingContext) {
+        val request = context.request()
+        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
+        val username = request.getParam("username") ?: throw ServiceException("Username is empty")
+        service.addFriend(auth, username)
+
+        context.success()
     }
 
 

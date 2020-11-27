@@ -14,4 +14,9 @@ class FriendService @Inject constructor(
             Friend(it, "online", Instant.now())
         }
     }
+
+    suspend fun addFriend(auth: Auth, username: String) {
+        repository.addFriend(auth.username, username)
+    }
+
 }
