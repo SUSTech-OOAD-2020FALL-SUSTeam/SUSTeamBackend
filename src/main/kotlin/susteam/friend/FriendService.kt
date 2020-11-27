@@ -19,4 +19,12 @@ class FriendService @Inject constructor(
         repository.addFriend(auth.username, username)
     }
 
+    suspend fun getApplicationList(auth: Auth): List<FriendApplication> {
+        return repository.getApplicationList(auth.username)
+    }
+
+    suspend fun getReplyList(auth: Auth): List<FriendReply> {
+        return repository.getReplyList(auth.username)
+    }
+
 }

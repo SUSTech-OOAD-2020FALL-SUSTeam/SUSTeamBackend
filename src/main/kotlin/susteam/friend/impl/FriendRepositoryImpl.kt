@@ -6,7 +6,7 @@ import io.vertx.kotlin.core.json.jsonArrayOf
 import io.vertx.kotlin.ext.sql.queryWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.ServiceException
-import susteam.friend.FriendRepository
+import susteam.friend.*
 import java.sql.SQLIntegrityConstraintViolationException
 
 class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient) : FriendRepository {
@@ -55,6 +55,30 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
             } else {
                 throw e
             }
+        }
+    }
+
+    override suspend fun getApplicationList(username: String): List<FriendApplication> {
+        return database.queryWithParamsAwait(
+            """
+                SELECT user2 AS `to`, status FROM relationship
+                WHERE user1 = ?
+            """.trimIndent(),
+            jsonArrayOf(username)
+        ).rows.map {
+            it.toFriendApplication()
+        }
+    }
+
+    override suspend fun getReplyList(username: String): List<FriendReply> {
+        return database.queryWithParamsAwait(
+            """
+                SELECT user1 AS `from`, status FROM relationship
+                WHERE user2 = ?
+            """.trimIndent(),
+            jsonArrayOf(username)
+        ).rows.map {
+            it.toFriendReply()
         }
     }
 }

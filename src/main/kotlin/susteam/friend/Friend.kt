@@ -15,3 +15,33 @@ fun Friend.toJson(): JsonObject = jsonObjectOf(
     "status" to status,
     "lastSeen" to lastSeen
 )
+
+data class FriendApplication(
+    val to: String,
+    val status: String
+)
+
+fun FriendApplication.toJson(): JsonObject = jsonObjectOf(
+    "to" to to,
+    "status" to status
+)
+
+fun JsonObject.toFriendApplication(): FriendApplication = FriendApplication(
+    getString("to"),
+    getString("status")
+)
+
+data class FriendReply(
+    val from: String,
+    val status: String
+)
+
+fun FriendReply.toJson(): JsonObject = jsonObjectOf(
+    "from" to from,
+    "status" to status
+)
+
+fun JsonObject.toFriendReply(): FriendReply = FriendReply(
+    getString("from"),
+    getString("status")
+)
