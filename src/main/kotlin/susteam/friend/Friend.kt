@@ -6,15 +6,16 @@ import java.time.Instant
 
 data class Friend(
     val username: String,
-    val status: String,
-    val lastSeen: Instant
+    val online: Boolean,
+    val lastSeen: Instant?
 )
 
 fun Friend.toJson(): JsonObject = jsonObjectOf(
     "username" to username,
-    "status" to status,
-    "lastSeen" to lastSeen
-)
+    "online" to online
+).also {
+    if (lastSeen != null) it.put("lastSeen", lastSeen)
+}
 
 data class FriendApplication(
     val to: String,

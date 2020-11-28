@@ -38,11 +38,13 @@ import susteam.save.GameSaveController
 import susteam.save.GameSaveRepository
 import susteam.save.GameSaveService
 import susteam.save.impl.GameSaveRepositoryImpl
+import susteam.status.UserStatus
 import susteam.storage.*
 import susteam.user.UserController
 import susteam.user.UserRepository
 import susteam.user.UserService
 import susteam.user.impl.UserRepositoryImpl
+import susteam.web.handler.StatusUpdateHandler
 import susteam.web.handler.TokenUserHandler
 import javax.inject.Provider
 
@@ -87,6 +89,9 @@ class ServiceModule(
         StorageFileFactory.pathPrefix = "storage/store"
 
         bind(TokenUserHandler::class.java)
+        bind(StatusUpdateHandler::class.java)
+
+        bind(UserStatus::class.java).toInstance(UserStatus)
 
         bind(UserController::class.java)
         bind(UserService::class.java)

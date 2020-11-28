@@ -1,17 +1,18 @@
 package susteam.friend
 
 import com.google.inject.Inject
+import susteam.status.UserStatus
 import susteam.user.Auth
 import susteam.user.username
-import java.time.Instant
 
 class FriendService @Inject constructor(
-    private val repository: FriendRepository
+    private val repository: FriendRepository,
+    private val status: UserStatus
 ) {
     suspend fun getFriends(auth: Auth): List<Friend> {
-        return repository.getFriendsUsername(auth.username).map {
-            // TODO: Use Hashmap or redis to get a real status
-            Friend(it, "online", Instant.now())
+        return repository.getFriendsUsername(auth.username).map { friendName ->
+            val friendStatus = status.getStatus(friendName)
+            Friend(friendName, friendStatus?.online ?: false, friendStatus?.lastSeen)
         }
     }
 

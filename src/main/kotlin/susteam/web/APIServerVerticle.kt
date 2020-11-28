@@ -16,6 +16,7 @@ import susteam.order.OrderController
 import susteam.save.GameSaveController
 import susteam.storage.StorageController
 import susteam.user.UserController
+import susteam.web.handler.StatusUpdateHandler
 import susteam.web.handler.TokenUserHandler
 
 class APIServerVerticle : CoroutineVerticle() {
@@ -54,6 +55,7 @@ class APIServerVerticle : CoroutineVerticle() {
         val injector = Guice.createInjector(module)
 
         router.route().handler(injector.getInstance(TokenUserHandler::class.java))
+        router.route().handler(injector.getInstance(StatusUpdateHandler::class.java))
 
         val controllers: List<Controller> = listOf(
             injector.getInstance(UserController::class.java),
