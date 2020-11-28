@@ -2,12 +2,11 @@ package susteam.save
 
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.jsonObjectOf
-import susteam.game.Game
 import susteam.storage.StorageFile
 import susteam.storage.getStorageFile
 import java.time.Instant
 
-data class GameSave (
+data class GameSave(
     val username: String,
     val gameId: Int,
     val saveName: String,

@@ -62,8 +62,8 @@ class OrderController @Inject constructor(private val service: OrderService) : C
     suspend fun handleCreateOrder(context: RoutingContext) {
         val params = context.bodyAsJson
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
-        val gameId = params.getInteger("gameId")?: throw ServiceException("Game ID not found")
-        val price = params.getInteger("price")?: throw ServiceException("Price not found")
+        val gameId = params.getInteger("gameId") ?: throw ServiceException("Game ID not found")
+        val price = params.getInteger("price") ?: throw ServiceException("Price not found")
 
         val status: OrderStatus = service.createOrder(auth, gameId, price)
 

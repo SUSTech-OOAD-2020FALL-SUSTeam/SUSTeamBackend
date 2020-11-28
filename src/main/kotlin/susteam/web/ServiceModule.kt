@@ -20,6 +20,10 @@ import susteam.comment.CommentController
 import susteam.comment.CommentRepository
 import susteam.comment.CommentService
 import susteam.comment.impl.CommentRepositoryImpl
+import susteam.friend.FriendController
+import susteam.friend.FriendRepository
+import susteam.friend.FriendService
+import susteam.friend.impl.FriendRepositoryImpl
 import susteam.game.GameController
 import susteam.game.GameRepository
 import susteam.game.GameService
@@ -34,11 +38,13 @@ import susteam.save.GameSaveController
 import susteam.save.GameSaveRepository
 import susteam.save.GameSaveService
 import susteam.save.impl.GameSaveRepositoryImpl
+import susteam.status.UserStatus
 import susteam.storage.*
 import susteam.user.UserController
 import susteam.user.UserRepository
 import susteam.user.UserService
 import susteam.user.impl.UserRepositoryImpl
+import susteam.web.handler.StatusUpdateHandler
 import susteam.web.handler.TokenUserHandler
 import javax.inject.Provider
 
@@ -83,6 +89,9 @@ class ServiceModule(
         StorageFileFactory.pathPrefix = "storage/store"
 
         bind(TokenUserHandler::class.java)
+        bind(StatusUpdateHandler::class.java)
+
+        bind(UserStatus::class.java).toInstance(UserStatus)
 
         bind(UserController::class.java)
         bind(UserService::class.java)
@@ -118,6 +127,10 @@ class ServiceModule(
         bind(GameSaveController::class.java)
         bind(GameSaveService::class.java)
         bind(GameSaveRepository::class.java).to(GameSaveRepositoryImpl::class.java)
+
+        bind(FriendController::class.java)
+        bind(FriendService::class.java)
+        bind(FriendRepository::class.java).to(FriendRepositoryImpl::class.java)
     }
 
     suspend fun close() {

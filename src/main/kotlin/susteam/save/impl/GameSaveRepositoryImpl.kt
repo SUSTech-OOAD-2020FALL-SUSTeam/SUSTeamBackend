@@ -15,7 +15,7 @@ import java.sql.SQLIntegrityConstraintViolationException
 import java.time.Instant
 import java.time.format.DateTimeFormatter.ISO_INSTANT
 
-class GameSaveRepositoryImpl @Inject constructor(private val database: JDBCClient): GameSaveRepository {
+class GameSaveRepositoryImpl @Inject constructor(private val database: JDBCClient) : GameSaveRepository {
 
     override suspend fun getAllGameSaveName(username: String, gameId: Int): List<GameSave> {
         return database.queryWithParamsAwait(
@@ -31,7 +31,7 @@ class GameSaveRepositoryImpl @Inject constructor(private val database: JDBCClien
                 ORDER BY saved_time DESC;
             """.trimIndent(),
             jsonArrayOf(username, gameId)
-        ).rows.map{ it.toGameSave() }
+        ).rows.map { it.toGameSave() }
     }
 
     override suspend fun uploadGameSave(
@@ -49,8 +49,7 @@ class GameSaveRepositoryImpl @Inject constructor(private val database: JDBCClien
             """.trimIndent(),
                 jsonArrayOf(username, gameId, saveName, ISO_INSTANT.format(savedTime), url)
             )
-        }
-        catch(e: SQLIntegrityConstraintViolationException) {
+        } catch (e: SQLIntegrityConstraintViolationException) {
             if (e.message?.contains("save_name") == true) {
                 throw ServiceException("Cannot upload game save '$saveName'", e)
             } else {
@@ -79,7 +78,7 @@ class GameSaveRepositoryImpl @Inject constructor(private val database: JDBCClien
                 WHERE username = ? and game_id = ? and save_name = ?;
             """.trimIndent(),
             jsonArrayOf(username, gameId, saveName)
-        )?.let{
+        )?.let {
             GameSave(
                 it.getString(0), it.getInteger(1), it.getString(2),
                 it.getInstant(3), it.getStorageFile(4)!!

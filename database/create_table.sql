@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage, game_image, game_tag, announcement, `order`, game_save;
+DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage, game_image, game_tag, announcement, `order`, game_save, relationship;
 
 CREATE TABLE user
 (
@@ -135,15 +135,25 @@ CREATE TABLE IF NOT EXISTS `order`
 
 CREATE TABLE IF NOT EXISTS `game_save`
 (
-    username      VARCHAR(255) NOT NULL,
-    game_id       INT          NOT NULL,
-    save_name     VARCHAR(255) NOT NULL,
-    saved_time    DATETIME(3)  NOT NULL,
-    url           VARCHAR(255) NOT NULL,
+    username   VARCHAR(255) NOT NULL,
+    game_id    INT          NOT NULL,
+    save_name  VARCHAR(255) NOT NULL,
+    saved_time DATETIME(3)  NOT NULL,
+    url        VARCHAR(255) NOT NULL,
 
-    PRIMARY KEY(username, game_id, save_name),
+    PRIMARY KEY (username, game_id, save_name),
     FOREIGN KEY (username) REFERENCES user (username),
     FOREIGN KEY (game_id) REFERENCES game (game_id)
+);
+
+CREATE TABLE IF NOT EXISTS relationship
+(
+    user1  VARCHAR(255) NOT NULL,
+    user2  VARCHAR(255) NOT NULL,
+    status VARCHAR(255) NOT NULL,
+
+    FOREIGN KEY (user1) REFERENCES user (username),
+    FOREIGN KEY (user2) REFERENCES user (username)
 );
 
 INSERT INTO game (game_id, name, price, publish_date, author, introduction)

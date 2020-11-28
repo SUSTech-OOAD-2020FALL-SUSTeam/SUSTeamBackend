@@ -1,8 +1,5 @@
 package susteam.comment.impl
 
-import susteam.comment.Comment
-import susteam.comment.toComment
-
 import com.google.inject.Inject
 import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.kotlin.core.json.jsonArrayOf
@@ -10,7 +7,9 @@ import io.vertx.kotlin.ext.sql.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.queryWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.ServiceException
+import susteam.comment.Comment
 import susteam.comment.CommentRepository
+import susteam.comment.toComment
 import java.sql.SQLIntegrityConstraintViolationException
 import java.time.Instant
 

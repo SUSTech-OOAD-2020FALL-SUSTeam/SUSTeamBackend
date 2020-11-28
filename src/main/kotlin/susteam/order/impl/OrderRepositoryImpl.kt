@@ -3,13 +3,13 @@ package susteam.order.impl
 import com.google.inject.Inject
 import io.vertx.ext.sql.SQLOperations
 import io.vertx.kotlin.core.json.jsonArrayOf
-import io.vertx.kotlin.ext.sql.*
-import susteam.game.Game
+import io.vertx.kotlin.ext.sql.querySingleWithParamsAwait
+import io.vertx.kotlin.ext.sql.queryWithParamsAwait
+import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.order.Order
 import susteam.order.OrderRepository
 import susteam.order.OrderStatus
 import susteam.order.toOrder
-import susteam.user.User
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 

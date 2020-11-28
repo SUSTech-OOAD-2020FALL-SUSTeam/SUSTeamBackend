@@ -1,6 +1,5 @@
 package susteam.save
 
-import susteam.storage.StorageFile
 import java.time.Instant
 
 interface GameSaveRepository {

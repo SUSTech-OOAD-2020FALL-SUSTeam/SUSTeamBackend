@@ -2,7 +2,7 @@ package susteam.announcement
 
 import java.time.Instant
 
-interface AnnouncementRepository{
+interface AnnouncementRepository {
 
     suspend fun create(
         gameId: Int,

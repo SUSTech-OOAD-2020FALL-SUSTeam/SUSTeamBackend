@@ -10,11 +10,13 @@ import kotlinx.coroutines.coroutineScope
 import susteam.Controller
 import susteam.announcement.AnnouncementController
 import susteam.comment.CommentController
+import susteam.friend.FriendController
 import susteam.game.GameController
 import susteam.order.OrderController
 import susteam.save.GameSaveController
 import susteam.storage.StorageController
 import susteam.user.UserController
+import susteam.web.handler.StatusUpdateHandler
 import susteam.web.handler.TokenUserHandler
 
 class APIServerVerticle : CoroutineVerticle() {
@@ -53,6 +55,7 @@ class APIServerVerticle : CoroutineVerticle() {
         val injector = Guice.createInjector(module)
 
         router.route().handler(injector.getInstance(TokenUserHandler::class.java))
+        router.route().handler(injector.getInstance(StatusUpdateHandler::class.java))
 
         val controllers: List<Controller> = listOf(
             injector.getInstance(UserController::class.java),
@@ -61,7 +64,8 @@ class APIServerVerticle : CoroutineVerticle() {
             injector.getInstance(CommentController::class.java),
             injector.getInstance(AnnouncementController::class.java),
             injector.getInstance(OrderController::class.java),
-            injector.getInstance(GameSaveController::class.java)
+            injector.getInstance(GameSaveController::class.java),
+            injector.getInstance(FriendController::class.java)
         )
         for (controller in controllers) {
             controller.route(router)

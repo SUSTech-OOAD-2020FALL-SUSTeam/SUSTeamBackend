@@ -24,7 +24,7 @@ class StorageService @Inject constructor(
         return StorageImageFactory.fromId(id)
     }
 
-    suspend fun getStorage(uuid: String):Storage =
+    suspend fun getStorage(uuid: String): Storage =
         repository.getStorage(uuid) ?: throw ServiceException("File not found")
 
     private fun FileUpload.extension() = this.fileName().substringAfterLast('.', "")

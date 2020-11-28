@@ -13,7 +13,7 @@ import susteam.user.UserRole
 import susteam.user.toUser
 import java.sql.SQLIntegrityConstraintViolationException
 
-class UserRepositoryImpl @Inject constructor(private val database: SQLOperations): UserRepository {
+class UserRepositoryImpl @Inject constructor(private val database: SQLOperations) : UserRepository {
 
     override suspend fun create(username: String, password: String, mail: String) {
         try {
