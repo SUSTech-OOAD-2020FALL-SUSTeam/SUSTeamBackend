@@ -12,7 +12,8 @@ import java.sql.SQLIntegrityConstraintViolationException
 class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient) : FriendRepository {
     override suspend fun getFriendsUsername(username: String): List<String> {
         return database.queryWithParamsAwait(
-            """(SELECT user1 friend_name
+            """
+               (SELECT user1 friend_name
                  FROM relationship
                  WHERE user2 = ?
                    AND status = 'accept')
@@ -31,8 +32,8 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
             """
                 SELECT user1, user2
                 FROM relationship
-                WHERE user1 = ? and user2 = ?
-                   OR user1 = ? and user2 = ?;
+                WHERE user1 = ? AND user2 = ?
+                   OR user1 = ? AND user2 = ?;
             """.trimIndent(),
             jsonArrayOf(from, to, to, from)
         ).let {
@@ -48,12 +49,12 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
                 jsonArrayOf(from, to)
             )
         } catch (e: SQLIntegrityConstraintViolationException) {
-            val message = e.message ?: throw e
-
-            if (message.contains("FOREIGN KEY")) {
-                throw ServiceException("User Not Found")
-            } else {
-                throw e
+            e.message?.contains("FOREIGN KEY").let {
+                if (it == true) {
+                    throw ServiceException("User Not Found")
+                } else {
+                    throw e
+                }
             }
         }
     }
@@ -62,7 +63,7 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
         return database.queryWithParamsAwait(
             """
                 SELECT user2 AS `to`, status FROM relationship
-                WHERE user1 = ?
+                WHERE user1 = ?;
             """.trimIndent(),
             jsonArrayOf(username)
         ).rows.map {
@@ -74,7 +75,7 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
         return database.queryWithParamsAwait(
             """
                 SELECT user1 AS `from`, status FROM relationship
-                WHERE user2 = ?
+                WHERE user2 = ?;
             """.trimIndent(),
             jsonArrayOf(username)
         ).rows.map {
@@ -86,7 +87,7 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
         return database.updateWithParamsAwait(
             """
                 UPDATE relationship SET status = ?
-                WHERE user1 = ? and user2 = ? and status = 'pending'
+                WHERE user1 = ? AND user2 = ? AND status = 'pending';
             """.trimIndent(),
             jsonArrayOf(status, to, from)
         ).updated == 1

@@ -24,6 +24,5 @@ object UserStatus {
         } else {
             StatusMap[username] = Status(true, Instant.now())
         }
-        print("update $username status")
     }
 }
