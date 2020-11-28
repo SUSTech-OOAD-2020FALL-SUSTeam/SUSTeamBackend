@@ -13,7 +13,7 @@ data class Order(
     val price: Int
 )
 
-enum class OrderStatus{
+enum class OrderStatus {
     REFUNDABLE, REFUNDED, FAIL, SUCCESS
 }
 

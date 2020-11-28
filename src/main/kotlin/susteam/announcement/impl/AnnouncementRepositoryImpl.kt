@@ -1,15 +1,14 @@
 package susteam.announcement.impl
 
-import susteam.announcement.Announcement
-import susteam.announcement.toAnnouncement
-
 import com.google.inject.Inject
 import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.kotlin.core.json.jsonArrayOf
 import io.vertx.kotlin.ext.sql.queryWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.ServiceException
+import susteam.announcement.Announcement
 import susteam.announcement.AnnouncementRepository
+import susteam.announcement.toAnnouncement
 import java.sql.SQLIntegrityConstraintViolationException
 import java.time.Instant
 

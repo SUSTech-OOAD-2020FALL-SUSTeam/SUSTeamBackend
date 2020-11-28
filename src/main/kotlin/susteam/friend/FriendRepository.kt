@@ -10,5 +10,5 @@ interface FriendRepository {
 
     suspend fun getReplyList(username: String): List<FriendReply>
 
-    suspend fun replyTo(from: String, to:String, status: String): Boolean
+    suspend fun replyTo(from: String, to: String, status: String): Boolean
 }

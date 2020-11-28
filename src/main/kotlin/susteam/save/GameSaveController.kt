@@ -8,7 +8,6 @@ import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
 import susteam.storage.StorageService
-import susteam.user.username
 
 class GameSaveController @Inject constructor(
     private val service: GameSaveService,
@@ -40,7 +39,7 @@ class GameSaveController @Inject constructor(
     private suspend fun handleUploadGameSave(context: RoutingContext) {
         val request = context.request()
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
-        val saveName = request.getParam("saveName")?: throw ServiceException("save name is empty")
+        val saveName = request.getParam("saveName") ?: throw ServiceException("save name is empty")
 
         val auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
@@ -67,7 +66,7 @@ class GameSaveController @Inject constructor(
 
         val auth = context.user() ?: throw ServiceException("Permission denied, please login")
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
-        val saveName = request.getParam("saveName")?: throw ServiceException("Save not found")
+        val saveName = request.getParam("saveName") ?: throw ServiceException("Save not found")
 
         service.deleteGameSave(auth, gameId, saveName)
 
@@ -79,7 +78,7 @@ class GameSaveController @Inject constructor(
 
         val auth = context.user() ?: throw ServiceException("Permission denied, please login")
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
-        val saveName = request.getParam("saveName")?: throw ServiceException("Save not found")
+        val saveName = request.getParam("saveName") ?: throw ServiceException("Save not found")
 
         val storageFile = service.download(auth, gameId, saveName)
 
