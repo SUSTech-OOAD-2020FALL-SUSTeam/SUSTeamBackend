@@ -8,26 +8,12 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.PubSecKeyOptions
 import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
-import io.vertx.ext.stomp.Destination
-import io.vertx.ext.stomp.StompServer
-import io.vertx.ext.stomp.StompServerHandler
 import io.vertx.kotlin.core.json.jsonObjectOf
-import io.vertx.kotlin.ext.bridge.permittedOptionsOf
-import io.vertx.kotlin.ext.stomp.bridgeOptionsOf
-import io.vertx.kotlin.ext.stomp.listenAwait
-import io.vertx.kotlin.ext.stomp.stompServerOptionsOf
-import kotlinx.coroutines.runBlocking
-import susteam.announcement.AnnouncementRepository
-import susteam.comment.CommentRepository
-import susteam.game.GameRepository
 import susteam.notification.MessageNotifier
 import susteam.status.UserStatus
 import susteam.storage.StorageFileFactory
 import susteam.storage.StorageImageFactory
-import susteam.storage.StorageRepository
 import susteam.user.Auth
-import susteam.user.UserRepository
-import susteam.user.impl.UserRepositoryMock
 
 class TestModule(
     private val vertx: Vertx,
@@ -77,26 +63,6 @@ class TestModule(
 
         bind(Vertx::class.java).toInstance(vertx)
         bind(JsonObject::class.java).annotatedWith(Config::class.java).toInstance(config)
-//
-//        StompServer.create(
-//            vertx, stompServerOptionsOf(
-//                port = webConfig.getInteger("stompPort"),
-//                host = webConfig.getString("host"),
-//                secured = true
-//            )
-//        ).handler(
-//            StompServerHandler.create(vertx).bridge(
-//                bridgeOptionsOf(
-//            inboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$""")),
-//            outboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$"""))
-//        )
-//            ).destinationFactory { _, name ->
-//            if (name.startsWith("/messageList")) {
-//                return@destinationFactory Destination.queue(vertx, name)
-//            } else {
-//                return@destinationFactory null
-//            }
-//        }).listen()
 
         val jwtAuth = JWTAuth.create(
             vertx, JWTAuthOptions().addPubSecKey(

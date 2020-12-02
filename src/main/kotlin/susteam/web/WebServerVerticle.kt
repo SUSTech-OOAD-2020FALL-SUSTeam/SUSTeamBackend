@@ -14,7 +14,6 @@ import io.vertx.kotlin.ext.bridge.permittedOptionsOf
 import io.vertx.kotlin.ext.stomp.bridgeOptionsOf
 import io.vertx.kotlin.ext.stomp.closeAwait
 import io.vertx.kotlin.ext.stomp.listenAwait
-import io.vertx.kotlin.ext.stomp.stompServerOptionsOf
 import kotlinx.coroutines.coroutineScope
 
 class WebServerVerticle : CoroutineVerticle() {
@@ -47,26 +46,25 @@ class WebServerVerticle : CoroutineVerticle() {
             webConfig.getString("host")
         )
 
-        stompServer = StompServer.create(
-            vertx, stompServerOptionsOf(
-                port = webConfig.getInteger("stompPort"),
-                host = webConfig.getString("host"),
-                secured = true
-            )
-        ).handler(StompServerHandler.create(vertx).bridge(bridgeOptionsOf(
-            inboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$""")),
-            outboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$"""))
-        )).destinationFactory { _, name ->
-            if (name.startsWith("/messageList")) {
-                return@destinationFactory Destination.topic(vertx, name)
-            } else {
-                return@destinationFactory null
+        stompServer = StompServer.create(vertx).handler(
+            StompServerHandler.create(vertx).bridge(
+                bridgeOptionsOf(
+                    inboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$""")),
+                    outboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$"""))
+                )
+            ).destinationFactory { _, name ->
+                if (name.startsWith("/messageList")) {
+                    return@destinationFactory Destination.topic(vertx, name)
+                } else {
+                    return@destinationFactory null
+                }
             }
-        }).listenAwait()
+        ).listenAwait(
+            webConfig.getInteger("stompPort"),
+            webConfig.getString("host")
+        )
 
         println("Web server listen on ${webConfig.getString("host")}:${webConfig.getInteger("port")}")
-
-        Unit
 
     }
 

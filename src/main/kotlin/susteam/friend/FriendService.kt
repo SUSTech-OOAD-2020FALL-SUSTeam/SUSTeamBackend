@@ -34,7 +34,7 @@ class FriendService @Inject constructor(
 
     suspend fun replyTo(auth: Auth, target: String, agree: Boolean): Boolean {
         val newStatus: String = if (agree) "accept" else "reject"
-        val isSuccess: Boolean = repository.replyTo(target, auth.username, newStatus)
+        val isSuccess: Boolean = repository.replyTo(auth.username, target, newStatus)
         if (isSuccess) {
             notifier.sendTo(target, jsonObjectOf("message" to "${auth.username} has ${newStatus}ed your application"))
         }

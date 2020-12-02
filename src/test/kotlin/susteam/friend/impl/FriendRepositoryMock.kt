@@ -31,6 +31,7 @@ class FriendRepositoryMock(
         data.add(FriendRepositoryMockItem("admin", "poorCustomer", "accept"))
         data.add(FriendRepositoryMockItem("admin", "richCustomer", "accept"))
         data.add(FriendRepositoryMockItem("author", "admin", "pending"))
+        data.add(FriendRepositoryMockItem("test002", "admin", "pending"))
     }
 
     override suspend fun getFriendsUsername(username: String): List<String> {
@@ -73,7 +74,7 @@ class FriendRepositoryMock(
 
     override suspend fun replyTo(username: String, applicant: String, newStatus: String): Boolean {
         data.find {
-            return@find it.user1 == applicant && it.user2 == username
+            return@find it.user1 == applicant && it.user2 == username && it.status == "pending"
         }?.let {
             it.status = newStatus
             return true
