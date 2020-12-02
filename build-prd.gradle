@@ -27,6 +27,8 @@ dependencies {
 
     implementation 'com.google.inject:guice:4.2.3'
     implementation 'mysql:mysql-connector-java:8.0.21'
+
+    implementation 'io.vertx:vertx-stomp:3.9.4'
 }
 
 compileKotlin {

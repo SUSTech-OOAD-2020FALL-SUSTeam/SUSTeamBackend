@@ -8,11 +8,20 @@ import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.PubSecKeyOptions
 import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
+import io.vertx.ext.stomp.Destination
+import io.vertx.ext.stomp.StompServer
+import io.vertx.ext.stomp.StompServerHandler
 import io.vertx.kotlin.core.json.jsonObjectOf
+import io.vertx.kotlin.ext.bridge.permittedOptionsOf
+import io.vertx.kotlin.ext.stomp.bridgeOptionsOf
+import io.vertx.kotlin.ext.stomp.listenAwait
+import io.vertx.kotlin.ext.stomp.stompServerOptionsOf
 import kotlinx.coroutines.runBlocking
 import susteam.announcement.AnnouncementRepository
 import susteam.comment.CommentRepository
 import susteam.game.GameRepository
+import susteam.notification.MessageNotifier
+import susteam.status.UserStatus
 import susteam.storage.StorageFileFactory
 import susteam.storage.StorageImageFactory
 import susteam.storage.StorageRepository
@@ -68,6 +77,26 @@ class TestModule(
 
         bind(Vertx::class.java).toInstance(vertx)
         bind(JsonObject::class.java).annotatedWith(Config::class.java).toInstance(config)
+//
+//        StompServer.create(
+//            vertx, stompServerOptionsOf(
+//                port = webConfig.getInteger("stompPort"),
+//                host = webConfig.getString("host"),
+//                secured = true
+//            )
+//        ).handler(
+//            StompServerHandler.create(vertx).bridge(
+//                bridgeOptionsOf(
+//            inboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$""")),
+//            outboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$"""))
+//        )
+//            ).destinationFactory { _, name ->
+//            if (name.startsWith("/messageList")) {
+//                return@destinationFactory Destination.queue(vertx, name)
+//            } else {
+//                return@destinationFactory null
+//            }
+//        }).listen()
 
         val jwtAuth = JWTAuth.create(
             vertx, JWTAuthOptions().addPubSecKey(
@@ -77,12 +106,19 @@ class TestModule(
         bind(JWTAuth::class.java).toInstance(jwtAuth)
         bind(FileSystem::class.java).toInstance(vertx.fileSystem())
 
+        bind(MessageNotifier::class.java).toInstance(MessageNotifier)
+
+        MessageNotifier.eventBus = vertx.eventBus()
+
         StorageImageFactory.urlPrefix = "${webConfig.getString("server_url")}/api/image"
         StorageImageFactory.pathPrefix = "storage/image"
         StorageFileFactory.urlPrefix = "${webConfig.getString("server_url")}/api/store"
         StorageFileFactory.pathPrefix = "storage/store"
 
-        val adminToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicGVybWlzc2lvbnMiOlsicm9sZTphZG1pbiJdLCJpYXQiOjE2MDAwODgyODB9.aQyz2Xc1fFBWc3D16bP_oEPnEVK3J3Xa-boAVyTdfAgYYmHFGSO5NkrmOKRbJ84Su3m9e9eLrDlTwttJhjHPFY133x8OvxNmjm2FYqrpa5aNnt6X0MnXmSBioE4MFKE63P_O_NaC-bdglVFKG7HmCyTkr5EMIFwZUYMeYSZiWhSvh2t8qEgw0HyhBW3EmIbN2_Xg-hi0GSnm6mwKpigMWTFvCgJKQMlmZomNfSXpSTI-8hEhrOcWzvoV65KdSCcypwzHUC_9WB4DgUQSrZKP3zSFjADfupjs0CiYa0zTu0cCFoivbYfqn46PuwXB01Cu1bB035WeV9LE9ESDKDhUSw"
+        bind(UserStatus::class.java).toInstance(UserStatus)
+
+        val adminToken =
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicGVybWlzc2lvbnMiOlsicm9sZTphZG1pbiJdLCJpYXQiOjE2MDAwODgyODB9.aQyz2Xc1fFBWc3D16bP_oEPnEVK3J3Xa-boAVyTdfAgYYmHFGSO5NkrmOKRbJ84Su3m9e9eLrDlTwttJhjHPFY133x8OvxNmjm2FYqrpa5aNnt6X0MnXmSBioE4MFKE63P_O_NaC-bdglVFKG7HmCyTkr5EMIFwZUYMeYSZiWhSvh2t8qEgw0HyhBW3EmIbN2_Xg-hi0GSnm6mwKpigMWTFvCgJKQMlmZomNfSXpSTI-8hEhrOcWzvoV65KdSCcypwzHUC_9WB4DgUQSrZKP3zSFjADfupjs0CiYa0zTu0cCFoivbYfqn46PuwXB01Cu1bB035WeV9LE9ESDKDhUSw"
         jwtAuth.authenticate(jsonObjectOf("jwt" to adminToken)) { result ->
             bind(Auth::class.java).annotatedWith(AdminAuth::class.java).toInstance(result.result())
         }
