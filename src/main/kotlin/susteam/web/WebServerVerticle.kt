@@ -50,7 +50,7 @@ class WebServerVerticle : CoroutineVerticle() {
             StompServerHandler.create(vertx).bridge(
                 bridgeOptionsOf(
                     inboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$""")),
-                    outboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$"""))
+                    outboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/.+$"""))
                 )
             ).destinationFactory { _, name ->
                 if (name.startsWith("/messageList")) {
