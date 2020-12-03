@@ -3,3 +3,9 @@ build
 .idea
 file-uploads
 storage
+gradle
+gradlew
+.DS_Store
+*.bat
+*.sh
+*.paw
