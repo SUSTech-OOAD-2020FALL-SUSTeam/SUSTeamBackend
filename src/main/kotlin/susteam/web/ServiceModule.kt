@@ -28,6 +28,7 @@ import susteam.game.GameController
 import susteam.game.GameRepository
 import susteam.game.GameService
 import susteam.game.impl.GameRepositoryImpl
+import susteam.notification.MessageNotifier
 import susteam.order.OrderController
 import susteam.order.OrderRepository
 import susteam.order.OrderService
@@ -82,6 +83,10 @@ class ServiceModule(
         bind(FileSystem::class.java).toInstance(vertx.fileSystem())
 
         bind(SQLOperations::class.java).toInstance(database)
+
+        bind(MessageNotifier::class.java).toInstance(MessageNotifier)
+
+        MessageNotifier.eventBus = vertx.eventBus()
 
         StorageImageFactory.urlPrefix = "${webConfig.getString("server_url")}/api/image"
         StorageImageFactory.pathPrefix = "storage/image"

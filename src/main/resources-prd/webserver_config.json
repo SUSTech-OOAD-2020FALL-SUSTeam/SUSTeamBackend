@@ -1,5 +1,6 @@
 {
   "port": 8080,
+  "stompPort": 61613,
   "host": "susteam.gogo.moe",
   "server_url": "http://susteam.gogo.moe",
   "cors_origin": "*",

@@ -27,7 +27,7 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
         ).rows.map { it.getString("friend_name").toString() }
     }
 
-    override suspend fun addFriend(from: String, to: String) {
+    override suspend fun addFriend(username: String, target: String) {
         database.queryWithParamsAwait(
             """
                 SELECT user1, user2
@@ -35,7 +35,7 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
                 WHERE user1 = ? AND user2 = ?
                    OR user1 = ? AND user2 = ?;
             """.trimIndent(),
-            jsonArrayOf(from, to, to, from)
+            jsonArrayOf(username, target, target, username)
         ).let {
             if (it.rows.isNotEmpty())
                 throw ServiceException("Friend Application Duplicate")
@@ -46,7 +46,7 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
                 """
                 INSERT INTO relationship (user1, user2, status) VALUES (?, ?, 'pending');
                 """.trimIndent(),
-                jsonArrayOf(from, to)
+                jsonArrayOf(username, target)
             )
         } catch (e: SQLIntegrityConstraintViolationException) {
             e.message?.contains("FOREIGN KEY").let {
@@ -83,13 +83,13 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
         }
     }
 
-    override suspend fun replyTo(from: String, to: String, status: String): Boolean {
+    override suspend fun replyTo(username: String, applicant: String, newStatus: String): Boolean {
         return database.updateWithParamsAwait(
             """
                 UPDATE relationship SET status = ?
                 WHERE user1 = ? AND user2 = ? AND status = 'pending';
             """.trimIndent(),
-            jsonArrayOf(status, to, from)
+            jsonArrayOf(newStatus, username, applicant)
         ).updated == 1
     }
 }
