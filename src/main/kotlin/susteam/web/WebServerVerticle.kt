@@ -49,7 +49,7 @@ class WebServerVerticle : CoroutineVerticle() {
         stompServer = StompServer.create(vertx).handler(
             StompServerHandler.create(vertx).bridge(
                 bridgeOptionsOf(
-                    inboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/\w+$""")),
+                    inboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/.+$""")),
                     outboundPermitteds = listOf(permittedOptionsOf(addressRegex = """^/messageList/.+$"""))
                 )
             ).destinationFactory { _, name ->
