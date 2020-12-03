@@ -21,6 +21,7 @@ data class Game(
 
 data class GameVersion(
     val gameId: Int,
+    val uploadTime: Instant,
     val name: String,
     val url: StorageFile
 )
@@ -75,12 +76,14 @@ fun JsonObject.toGame(): Game = Game(
 
 fun GameVersion.toJson(): JsonObject = jsonObjectOf(
     "gameId" to gameId,
+    "uploadTime" to uploadTime,
     "name" to name,
     "url" to url.url
 )
 
 fun JsonObject.toGameVersion(): GameVersion = GameVersion(
     getInteger("gameId"),
+    getInstant("uploadTime"),
     getString("name"),
     getStorageFile("url")!!
 )

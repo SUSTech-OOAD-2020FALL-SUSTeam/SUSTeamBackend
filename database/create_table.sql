@@ -54,9 +54,10 @@ CREATE TABLE IF NOT EXISTS game
 
 CREATE TABLE IF NOT EXISTS game_version
 (
-    game_id INT          NOT NULL,
-    name    VARCHAR(255) NOT NULL,
-    url     VARCHAR(255) NOT NULL,
+    game_id     INT          NOT NULL,
+    upload_time DATETIME(3)  NOT NULL,
+    name        VARCHAR(255) NOT NULL,
+    url         VARCHAR(255) NOT NULL,
 
     UNIQUE (url),
     PRIMARY KEY (game_id, name),
