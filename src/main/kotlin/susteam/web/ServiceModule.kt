@@ -12,6 +12,10 @@ import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.ext.sql.SQLOperations
 import io.vertx.kotlin.ext.sql.closeAwait
+import susteam.achievement.AchievementController
+import susteam.achievement.AchievementRepository
+import susteam.achievement.AchievementService
+import susteam.achievement.impl.AchievementRepositoryImpl
 import susteam.announcement.AnnouncementController
 import susteam.announcement.AnnouncementRepository
 import susteam.announcement.AnnouncementService
@@ -136,6 +140,10 @@ class ServiceModule(
         bind(FriendController::class.java)
         bind(FriendService::class.java)
         bind(FriendRepository::class.java).to(FriendRepositoryImpl::class.java)
+
+        bind(AchievementController::class.java)
+        bind(AchievementService::class.java)
+        bind(AchievementRepository::class.java).to(AchievementRepositoryImpl::class.java)
     }
 
     suspend fun close() {

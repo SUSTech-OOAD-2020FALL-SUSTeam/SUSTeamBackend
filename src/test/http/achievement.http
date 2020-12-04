@@ -1,0 +1,49 @@
+###
+
+POST {{host}}/api/achievement/1
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "achievementName": "test",
+  "description": "description",
+  "achievementCount": 10
+}
+
+###
+
+POST {{host}}/api/achievement/1
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "achievementName": "test2",
+  "description": "description2",
+  "achievementCount": 10
+}
+
+###
+
+GET {{host}}/api/achievement/1/test2
+
+###
+
+GET {{host}}/api/achievement/1
+
+###
+
+POST {{host}}/api/achieveProcess/1
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "username": "test001",
+  "achievementName": "test",
+  "rateOfProcess": 9
+}
+
+###
+
+GET {{host}}/api/achieveProcess/test001/1/test
+
+###
