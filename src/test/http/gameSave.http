@@ -49,3 +49,7 @@ Authorization: Bearer {{test001-token}}
 
 ###
 
+GET{{host}}/api/check/1
+Authorization: Bearer {{test001-token}}
+
+###

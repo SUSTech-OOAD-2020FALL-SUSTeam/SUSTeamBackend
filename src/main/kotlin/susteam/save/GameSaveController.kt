@@ -19,6 +19,7 @@ class GameSaveController @Inject constructor(
         router.post("/save/:username/:gameId/:saveName").coroutineHandler(::handleUploadGameSave)
         router.get("/save/:username/:gameId/:saveName/delete").coroutineHandler(::handleDeleteGameSave)
         router.get("/save/:username/:gameId/:saveName").coroutineHandler(::handleGetGameSave)
+        router.get("/check/:gameId").coroutineHandler(::handleCheckBought)
     }
 
     private suspend fun handleGetAllGameSave(context: RoutingContext) {
@@ -84,5 +85,16 @@ class GameSaveController @Inject constructor(
 
         context.put("allow-storage", storageFile.id)
         context.reroute("/api/store/${storageFile.id}")
+    }
+
+    private suspend fun handleCheckBought(context: RoutingContext) {
+        val request = context.request()
+
+        val auth = context.user() ?: throw ServiceException("Permission denied, please login")
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+
+        service.checkBought(auth, gameId)
+
+        context.success()
     }
 }
