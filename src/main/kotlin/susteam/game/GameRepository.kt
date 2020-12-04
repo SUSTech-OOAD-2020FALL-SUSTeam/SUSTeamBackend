@@ -20,6 +20,7 @@ interface GameRepository {
 
     suspend fun createVersion(
         gameId: Int,
+        uploadTime: Instant,
         versionName: String,
         url: String
     )
@@ -27,6 +28,8 @@ interface GameRepository {
     suspend fun getById(id: Int): Game?
 
     suspend fun getVersion(gameId: Int, versionName: String): GameVersion?
+
+    suspend fun getNewestVersion(gameId: Int): GameVersion?
 
     suspend fun getAllGameProfileOrderByPublishDate(): List<GameProfile>
 

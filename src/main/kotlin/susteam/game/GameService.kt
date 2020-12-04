@@ -55,6 +55,12 @@ class GameService @Inject constructor(
         return repository.createGame(gameName, price, publishDate, auth.username, introduction, description)
     }
 
+    suspend fun getNewestVersion(
+        gameId: Int
+    ): GameVersion {
+        return repository.getNewestVersion(gameId) ?: throw ServiceException("Game or version does not exist")
+    }
+
     suspend fun publishGameVersion(
         auth: Auth,
         gameId: Int,
@@ -77,7 +83,8 @@ class GameService @Inject constructor(
             throw ServiceException("Permission denied")
         }
 
-        repository.createVersion(gameId, versionName, url.id)
+        val uploadTime = Instant.now()
+        repository.createVersion(gameId, uploadTime, versionName, url.id)
     }
 
     suspend fun updateDescription(

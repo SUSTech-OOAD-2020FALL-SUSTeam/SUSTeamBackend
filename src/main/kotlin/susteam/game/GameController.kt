@@ -33,6 +33,7 @@ class GameController @Inject constructor(
         router.get("/games/recommend").coroutineHandler(::handleGetRecommendGames)
 
         router.get("/game/:gameId/version/:versionName").coroutineHandler(::handleGetVersion)
+        router.get("/game/:gameId/version").coroutineHandler(::handleGetNewestVersion)
         router.post("/game/:gameId/version").coroutineHandler(::handlePublishGameVersion)
         router.post("/game/:gameId/upload").coroutineHandler(::handleUploadGameVersion)
         router.get("/game/:gameId/version/:versionName/download").coroutineHandler(::handleDownloadGameVersion)
@@ -171,6 +172,19 @@ class GameController @Inject constructor(
         val versionName = request.getParam("versionName") ?: throw ServiceException("Version name not found")
 
         val gameVersion: GameVersion = service.getGameVersion(gameId, versionName)
+
+        context.success(
+            jsonObjectOf(
+                "gameVersion" to gameVersion.toJson()
+            )
+        )
+    }
+
+    suspend fun handleGetNewestVersion(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+
+        val gameVersion: GameVersion = service.getNewestVersion(gameId)
 
         context.success(
             jsonObjectOf(

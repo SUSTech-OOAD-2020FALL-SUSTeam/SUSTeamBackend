@@ -52,13 +52,14 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
 
     override suspend fun createVersion(
         gameId: Int,
+        uploadTime: Instant,
         versionName: String,
         url: String
     ) {
         try {
             database.updateWithParamsAwait(
-                """INSERT INTO game_version (game_id, name, url) VALUES (?, ?, ?);""",
-                jsonArrayOf(gameId, versionName, url)
+                """INSERT INTO game_version (game_id, upload_time, name, url) VALUES (?, ?, ?, ?);""",
+                jsonArrayOf(gameId, uploadTime, versionName, url)
             )
         } catch (e: SQLIntegrityConstraintViolationException) {
             val message = e.message ?: throw e
@@ -93,11 +94,27 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
 
     override suspend fun getVersion(gameId: Int, versionName: String): GameVersion? {
         return database.querySingleWithParamsAwait(
-            """SELECT game_id, name, url FROM game_version WHERE name = ? AND game_id = ?;""",
+            """SELECT game_id, upload_time, name, url FROM game_version WHERE name = ? AND game_id = ?;""",
             jsonArrayOf(versionName, gameId)
         )?.let {
             GameVersion(
-                it.getInteger(0), it.getString(1), it.getStorageFile(2)!!
+                it.getInteger(0), it.getInstant(1), it.getString(2), it.getStorageFile(3)!!
+            )
+        }
+    }
+
+    override suspend fun getNewestVersion(gameId: Int): GameVersion? {
+        return database.querySingleWithParamsAwait(
+            """
+                SELECT game_id, upload_time, name, url FROM game_version
+                WHERE game_id = ?
+                ORDER BY upload_time DESC
+                LIMIT 1;
+            """.trimIndent(),
+            jsonArrayOf(gameId)
+        )?.let {
+            GameVersion(
+                it.getInteger(0), it.getInstant(1), it.getString(2), it.getStorageFile(3)!!
             )
         }
     }
