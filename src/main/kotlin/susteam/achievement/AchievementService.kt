@@ -66,14 +66,11 @@ class AchievementService @Inject constructor(
     }
 
     suspend fun updateUserAchievementProcess(
-        auth: Auth,
         username: String,
         gameId: Int,
         achievementName: String,
         rateOfProcess: Int
     ) {
-        isDeveloper(auth, gameId)
-
         val achievement = getAchievement(gameId, achievementName)
         var finished = false
         if ( achievement.achieveCount <= rateOfProcess ) {

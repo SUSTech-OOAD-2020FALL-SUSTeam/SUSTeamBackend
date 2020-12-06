@@ -78,11 +78,7 @@ class AchievementController @Inject constructor(private val service: Achievement
         val rateOfProcess =
             params.getInteger("rateOfProcess") ?: throw ServiceException("Rate of process not found")
 
-        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
-
-
-
-        service.updateUserAchievementProcess(auth, username, gameId, achievementName, rateOfProcess)
+        service.updateUserAchievementProcess(username, gameId, achievementName, rateOfProcess)
         context.success()
     }
 
