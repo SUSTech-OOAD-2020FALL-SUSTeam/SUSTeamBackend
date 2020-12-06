@@ -37,6 +37,9 @@ VALUES ('test001',
 INSERT INTO user_roles
 VALUES ('admin', 'admin');
 
+INSERT INTO user_roles
+VALUES ('admin', 'developer');
+
 CREATE TABLE IF NOT EXISTS game
 (
     game_id      INT          NOT NULL AUTO_INCREMENT,

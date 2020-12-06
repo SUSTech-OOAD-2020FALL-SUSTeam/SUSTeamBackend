@@ -7,6 +7,11 @@ plugins {
 group 'susteam'
 version '0.0.0'
 
+application {
+    mainClass = 'susteam.Main'
+}
+
+
 repositories {
     maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
     mavenCentral()
