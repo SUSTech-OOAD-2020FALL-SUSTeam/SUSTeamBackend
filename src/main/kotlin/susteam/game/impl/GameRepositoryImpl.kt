@@ -291,4 +291,24 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
             )
         ).rows.map { it.toGameProfile() }
     }
+
+    override suspend fun getDevelopedGameProfile(author: String): List<GameProfile> {
+        return database.queryWithParamsAwait(
+            """
+                SELECT game.game_id gameId,
+                       name,
+                       price,
+                       publish_date publishDate,
+                       author,
+                       introduction,
+                       gi1.url      imageFullSize,
+                       gi2.url      imageCardSize
+                FROM game
+                         LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
+                         LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
+                WHERE author = ?;
+            """.trimIndent(),
+            jsonArrayOf(author)
+        ).rows.map { it.toGameProfile() }
+    }
 }

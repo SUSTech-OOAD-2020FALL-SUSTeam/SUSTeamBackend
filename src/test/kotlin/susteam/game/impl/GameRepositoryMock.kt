@@ -100,23 +100,27 @@ class GameRepositoryMock(
         return true
     }
 
-    override suspend fun createVersion(
-        gameId: Int,
-        versionName: String,
-        url: String
-    ) {
-        if (games.find { it.id == gameId } == null)
-            throw ServiceException("Cannot find game by id'$gameId'")
-        if (gameVersions.find { it.name == versionName } != null)
-            throw ServiceException("Cannot create version name '$versionName'")
-        if (gameVersions.find { it.url == url } != null)
-            throw ServiceException("url already exist")
-        gameVersions.add(
-            GameVersionRepositoryMockItem(
-                gameId, versionName, url
-            )
-        )
+    override suspend fun createVersion(gameId: Int, uploadTime: Instant, versionName: String, url: String) {
+        TODO("Not yet implemented")
     }
+
+//    override suspend fun createVersion(
+//        gameId: Int,
+//        versionName: String,
+//        url: String
+//    ) {
+//        if (games.find { it.id == gameId } == null)
+//            throw ServiceException("Cannot find game by id'$gameId'")
+//        if (gameVersions.find { it.name == versionName } != null)
+//            throw ServiceException("Cannot create version name '$versionName'")
+//        if (gameVersions.find { it.url == url } != null)
+//            throw ServiceException("url already exist")
+//        gameVersions.add(
+//            GameVersionRepositoryMockItem(
+//                gameId, versionName, url
+//            )
+//        )
+//    }
 
     override suspend fun getById(id: Int): Game? {
         return games.find { it.id == id }?.let {
@@ -125,9 +129,14 @@ class GameRepositoryMock(
     }
 
     override suspend fun getVersion(gameId: Int, versionName: String): GameVersion? {
-        return gameVersions.find { it.name == versionName && it.gameId == gameId }?.let {
-            GameVersion(it.gameId, it.name, it.url.toStorageFile())
-        }
+        TODO("Not yet implemented")
+//        return gameVersions.find { it.name == versionName && it.gameId == gameId }?.let {
+//            GameVersion(it.gameId, it.name, it.url.toStorageFile())
+//        }
+    }
+
+    override suspend fun getNewestVersion(gameId: Int): GameVersion? {
+        TODO("Not yet implemented")
     }
 
     override suspend fun getAllGameProfileOrderByPublishDate(): List<GameProfile> {
@@ -220,6 +229,10 @@ class GameRepositoryMock(
 
     override suspend fun getGameProfiles(games: List<Int>): List<GameProfile> {
         return games.mapNotNull { getGameProfile(it) }
+    }
+
+    override suspend fun getDevelopedGameProfile(author: String): List<GameProfile> {
+        TODO("Not implemented yet")
     }
 
 }

@@ -58,4 +58,6 @@ interface GameRepository {
     suspend fun addTag(gameId: Int, tag: String)
 
     suspend fun getGameProfiles(games: List<Int>): List<GameProfile>
+
+    suspend fun getDevelopedGameProfile(author: String): List<GameProfile>
 }

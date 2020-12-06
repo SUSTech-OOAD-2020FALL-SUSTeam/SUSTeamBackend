@@ -13,6 +13,7 @@ import susteam.storage.StorageService
 import susteam.storage.getStorageFile
 import susteam.user.Auth
 import susteam.user.isAdmin
+import susteam.user.isDeveloper
 import susteam.user.username
 import javax.imageio.ImageIO
 
@@ -44,6 +45,8 @@ class GameController @Inject constructor(
         router.get("/tags").coroutineHandler(::handleGetAllTag)
         router.get("/games/tags").coroutineHandler(::handleGetGameProfileWithTags)
         router.post("/game/:gameId/tag").coroutineHandler(::handleAddTag)
+
+        router.get("/dev/games").coroutineHandler(::handleGetDevGames)
 
     }
 
@@ -325,6 +328,20 @@ class GameController @Inject constructor(
         service.addTag(auth, gameId, tag)
 
         context.success()
+    }
+
+    suspend fun handleGetDevGames(context: RoutingContext) {
+        val auth = context.user() ?: throw ServiceException("Permission denied, please login")
+        if (auth.isDeveloper()) {
+            val gamesList = service.getDevelopedGameProfile(auth)
+            context.success(
+                jsonObjectOf(
+                    "games" to JsonArray(gamesList.map { it.toJson() })
+                )
+            )
+        } else {
+            throw ServiceException("Permission denied, developer account required")
+        }
     }
 
 }

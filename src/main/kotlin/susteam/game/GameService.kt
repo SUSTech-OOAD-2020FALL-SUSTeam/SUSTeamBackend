@@ -199,4 +199,8 @@ class GameService @Inject constructor(
 
         repository.addTag(gameId, tag)
     }
+
+    suspend fun getDevelopedGameProfile(author: Auth): List<GameProfile> {
+        return repository.getDevelopedGameProfile(author.username)
+    }
 }

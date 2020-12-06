@@ -23,7 +23,8 @@ fun Auth.isAuthorized(permission: String): Boolean {
 }
 
 fun Auth.isAdmin() = this.isAuthorized("role:admin")
-fun Auth.isDeveloper() = this.isAuthorized("role:developer")
+// TODO: 等待讨论。目前管理员视作特殊的开发者。
+fun Auth.isDeveloper() = this.isAuthorized("role:developer") || this.isAuthorized("role:admin")
 
 data class UserRole(
     val user: User,
