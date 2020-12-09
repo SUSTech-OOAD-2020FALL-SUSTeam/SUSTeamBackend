@@ -1,6 +1,8 @@
 package susteam.achievement
 
 import com.google.inject.Inject
+import io.vertx.kotlin.core.json.jsonArrayOf
+import io.vertx.kotlin.ext.jdbc.querySingleWithParamsAwait
 import susteam.ServiceException
 import susteam.game.GameRepository
 import susteam.order.OrderRepository
@@ -109,4 +111,13 @@ class AchievementService @Inject constructor(
             ?: UserAchievementProcess(username, achievement.achievementId, 0, false)
     }
 
+
+    suspend fun getAllValuedAchievementProcess(
+            username: String,
+    ): List<ValuedAchievementProcess> {
+        return repository.getValuedAchievementProcess(username)
+    }
+
 }
+
+

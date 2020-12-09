@@ -16,6 +16,7 @@ class AchievementController @Inject constructor(private val service: Achievement
         router.get("/achievement/:gameId").coroutineHandler(::handleGetAllAchievement)
         router.post("/achieveProcess/:gameId").coroutineHandler(::handleUpdateUserAchievementProcess)
         router.get("/achieveProcess/:username/:gameId/:achievementName").coroutineHandler(::handleGetUserAchievementProcess)
+        router.get("/valuedAchieveProcess/:username").coroutineHandler(::handleGetValuedAchievementProcess)
     }
 
     suspend fun handleGetAchievement(context: RoutingContext) {
@@ -88,14 +89,28 @@ class AchievementController @Inject constructor(private val service: Achievement
         val username = request.getParam("username") ?: throw ServiceException("Username not found")
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
         val achievementName =
-            request.getParam("achievementName") ?: throw ServiceException("Achievement name not found")
+                request.getParam("achievementName") ?: throw ServiceException("Achievement name not found")
 
         val userAchievementProcess = service.getUserAchievementProcess(username, gameId, achievementName)
 
         context.success(
-            jsonObjectOf(
-                "userAchievementProcess" to userAchievementProcess.toJson()
-            )
+                jsonObjectOf(
+                        "userAchievementProcess" to userAchievementProcess.toJson()
+                )
+        )
+    }
+
+    suspend fun handleGetValuedAchievementProcess(context: RoutingContext) {
+        val request = context.request()
+
+        val username = request.getParam("username") ?: throw ServiceException("Username not found")
+
+        val valuedAchievementProcess = service.getAllValuedAchievementProcess(username)
+
+        context.success(
+                jsonObjectOf(
+                        "ValuedAchievementProcess" to JsonArray(valuedAchievementProcess.map { it })
+                )
         )
     }
 }

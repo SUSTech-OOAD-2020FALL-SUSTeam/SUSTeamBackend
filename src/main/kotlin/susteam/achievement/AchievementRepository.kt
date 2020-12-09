@@ -32,8 +32,12 @@ interface AchievementRepository {
     ): Boolean
 
     suspend fun getUserAchievementProcess(
-        username: String,
-        achievementId: Int
+            username: String,
+            achievementId: Int
     ): UserAchievementProcess?
+
+    suspend fun getValuedAchievementProcess(
+            username: String
+    ): List<ValuedAchievementProcess>
 
 }

@@ -5,7 +5,7 @@ Content-Type: application/json
 Authorization: Bearer {{admin-token}}
 
 {
-  "achievementName": "test",
+  "achievementName": "小试牛刀",
   "description": "description",
   "achievementCount": 10
 }
@@ -38,12 +38,16 @@ Authorization: Bearer {{admin-token}}
 
 {
   "username": "test001",
-  "achievementName": "test",
+  "achievementName": "小试牛刀",
   "rateOfProcess": 9
 }
 
 ###
 
-GET {{host}}/api/achieveProcess/test001/1/test
+GET {{host}}/api/achieveProcess/test001/1/小试牛刀
+
+###
+
+GET {{host}}/api/valuedAchieveProcess/test001
 
 ###

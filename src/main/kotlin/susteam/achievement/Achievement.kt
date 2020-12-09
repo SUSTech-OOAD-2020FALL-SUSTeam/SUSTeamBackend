@@ -47,3 +47,31 @@ fun JsonObject.toUserAchievementProcess(): UserAchievementProcess = UserAchievem
     getInteger("rateOfProcess"),
     getBoolean("finished")
 )
+
+
+data class ValuedAchievementProcess(
+        val username: String,
+        val gameName: String,
+        val achievementName: String,
+        val rateOfProcess: Int,
+        val achievementCount: Int,
+)
+
+
+fun ValuedAchievementProcess.toJson(): JsonObject = jsonObjectOf(
+        "username" to username,
+        "gameName" to gameName,
+        "achievementName" to achievementName,
+        "rateOfProcess" to rateOfProcess,
+        "achievementCount" to achievementCount
+)
+
+
+fun JsonObject.toValuedAchievementProcess(): ValuedAchievementProcess = ValuedAchievementProcess(
+        getString("username"),
+        getString("gameName"),
+        getString("achievementName"),
+        getInteger("rateOfProcess"),
+        getInteger("achievementCount")
+)
+
