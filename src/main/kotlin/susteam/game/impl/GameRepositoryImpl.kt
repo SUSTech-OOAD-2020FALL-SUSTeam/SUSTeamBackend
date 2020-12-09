@@ -271,7 +271,7 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
     }
 
     override suspend fun getGameProfiles(games: List<Int>): List<GameProfile> {
-        return database.queryWithParamsAwait(
+        return database.queryAwait(
             """
                 SELECT game.game_id gameId,
                        name,
@@ -284,11 +284,8 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
                 FROM game
                          LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
                          LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
-                WHERE game.game_id IN (?);
-            """.trimIndent(),
-            jsonArrayOf(
-                games.joinToString(",")
-            )
+                WHERE game.game_id IN (${games.joinToString(",")});
+            """.trimIndent()
         ).rows.map { it.toGameProfile() }
     }
 

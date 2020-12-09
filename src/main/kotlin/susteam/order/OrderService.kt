@@ -59,12 +59,14 @@ class OrderService @Inject constructor(
         orderRepositoryProvider.transaction { transaction, orderRepo ->
             val userRepo = userRepositoryProvider.provide(transaction)
 
-            userRepo.updateUser(
-                customer.copy(balance = customer.balance - price)
-            )
-            userRepo.updateUser(
-                author.copy(balance = author.balance + price)
-            )
+            if (customer.username != author.username) {
+                userRepo.updateUser(
+                    customer.copy(balance = customer.balance - price)
+                )
+                userRepo.updateUser(
+                    author.copy(balance = author.balance + price)
+                )
+            }
             orderRepo.updateOrder(orderId, OrderStatus.REFUNDABLE)
 
             val curUser: User = userRepo.get(customer.username)!!
