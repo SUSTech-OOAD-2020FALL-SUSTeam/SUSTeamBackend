@@ -4,6 +4,7 @@ import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.array
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.jsonObjectOf
+import susteam.storage.toStorageImage
 
 data class User(
     val username: String,
@@ -40,7 +41,7 @@ fun User.toJson(): JsonObject = jsonObjectOf(
 fun JsonObject.toUser(): User = User(
     getString("username"),
     getString("mail"),
-    getString("avatar"),
+    (getString("avatar") ?: defaultAvatar()).toStorageImage().url,
     getString("description"),
     getInteger("balance")
 )
@@ -54,4 +55,4 @@ fun UserRole.toJson(): JsonObject = jsonObjectOf(
     "roles" to json { array(roles) }
 )
 
-fun defaultAvatar(): String = "/avatar/default.jpg"
+fun defaultAvatar(): String = "0B01A8D8572A6E78E62718BAA31817A6.jpg"
