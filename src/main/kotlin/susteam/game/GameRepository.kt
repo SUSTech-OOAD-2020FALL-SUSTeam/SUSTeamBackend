@@ -22,6 +22,10 @@ interface GameRepository {
         gameKey: String
     ): Int?
 
+    suspend fun getGameKey(
+        gameId: Int
+    ): String?
+
     suspend fun updateDescription(
         gameId: Int,
         description: String?

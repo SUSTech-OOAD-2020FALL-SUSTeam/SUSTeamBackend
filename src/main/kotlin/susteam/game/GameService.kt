@@ -69,6 +69,22 @@ class GameService @Inject constructor(
         return repository.getGameId(gameKey) ?: throw ServiceException("Game id does not exist")
     }
 
+    suspend fun getGameKey(gameId: Int, auth: Auth): String {
+        val game = repository.getById(gameId) ?: throw ServiceException("Game does not exist")
+        val havePermission = when {
+            auth.isAdmin() -> true
+            auth.isDeveloper() -> {
+                game.author == auth.username
+            }
+            else -> false
+        }
+        if (!havePermission) {
+            throw ServiceException("Permission denied")
+        }
+
+        return repository.getGameKey(gameId) ?: throw ServiceException("Game key does not exist")
+    }
+
     suspend fun getNewestVersion(
         gameId: Int
     ): GameVersion {

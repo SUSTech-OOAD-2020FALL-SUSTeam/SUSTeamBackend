@@ -55,6 +55,13 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
             )?.getInteger(0)
     }
 
+    override suspend fun getGameKey(gameId: Int): String? {
+        return database.querySingleWithParamsAwait(
+            """SELECT game_key FROM game_map WHERE game_id = ?;""",
+            jsonArrayOf(gameId)
+        )?.getString(0)
+    }
+
     override suspend fun updateDescription(
         gameId: Int,
         description: String?
