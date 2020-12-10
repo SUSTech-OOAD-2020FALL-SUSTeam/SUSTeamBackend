@@ -4,11 +4,15 @@ Content-Type: application/json
 Authorization: Bearer {{admin-token}}
 
 {
-  "name": "TestGame",
+  "name": "TestGame343",
   "price": 1000,
   "introduction": "nice",
   "description": "Nice game"
 }
+
+###
+
+GET {{host}}/api/gameKey/1709958556112275173779206261496011538612088445701588374628117680877353884357
 
 ###
 #create game version
@@ -24,7 +28,7 @@ Authorization: Bearer {{admin-token}}
 
 ###
 
-GET {{host}}/api/game/10
+GET {{host}}/api/game/1
 
 ###
 

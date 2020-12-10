@@ -18,11 +18,6 @@ class GameService @Inject constructor(
     private val repository: GameRepository,
     private val orderRepository: OrderRepository
 ) {
-
-    private val hashingStrategy = HashingStrategy.load()
-    private fun generateSalt() = Random.nextBytes(32).toHexString()
-    private fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
-
     suspend fun getGame(gameId: Int): Game {
         return repository.getById(gameId) ?: throw ServiceException("Game does not exist")
     }
@@ -58,13 +53,20 @@ class GameService @Inject constructor(
         }
 
         val publishDate: Instant = Instant.now()
-        val salt = generateSalt()
-        val gameKey = hashingStrategy.hash("sha512", emptyMap(), salt, gameName+publishDate.toString())
+
+        val gameKey = Math.abs(Random.nextInt()).toString() + Math.abs(Random.nextInt()).toString() +
+                Math.abs(Random.nextInt()).toString() + Math.abs(Random.nextInt()).toString() +
+                Math.abs(Random.nextInt()).toString() + Math.abs(Random.nextInt()).toString() +
+                Math.abs(Random.nextInt()).toString() + Math.abs(Random.nextInt()).toString()
 
         val gameId = repository.createGame(gameName, price, publishDate, auth.username, introduction, description)
         repository.addKeyMap(gameId, gameKey)
 
         return gameKey
+    }
+
+    suspend fun getGameIdByGameKey(gameKey: String): Int {
+        return repository.getGameId(gameKey) ?: throw ServiceException("Game id does not exist")
     }
 
     suspend fun getNewestVersion(

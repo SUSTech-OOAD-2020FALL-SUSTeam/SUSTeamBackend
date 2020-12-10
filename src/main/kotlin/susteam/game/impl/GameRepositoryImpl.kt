@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import io.vertx.core.json.JsonArray
 import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.kotlin.core.json.jsonArrayOf
+import io.vertx.kotlin.ext.jdbc.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.queryAwait
 import io.vertx.kotlin.ext.sql.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.queryWithParamsAwait
@@ -45,6 +46,13 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
             """INSERT INTO game_map (game_id, game_key) VALUES (?,?);""",
             jsonArrayOf(gameId, gameKey)
         )
+    }
+
+    override suspend fun getGameId(gameKey: String): Int? {
+        return database.querySingleWithParamsAwait(
+                """SELECT game_id FROM game_map WHERE game_key = ?;""",
+                jsonArrayOf(gameKey)
+            )?.getInteger(0)
     }
 
     override suspend fun updateDescription(
