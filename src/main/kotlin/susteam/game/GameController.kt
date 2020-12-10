@@ -98,9 +98,13 @@ class GameController @Inject constructor(
 
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
-        service.publishGame(auth, name, price, introduction, description)
+        val key = service.publishGame(auth, name, price, introduction, description)
 
-        context.success()
+        context.success(
+            jsonObjectOf(
+                "key" to key
+            )
+        )
     }
 
     suspend fun handleUpdateDescription(context: RoutingContext) {

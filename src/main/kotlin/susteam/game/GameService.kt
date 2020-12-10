@@ -1,6 +1,7 @@
 package susteam.game
 
 import com.google.inject.Inject
+import io.vertx.ext.auth.HashingStrategy
 import susteam.ServiceException
 import susteam.order.OrderRepository
 import susteam.order.OrderStatus
@@ -11,11 +12,16 @@ import susteam.user.isAdmin
 import susteam.user.isDeveloper
 import susteam.user.username
 import java.time.Instant
+import kotlin.random.Random
 
 class GameService @Inject constructor(
     private val repository: GameRepository,
     private val orderRepository: OrderRepository
 ) {
+
+    private val hashingStrategy = HashingStrategy.load()
+    private fun generateSalt() = Random.nextBytes(32).toHexString()
+    private fun ByteArray.toHexString() = joinToString("") { "%02x".format(it) }
 
     suspend fun getGame(gameId: Int): Game {
         return repository.getById(gameId) ?: throw ServiceException("Game does not exist")
@@ -39,7 +45,7 @@ class GameService @Inject constructor(
         price: Int,
         introduction: String?,
         description: String?
-    ): Int {
+    ): String {
         if (gameName.isBlank()) {
             throw ServiceException("Game name is blank")
         }
@@ -52,7 +58,13 @@ class GameService @Inject constructor(
         }
 
         val publishDate: Instant = Instant.now()
-        return repository.createGame(gameName, price, publishDate, auth.username, introduction, description)
+        val salt = generateSalt()
+        val gameKey = hashingStrategy.hash("sha512", emptyMap(), salt, gameName+publishDate.toString())
+
+        val gameId = repository.createGame(gameName, price, publishDate, auth.username, introduction, description)
+        repository.addKeyMap(gameId, gameKey)
+
+        return gameKey
     }
 
     suspend fun getNewestVersion(

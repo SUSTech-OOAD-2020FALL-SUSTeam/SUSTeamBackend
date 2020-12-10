@@ -13,6 +13,11 @@ interface GameRepository {
         description: String?
     ): Int
 
+    suspend fun addKeyMap(
+        gameId: Int,
+        gameKey: String
+    )
+
     suspend fun updateDescription(
         gameId: Int,
         description: String?

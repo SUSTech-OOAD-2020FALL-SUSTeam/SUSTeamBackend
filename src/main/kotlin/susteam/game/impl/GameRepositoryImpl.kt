@@ -40,6 +40,13 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
         }
     }
 
+    override suspend fun addKeyMap(gameId: Int, gameKey: String) {
+        database.updateWithParamsAwait(
+            """INSERT INTO game_map (game_id, game_key) VALUES (?,?);""",
+            jsonArrayOf(gameId, gameKey)
+        )
+    }
+
     override suspend fun updateDescription(
         gameId: Int,
         description: String?
