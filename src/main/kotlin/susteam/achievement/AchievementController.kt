@@ -14,7 +14,7 @@ class AchievementController @Inject constructor(private val service: Achievement
         router.get("/achievement/:gameId/:achievementName").coroutineHandler(::handleGetAchievement)
         router.post("/achievement/:gameId").coroutineHandler(::handleAddAchievement)
         router.get("/achievement/:gameId").coroutineHandler(::handleGetAllAchievement)
-        router.post("/achieveProcess/:gameId").coroutineHandler(::handleUpdateUserAchievementProcess)
+        router.post("/achieveProcess/:gameKey").coroutineHandler(::handleUpdateUserAchievementProcess)
         router.get("/achieveProcess/:username/:gameId/:achievementName").coroutineHandler(::handleGetUserAchievementProcess)
         router.get("/valuedAchieveProcess/:username").coroutineHandler(::handleGetValuedAchievementProcess)
     }
@@ -70,7 +70,7 @@ class AchievementController @Inject constructor(private val service: Achievement
     suspend fun handleUpdateUserAchievementProcess(context: RoutingContext) {
         val request = context.request()
 
-        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+        val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
 
         val params = context.bodyAsJson
         val username = params.getString("username") ?: throw ServiceException("Username not found")
@@ -79,7 +79,8 @@ class AchievementController @Inject constructor(private val service: Achievement
         val rateOfProcess =
             params.getInteger("rateOfProcess") ?: throw ServiceException("Rate of process not found")
 
-        service.updateUserAchievementProcess(username, gameId, achievementName, rateOfProcess)
+
+        service.updateUserAchievementProcess(username, gameKey, achievementName, rateOfProcess)
         context.success()
     }
 

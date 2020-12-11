@@ -69,10 +69,11 @@ class AchievementService @Inject constructor(
 
     suspend fun updateUserAchievementProcess(
         username: String,
-        gameId: Int,
+        gameKey: String,
         achievementName: String,
         rateOfProcess: Int
     ) {
+        val gameId = gameRepository.getGameId(gameKey) ?: throw ServiceException("Game ID not found")
         val achievement = getAchievement(gameId, achievementName)
         var finished = false
         if ( achievement.achieveCount <= rateOfProcess ) {
