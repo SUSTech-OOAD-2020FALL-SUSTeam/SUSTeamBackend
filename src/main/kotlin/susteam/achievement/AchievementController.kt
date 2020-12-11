@@ -7,21 +7,27 @@ import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
+import susteam.game.GameService
 import susteam.user.Auth
 
-class AchievementController @Inject constructor(private val service: AchievementService) : CoroutineController() {
+class AchievementController @Inject constructor(
+    private val service: AchievementService,
+    private val gameService: GameService,
+) : CoroutineController() {
     override fun route(router: Router) {
-        router.get("/achievement/:gameId/:achievementName").coroutineHandler(::handleGetAchievement)
-        router.post("/achievement/:gameId").coroutineHandler(::handleAddAchievement)
-        router.get("/achievement/:gameId").coroutineHandler(::handleGetAllAchievement)
+        router.get("/achievement/:gameKey/:achievementName").coroutineHandler(::handleGetAchievement)
+        router.post("/achievement/:gameKey").coroutineHandler(::handleAddAchievement)
+        router.get("/achievement/:gameKey").coroutineHandler(::handleGetAllAchievement)
         router.post("/achieveProcess/:gameKey").coroutineHandler(::handleUpdateUserAchievementProcess)
-        router.get("/achieveProcess/:username/:gameId/:achievementName").coroutineHandler(::handleGetUserAchievementProcess)
+        router.get("/achieveProcess/:username/:gameKey/:achievementName").coroutineHandler(::handleGetUserAchievementProcess)
         router.get("/valuedAchieveProcess/:username").coroutineHandler(::handleGetValuedAchievementProcess)
     }
 
     suspend fun handleGetAchievement(context: RoutingContext) {
         val request = context.request()
-        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+        val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
+        val gameId = gameService.getGameIdByGameKey(gameKey)
+
         val achievementName =
             request.getParam("achievementName") ?: throw ServiceException("Achievement name not found")
 
@@ -35,7 +41,8 @@ class AchievementController @Inject constructor(private val service: Achievement
 
     suspend fun handleAddAchievement(context: RoutingContext) {
         val request = context.request()
-        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+        val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
+        val gameId = gameService.getGameIdByGameKey(gameKey)
 
         val params = context.bodyAsJson
         val achievementName =
@@ -57,7 +64,8 @@ class AchievementController @Inject constructor(private val service: Achievement
 
     suspend fun handleGetAllAchievement(context: RoutingContext) {
         val request = context.request()
-        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+        val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
+        val gameId = gameService.getGameIdByGameKey(gameKey)
 
         val achievements = service.getAllAchievement(gameId)
         context.success(
@@ -79,7 +87,6 @@ class AchievementController @Inject constructor(private val service: Achievement
         val rateOfProcess =
             params.getInteger("rateOfProcess") ?: throw ServiceException("Rate of process not found")
 
-
         service.updateUserAchievementProcess(username, gameKey, achievementName, rateOfProcess)
         context.success()
     }
@@ -88,7 +95,8 @@ class AchievementController @Inject constructor(private val service: Achievement
         val request = context.request()
 
         val username = request.getParam("username") ?: throw ServiceException("Username not found")
-        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+        val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
+        val gameId = gameService.getGameIdByGameKey(gameKey)
         val achievementName =
                 request.getParam("achievementName") ?: throw ServiceException("Achievement name not found")
 
