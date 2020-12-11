@@ -54,10 +54,11 @@ class GameService @Inject constructor(
 
         val publishDate: Instant = Instant.now()
 
-        val gameKey = Math.abs(Random.nextInt()).toString() + Math.abs(Random.nextInt()).toString() +
-                Math.abs(Random.nextInt()).toString() + Math.abs(Random.nextInt()).toString() +
-                Math.abs(Random.nextInt()).toString() + Math.abs(Random.nextInt()).toString() +
-                Math.abs(Random.nextInt()).toString() + Math.abs(Random.nextInt()).toString()
+        var gameKey = ""
+        val charSet = "1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm"
+        for (i in 1..100) {
+            gameKey = gameKey + charSet[Random.nextInt(62)]
+        }
 
         val gameId = repository.createGame(gameName, price, publishDate, auth.username, introduction, description)
         repository.addKeyMap(gameId, gameKey)

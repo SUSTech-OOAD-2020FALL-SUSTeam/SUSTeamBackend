@@ -202,8 +202,6 @@ VALUES (1,
         'admin',
         '穿越时代相遇的十三名少男少女搭乘名为「机兵」的巨大机器人，面对关乎人类存亡的最后一战。');
 
-INSERT INTO game_map(game_id, game_key) VALUES (1, '135214871254681254861135235625468125468715245');
-
 INSERT INTO game_image(game_id, url, type)
 VALUES (1, 'A5161ACAB07F7940B967FE24999895C8.jpg', 'F'),
        (1, '5A124BEF0DC68A3FC209F972C9DE8713.jpg', 'C');
@@ -268,8 +266,6 @@ VALUES (2,
         'admin',
         '杰洛特寻求改变自己的生活，着手于新的个人使命，而世界的秩序也在悄然改变。');
 
-INSERT INTO game_map(game_id, game_key) VALUES (2, '92164856899612912094708127818124151507150985701');
-
 INSERT INTO game_image(game_id, url, type)
 VALUES (2, '2BBFDD261CBBA68B2449ADBAA9125C22.jpg', 'F'),
        (2, 'C6041EEB233D2D76BADB5502126448AC.jpg', 'C');
@@ -323,8 +319,6 @@ VALUES (3,
         'admin',
         '你能适应这小镇上的生活并且将杂草丛生的老旧农场变成一个繁荣的家吗？');
 
-INSERT INTO game_map(game_id, game_key) VALUES (3, '12985698126509812675081276085761512890752908972536');
-
 INSERT INTO game_image(game_id, url, type)
 VALUES (3, '9C02C8CF4D73F30B3730936E6A8FCCA2.jpg', 'F'),
        (3, 'E460BAAD9A38BA4706FD1062C81677A6.jpg', 'C');
@@ -351,8 +345,6 @@ VALUES (4,
         '2009-11-16T00:00:01.000',
         'admin',
         '这个游戏将带领玩家和好友穿过美国南部的城市、沼泽和墓地，从萨凡纳到新奥尔良，沿途经过五个漫长的战役。');
-
-INSERT INTO game_map(game_id, game_key) VALUES (4, '1265236987678932503261325971251651685435371124');
 
 INSERT INTO game_image(game_id, url, type)
 VALUES (4, '33C60B77C76CABF696EC2701C76E13B0.jpg', 'F'),
@@ -397,8 +389,6 @@ VALUES (5,
         '2019-09-05T00:00:01.000',
         'admin',
         '《NBA 2K20》将以突破性的游戏模拟以及无与伦比的玩家控制重新定义运动游戏的可能性。');
-
-INSERT INTO game_map(game_id, game_key) VALUES (5, '0677123658091658906128956891976556261267581275915');
 
 INSERT INTO game_image(game_id, url, type)
 VALUES (5, '62E6C776DEA60147E360A675E934A234.jpg', 'F'),
@@ -467,8 +457,6 @@ VALUES (6,
         'admin',
         '当一个街头骗子、一个银行劫匪和一个精神病患者陷入困境时，他们必须在这个他们谁也不能相信的城市中生存下去。');
 
-INSERT INTO game_map(game_id, game_key) VALUES (6, '0126581567185789761868165712675461278561275115215632');
-
 INSERT INTO game_image(game_id, url, type)
 VALUES (6, 'EC71D1F8A1C03765856CFD0069A370F9.jpg', 'F'),
        (6, '91B9FF64E84F3B9C42F9EDE45A422AD0.jpg', 'C');
@@ -510,8 +498,6 @@ VALUES (7,
         '2011-11-18T00:00:01.000',
         'admin',
         '探索无限世界，建造包括了从最简单的家园到最宏伟的城堡的一切。');
-
-INSERT INTO game_map(game_id, game_key) VALUES (7, '126534743557635453125765432865769786532');
 
 INSERT INTO game_image(game_id, url, type)
 VALUES (7, '22268973DF2A38124DBF4F6832E4F0D9.jpg', 'F'),
@@ -556,8 +542,6 @@ VALUES (8,
         '2020-09-03T00:00:01.000',
         'admin',
         '雷亚首款次时代主机游戏，延续《DEEMO》的经典探索元素，透过生动逼真的3D画面，呈现音乐游玩与冒险解谜并行的丰富内容。');
-
-INSERT INTO game_map(game_id, game_key) VALUES (8, '0098608972135489121208912056123905678196478916');
 
 INSERT INTO game_image(game_id, url, type)
 VALUES (8, '2620700EACFA26A6396424B10809FE62.jpg', 'F'),
@@ -612,8 +596,6 @@ VALUES (9,
         'admin',
         '选择个性可爱的小姐姐，穿过各式各样童话般的场景，跟随动次打次的音乐节拍，踹飞迎面而来的蠢萌敌人吧！');
 
-INSERT INTO game_map(game_id, game_key) VALUES (9, '97601246215141206541297561209756120952714');
-
 INSERT INTO game_image(game_id, url, type)
 VALUES (9, '196129816DBE0D4F16E9AB90A6B44639.jpg', 'F'),
        (9, '2F002A3FED69F4F4EB461E2BDBB1E5C4.jpg', 'C');
@@ -652,3 +634,15 @@ WHERE game_id = 9;
 
 INSERT INTO storage (uuid, file_name, uploader, upload_time, is_public)
 VALUES ('c678f433-0a14-40c2-8437-99af8dc0bd1c', 'game.txt', 'admin', NOW(), false);
+
+
+INSERT INTO game_map(game_id, game_key) VALUES (1, 'cCrUDW4alFayrgtI4GsFTEV0brLjZ5k3bwkrJfnKGiRRwEFJiuR1yXACeIzxe71qcVjqB2ykjnZwZ6mY8imGywhLcAm7W96404AuH');
+INSERT INTO game_map(game_id, game_key) VALUES (2, 'gYja8Bf8SnxHBDSnx0MWG6znN19VI6hf6UOnfbXiLt95hWFZlDF0DVS0kc51k9vGmhdBr1JfBVFxaWpSg77srqZIMuwNQgEitAyOB');
+INSERT INTO game_map(game_id, game_key) VALUES (3, 'DaE4hi1FSjpjVFYI9Jgar5Z8JwLsB11XPILOYozOlPBMvnlxsL0Ht6FkqpWTgiSgR2BZqcpca0ljs1gxYX02mDdJtDb1Lw6HiNYaE');
+INSERT INTO game_map(game_id, game_key) VALUES (4, 'gGyCkxZ6fXQwiPWZC4TnizHqRLVSGmanb1sAJUM74SK0mjczg0DIWcpIiS1KdoleemhnF2DkSkkQo5kHCXQmudgAReoo6lCaWDHLH');
+INSERT INTO game_map(game_id, game_key) VALUES (5, '51LNIrWoZug2QzfjjurlChVC6AALo54K2mvGIU7ZKBnbZWV3XJ0MKVUlfkYEjTVqLRor8KNILm9bvC9jdOJFeP3l3mW6CiP9cu7Iu');
+INSERT INTO game_map(game_id, game_key) VALUES (6, 'ov49pAr8uoofacPUZYZdaoLiQCnJbJRFKOGAczskq7hBrXrhErComSYmupwNsEm3Hq23wcmGcvwAyKBxyZ1j0iyGBu1kGIiDV2WUt');
+INSERT INTO game_map(game_id, game_key) VALUES (7, 'ikOPcy2ZAgdLwsfc3xXPclzzqI6oIbTlB2H2tUMwNhcBlFOllW4G42zTjAiILddzOtKdCskfqmiBBOsi7sK5ZVvSAbwjlt4Gl0d3d');
+INSERT INTO game_map(game_id, game_key) VALUES (8, 'ag3RtVNJ67ldHCQFi6OKqNhLNQXW3YjC7RrVSW6xD1InCcpgFiaXJlRsF9tOto47H2QQK0JZArgSZvdZxvxiAliALVR8Z24J8KHn7');
+INSERT INTO game_map(game_id, game_key) VALUES (9, 'SByGOg9RcBfheundodmEraUtLgAdnZjDZ2NF1gc18gsYSvyoRhkN0y8wKoLCORTlg54vakBNIsy6dWx2rYVwLXK0GkqWsxieif0RG');
+INSERT INTO game_map(game_id, game_key) VALUES (10, 'o6cf3Wd9OXOvzq9pRdBB4EeYBpimP0X1WwFBSOgLpajJ3MutNmsVWjDWjX5Vz8bVavbix4Ya2gyDVLHNgjIX3toZKOkuVkAM8sMMD');
