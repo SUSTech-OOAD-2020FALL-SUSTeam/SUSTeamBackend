@@ -33,15 +33,17 @@ class AchievementService @Inject constructor(
     }
 
     suspend fun getAchievement(
-        gameId: Int,
+        gameKey: String,
         achievementName: String
     ): Achievement {
+        val gameId = gameRepository.getGameByGameKey(gameKey)?.id ?: throw ServiceException("Game does not exist")
+
         return repository.getAchievement(gameId, achievementName) ?: throw ServiceException("Achievement not exist")
     }
 
     suspend fun addAchievement(
         auth: Auth,
-        gameId: Int,
+        gameKey: String,
         achievementName: String,
         description: String,
         achievementCount: Int
@@ -56,14 +58,16 @@ class AchievementService @Inject constructor(
             throw ServiceException("Description is too long")
         }
 
+        val gameId = gameRepository.getGameByGameKey(gameKey)?.id ?: throw ServiceException("Game does not exist")
         isDeveloper(auth, gameId)
 
         return repository.addAchievement(gameId, achievementName, description, achievementCount)
     }
 
     suspend fun getAllAchievement(
-        gameId: Int
+        gameKey: String
     ): List<Achievement> {
+        val gameId = gameRepository.getGameByGameKey(gameKey)?.id ?: throw ServiceException("Game does not exist")
         return repository.getAllAchievement(gameId)
     }
 
@@ -73,15 +77,14 @@ class AchievementService @Inject constructor(
         achievementName: String,
         rateOfProcess: Int
     ) {
-        val gameId = gameRepository.getGameId(gameKey) ?: throw ServiceException("Game ID not found")
-        val achievement = getAchievement(gameId, achievementName)
+        val achievement = getAchievement(gameKey, achievementName)
         var finished = false
         if ( achievement.achieveCount <= rateOfProcess ) {
             finished = true
         }
 
         val processPermission = when {
-            orderRepository.checkOrder(username, gameId) == OrderStatus.SUCCESS -> true
+            orderRepository.checkOrder(username, achievement.gameId) == OrderStatus.SUCCESS -> true
             else -> false
         }
         if (!processPermission) {
@@ -95,13 +98,13 @@ class AchievementService @Inject constructor(
 
     suspend fun getUserAchievementProcess(
         username: String,
-        gameId: Int,
+        gameKey: String,
         achievementName: String,
     ): UserAchievementProcess {
-        val achievement = getAchievement(gameId, achievementName)
+        val achievement = getAchievement(gameKey, achievementName)
 
         val processPermission = when {
-            orderRepository.checkOrder(username, gameId) == OrderStatus.SUCCESS -> true
+            orderRepository.checkOrder(username, achievement.gameId) == OrderStatus.SUCCESS -> true
             else -> false
         }
         if (!processPermission) {
@@ -120,5 +123,3 @@ class AchievementService @Inject constructor(
     }
 
 }
-
-

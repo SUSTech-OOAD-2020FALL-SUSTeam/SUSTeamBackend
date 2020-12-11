@@ -3,6 +3,7 @@ package susteam.friend
 import com.google.inject.Inject
 import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.ServiceException
+import susteam.game.GameRepository
 import susteam.notification.MessageNotifier
 import susteam.status.UserStatus
 import susteam.user.Auth
@@ -10,6 +11,7 @@ import susteam.user.username
 
 class FriendService @Inject constructor(
     private val repository: FriendRepository,
+    private val gameRepository: GameRepository,
     private val status: UserStatus,
     private val notifier: MessageNotifier
 ) {
@@ -20,9 +22,10 @@ class FriendService @Inject constructor(
         }
     }
 
-    suspend fun invitedFriend(auth: Auth, username: String, gameName: String) {
+    suspend fun invitedFriend(auth: Auth, username: String, gameKey: String) {
+        val game = gameRepository.getGameByGameKey(gameKey) ?: throw ServiceException("Game does not exist")
         if (username in getFriends(auth).map{ it.username })
-            notifier.sendTo(username, jsonObjectOf("message" to "${auth.username} invite you to play ${gameName}"))
+            notifier.sendTo(username, jsonObjectOf("message" to "${auth.username} invite you to play ${game.name}"))
         else throw ServiceException("${username} is not your friend")
     }
 

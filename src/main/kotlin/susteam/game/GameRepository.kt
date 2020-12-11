@@ -18,9 +18,9 @@ interface GameRepository {
         gameKey: String
     )
 
-    suspend fun getGameId(
+    suspend fun getGameByGameKey(
         gameKey: String
-    ): Int?
+    ): Game?
 
     suspend fun getGameKey(
         gameId: Int

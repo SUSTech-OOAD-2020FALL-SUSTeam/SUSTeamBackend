@@ -11,8 +11,7 @@ import susteam.game.GameService
 import susteam.user.Auth
 
 class AchievementController @Inject constructor(
-    private val service: AchievementService,
-    private val gameService: GameService,
+    private val service: AchievementService
 ) : CoroutineController() {
     override fun route(router: Router) {
         router.get("/achievement/:gameKey/:achievementName").coroutineHandler(::handleGetAchievement)
@@ -26,12 +25,11 @@ class AchievementController @Inject constructor(
     suspend fun handleGetAchievement(context: RoutingContext) {
         val request = context.request()
         val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
-        val gameId = gameService.getGameIdByGameKey(gameKey)
 
         val achievementName =
             request.getParam("achievementName") ?: throw ServiceException("Achievement name not found")
 
-        val achievement = service.getAchievement(gameId, achievementName)
+        val achievement = service.getAchievement(gameKey, achievementName)
         context.success(
             jsonObjectOf(
                 "achievement" to achievement.toJson()
@@ -42,7 +40,6 @@ class AchievementController @Inject constructor(
     suspend fun handleAddAchievement(context: RoutingContext) {
         val request = context.request()
         val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
-        val gameId = gameService.getGameIdByGameKey(gameKey)
 
         val params = context.bodyAsJson
         val achievementName =
@@ -53,7 +50,7 @@ class AchievementController @Inject constructor(
 
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
-        val achievementId = service.addAchievement(auth, gameId, achievementName, description, achievementCount)
+        val achievementId = service.addAchievement(auth, gameKey, achievementName, description, achievementCount)
 
         context.success(
             jsonObjectOf(
@@ -65,9 +62,8 @@ class AchievementController @Inject constructor(
     suspend fun handleGetAllAchievement(context: RoutingContext) {
         val request = context.request()
         val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
-        val gameId = gameService.getGameIdByGameKey(gameKey)
 
-        val achievements = service.getAllAchievement(gameId)
+        val achievements = service.getAllAchievement(gameKey)
         context.success(
             jsonObjectOf(
                 "achievements" to JsonArray(achievements.map { it })
@@ -96,11 +92,10 @@ class AchievementController @Inject constructor(
 
         val username = request.getParam("username") ?: throw ServiceException("Username not found")
         val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
-        val gameId = gameService.getGameIdByGameKey(gameKey)
         val achievementName =
                 request.getParam("achievementName") ?: throw ServiceException("Achievement name not found")
 
-        val userAchievementProcess = service.getUserAchievementProcess(username, gameId, achievementName)
+        val userAchievementProcess = service.getUserAchievementProcess(username, gameKey, achievementName)
 
         context.success(
                 jsonObjectOf(

@@ -113,9 +113,7 @@ class GameController @Inject constructor(
         val request = context.request()
         val gameKey = request.getParam("gameKey") ?: throw ServiceException("game Key not found")
 
-        val gameId = service.getGameIdByGameKey(gameKey)
-
-        val game: Game = service.getGame(gameId)
+        val game = service.getGameByGameKey(gameKey)
 
         context.success(
             jsonObjectOf(

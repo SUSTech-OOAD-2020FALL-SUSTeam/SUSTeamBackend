@@ -66,8 +66,8 @@ class GameService @Inject constructor(
         return gameKey
     }
 
-    suspend fun getGameIdByGameKey(gameKey: String): Int {
-        return repository.getGameId(gameKey) ?: throw ServiceException("Game id does not exist")
+    suspend fun getGameByGameKey(gameKey: String): Game {
+        return repository.getGameByGameKey(gameKey) ?: throw ServiceException("Game does not exist")
     }
 
     suspend fun getGameKey(gameId: Int, auth: Auth): String {

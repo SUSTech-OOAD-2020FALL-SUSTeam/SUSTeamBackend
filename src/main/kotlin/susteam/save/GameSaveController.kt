@@ -30,7 +30,7 @@ class GameSaveController @Inject constructor(
         val auth = context.user() ?: throw ServiceException("Permission denied, please login")
         val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
 
-        val gameId = gameService.getGameIdByGameKey(gameKey)
+        val gameId = gameService.getGameByGameKey(gameKey).id
 
         val gameSaves = service.getAllGameSaveName(auth, gameId)
 
@@ -44,11 +44,10 @@ class GameSaveController @Inject constructor(
     private suspend fun handleUploadGameSave(context: RoutingContext) {
         val request = context.request()
         val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
+        val gameId = gameService.getGameByGameKey(gameKey).id
         val saveName = request.getParam("saveName") ?: throw ServiceException("save name is empty")
 
         val auth = context.user() ?: throw ServiceException("Permission denied, please login")
-
-        val gameId = gameService.getGameIdByGameKey(gameKey)
 
         service.checkBought(auth, gameId)
 
@@ -75,7 +74,8 @@ class GameSaveController @Inject constructor(
         val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
         val saveName = request.getParam("saveName") ?: throw ServiceException("Save not found")
 
-        val gameId = gameService.getGameIdByGameKey(gameKey)
+        val gameId = gameService.getGameByGameKey(gameKey).id
+
 
         service.deleteGameSave(auth, gameId, saveName)
 
@@ -89,7 +89,7 @@ class GameSaveController @Inject constructor(
         val gameKey = request.getParam("gameKey") ?: throw ServiceException("Game Key not found")
         val saveName = request.getParam("saveName") ?: throw ServiceException("Save not found")
 
-        val gameId = gameService.getGameIdByGameKey(gameKey)
+        val gameId = gameService.getGameByGameKey(gameKey).id
 
         val storageFile = service.download(auth, gameId, saveName)
 
