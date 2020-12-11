@@ -26,7 +26,7 @@ class GameController @Inject constructor(
 
     override fun route(router: Router) {
         router.get("/game/:gameId").coroutineHandler(::handleGetGame)
-        router.get("/gameKey/:gameKey").coroutineHandler(::handleGetGameIdByGameKey)
+        router.get("/gameKey/:gameKey").coroutineHandler(::handleGetGameByGameKey)
         router.get("/key/:gameId").coroutineHandler(::handleGetGameKey)
         router.get("/game/:gameId/profile").coroutineHandler(::handleGetGameProfile)
         router.get("/game/:gameId/detail").coroutineHandler(::handleGetGameDetail)
@@ -109,15 +109,17 @@ class GameController @Inject constructor(
         )
     }
 
-    suspend fun handleGetGameIdByGameKey(context: RoutingContext) {
+    suspend fun handleGetGameByGameKey(context: RoutingContext) {
         val request = context.request()
         val gameKey = request.getParam("gameKey") ?: throw ServiceException("game Key not found")
 
         val gameId = service.getGameIdByGameKey(gameKey)
 
+        val game: Game = service.getGame(gameId)
+
         context.success(
             jsonObjectOf(
-                "gameId" to gameId
+                "game" to game.toJson()
             )
         )
     }
