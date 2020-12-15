@@ -31,7 +31,7 @@ class GameController @Inject constructor(
         router.get("/game/:gameId/profile").coroutineHandler(::handleGetGameProfile)
         router.get("/game/:gameId/detail").coroutineHandler(::handleGetGameDetail)
         router.post("/game").coroutineHandler(::handlePublishGame)
-        router.put("/game/:gameId").coroutineHandler(::handleUpdateDescription)
+        router.put("/game/:gameId").coroutineHandler(::handleUpdateGame)
         router.get("/games").coroutineHandler(::handleGetAllGames)
         router.get("/games/recommend").coroutineHandler(::handleGetRecommendGames)
 
@@ -137,16 +137,26 @@ class GameController @Inject constructor(
         )
     }
 
-    suspend fun handleUpdateDescription(context: RoutingContext) {
+    suspend fun handleUpdateGame(context: RoutingContext) {
         val request = context.request()
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
 
         val params = context.bodyAsJson
-        val description = params.getString("description")
+        val game = params.getJsonObject("game").run {
+            Game(
+                getInteger("gameId"),
+                getString("name"),
+                getInteger("price"),
+                getInstant("publishDate"),
+                getString("author"),
+                getString("introduction"),
+                getString("description")
+            )
+        }
 
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
-        service.updateDescription(auth, gameId, description)
+        service.updateGame(auth, gameId, game)
 
         context.success()
     }

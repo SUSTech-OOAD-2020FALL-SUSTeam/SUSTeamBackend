@@ -89,13 +89,17 @@ class GameRepositoryMock(
         return games.size
     }
 
-    override suspend fun updateDescription(
+    override suspend fun updateGame(
         gameId: Int,
-        description: String?
+        game: Game
     ): Boolean {
         if (games.find { it.id == gameId } == null)
             return false
-        games.find { it.id == gameId }!!.description = description
+        val toUpdate = games.find { it.id == gameId }!!
+
+        toUpdate.price = game.price
+        toUpdate.introduction = game.introduction
+        toUpdate.description = game.description
 
         return true
     }

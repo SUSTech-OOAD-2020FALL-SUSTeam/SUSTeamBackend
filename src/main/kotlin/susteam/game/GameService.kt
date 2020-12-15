@@ -1,7 +1,6 @@
 package susteam.game
 
 import com.google.inject.Inject
-import io.vertx.ext.auth.HashingStrategy
 import susteam.ServiceException
 import susteam.order.OrderRepository
 import susteam.order.OrderStatus
@@ -118,12 +117,12 @@ class GameService @Inject constructor(
         repository.createVersion(gameId, uploadTime, versionName, url.id)
     }
 
-    suspend fun updateDescription(
+    suspend fun updateGame(
         auth: Auth,
         gameId: Int,
-        description: String?
+        game: Game
     ) {
-        val game = repository.getById(gameId) ?: throw ServiceException("Game does not exist")
+        repository.getById(gameId) ?: throw ServiceException("Game does not exist")
 
         val havePermission = when {
             auth.isAdmin() -> true
@@ -136,7 +135,7 @@ class GameService @Inject constructor(
             throw ServiceException("Permission denied")
         }
 
-        repository.updateDescription(gameId, description)
+        repository.updateGame(gameId, game)
     }
 
     suspend fun getAllGameProfileOrderByPublishDate(): List<GameProfile> {

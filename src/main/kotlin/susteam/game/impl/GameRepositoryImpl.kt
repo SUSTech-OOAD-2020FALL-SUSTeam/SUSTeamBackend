@@ -72,13 +72,19 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
         )?.getString(0)
     }
 
-    override suspend fun updateDescription(
+    override suspend fun updateGame(
         gameId: Int,
-        description: String?
+        game: Game
     ): Boolean {
         return database.updateWithParamsAwait(
-            """UPDATE game SET description = ? WHERE game_id = ?;""",
-            jsonArrayOf(description, gameId)
+            """
+                UPDATE game 
+                SET price = ?,
+                    introduction = ?,
+                    description = ? 
+                WHERE game_id = ?;
+            """.trimIndent(),
+            jsonArrayOf(game.price, game.introduction, game.description, gameId)
         ).updated == 1
     }
 

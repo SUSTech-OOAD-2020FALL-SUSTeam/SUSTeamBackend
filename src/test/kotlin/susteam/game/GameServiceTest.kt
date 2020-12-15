@@ -21,7 +21,7 @@ class GameServiceTest : StringSpec() {
         val injector = Guice.createInjector(module)
 
         val repository = GameRepositoryMock().apply { init() }
-        val orderRepository = OrderRepositoryMock().apply{ init() }
+        val orderRepository = OrderRepositoryMock().apply { init() }
         val service = GameService(repository, orderRepository)
 
         "test getGame" {
@@ -34,15 +34,15 @@ class GameServiceTest : StringSpec() {
 
         "test getGameVersion" {
             shouldThrow<ServiceException> {
-                service.getGameVersion(1111111,"??????")
+                service.getGameVersion(1111111, "??????")
             }
             shouldThrow<ServiceException> {
-                service.getGameVersion(1,"??????")
+                service.getGameVersion(1, "??????")
             }
             shouldThrow<ServiceException> {
-                service.getGameVersion(2,"v1.0")
+                service.getGameVersion(2, "v1.0")
             }
-            val gv = service.getGameVersion(1,"v1.0")
+            val gv = service.getGameVersion(1, "v1.0")
             gv.url shouldNotBe null
             //TODO url still not test
         }
@@ -71,34 +71,35 @@ class GameServiceTest : StringSpec() {
 
         "test publishGame" {
             val auth = injector.getInstance(Key.get(Auth::class.java, TestModule.AdminAuth::class.java))
-            service.publishGame(auth,"hello",100,"1","11")
+            service.publishGame(auth, "hello", 100, "1", "11")
             service.getGame(2) shouldNotBe null
             shouldThrow<ServiceException> {
-                service.publishGame(auth,"hello",100,"1","11")
+                service.publishGame(auth, "hello", 100, "1", "11")
             }
         }
 
-        "test updateDescription" {
+        "test updateGame" {
             val auth = injector.getInstance(Key.get(Auth::class.java, TestModule.AdminAuth::class.java))
-            service.updateDescription(auth,1,"22")
+            val game = service.getGame(1)
+            service.updateGame(auth, 1, game.copy(description = "22"))
             service.getGame(1).description shouldBe "22"
             shouldThrow<ServiceException> {
-                service.updateDescription(auth, 1111, "22")
+                service.updateGame(auth, 1111, game.copy(description = "22"))
             }
         }
 
         "test publishVersion" {
             val auth = injector.getInstance(Key.get(Auth::class.java, TestModule.AdminAuth::class.java))
-            service.publishGameVersion(auth,1,"v1","111".toStorageFile())
+            service.publishGameVersion(auth, 1, "v1", "111".toStorageFile())
 
             shouldThrow<ServiceException> {
-                service.publishGameVersion(auth,999,"vvv","111".toStorageFile())
+                service.publishGameVersion(auth, 999, "vvv", "111".toStorageFile())
             }
             shouldThrow<ServiceException> {
-                service.publishGameVersion(auth,1,"v1","1222".toStorageFile())
+                service.publishGameVersion(auth, 1, "v1", "1222".toStorageFile())
             }
             shouldThrow<ServiceException> {
-                service.publishGameVersion(auth,1,"v2","111".toStorageFile())
+                service.publishGameVersion(auth, 1, "v2", "111".toStorageFile())
             }
         }
 
@@ -124,7 +125,7 @@ class GameServiceTest : StringSpec() {
 
         "test uploadGameImage" {
             shouldThrow<ServiceException> {
-                service.uploadGameImage(1,"urlimage2".toStorageImage(),"J")
+                service.uploadGameImage(1, "urlimage2".toStorageImage(), "J")
             }
         }
 
@@ -144,9 +145,9 @@ class GameServiceTest : StringSpec() {
 
         "test addTag" {
             val auth = injector.getInstance(Key.get(Auth::class.java, TestModule.AdminAuth::class.java))
-            service.addTag(auth,1,"haha")
+            service.addTag(auth, 1, "haha")
             shouldThrow<ServiceException> {
-                service.addTag(auth,1,"haha")
+                service.addTag(auth, 1, "haha")
             }
         }
     }

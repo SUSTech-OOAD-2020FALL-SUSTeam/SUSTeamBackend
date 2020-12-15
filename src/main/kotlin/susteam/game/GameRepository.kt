@@ -26,9 +26,9 @@ interface GameRepository {
         gameId: Int
     ): String?
 
-    suspend fun updateDescription(
+    suspend fun updateGame(
         gameId: Int,
-        description: String?
+        game: Game
     ): Boolean
 
     suspend fun createVersion(

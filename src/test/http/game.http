@@ -58,8 +58,15 @@ Content-Type: application/json
 Authorization: Bearer {{admin-token}}
 
 {
-  "gameId": 1,
-  "description": "Cool game"
+  "game": {
+    "gameId": 10,
+    "name": "2048",
+    "price": 0,
+    "publishDate": "2020-03-19T00:00:01.000Z",
+    "author": "admin",
+    "introduction": "《2048》的任务是在一个网格上滑动小方块来进行组合，直到形成一个带有有数字2048的方块。",
+    "description": "test edit"
+  }
 }
 
 ###
