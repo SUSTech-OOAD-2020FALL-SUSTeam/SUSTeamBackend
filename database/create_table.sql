@@ -1,4 +1,6 @@
-DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage, game_image, game_tag, announcement, `order`, game_save, relationship, achievement, user_achievement_progress, game_map, record;
+DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, comment_thumb,
+    storage, game_image, game_tag, announcement, discount, `order`, game_save,
+    relationship, achievement, user_achievement_progress, game_map, record;
 
 CREATE TABLE user
 (
@@ -90,6 +92,18 @@ CREATE TABLE IF NOT EXISTS `comment`
     FOREIGN KEY (game_id) REFERENCES game (game_id)
 );
 
+CREATE TABLE IF NOT EXISTS comment_thumb
+(
+    commenter VARCHAR(255) NOT NULL,
+    game_id   INT          NOT NULL,
+    username  VARCHAR(255) NOT NULL,
+    vote      INT          NOT NULL,
+
+    PRIMARY KEY (commenter, game_id, username),
+    FOREIGN KEY (commenter, game_id) REFERENCES comment (username, game_id),
+    FOREIGN KEY (username) REFERENCES user (username)
+);
+
 CREATE TABLE IF NOT EXISTS `storage`
 (
     uuid        VARCHAR(255) NOT NULL,
@@ -130,6 +144,17 @@ CREATE TABLE IF NOT EXISTS `announcement`
 
     PRIMARY KEY (game_id, title),
     FOREIGN KEY (game_id) REFERENCES game (game_id)
+);
+
+CREATE TABLE IF NOT EXISTS discount
+(
+    id         INT         NOT NULL,
+    type       INT         NOT NULL,
+    percentage DOUBLE      NOT NULL,
+    start_time DATETIME(3) NOT NULL,
+    end_time   DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (id, type, start_time)
 );
 
 CREATE TABLE IF NOT EXISTS `order`
@@ -184,10 +209,10 @@ CREATE TABLE IF NOT EXISTS achievement
 
 CREATE TABLE IF NOT EXISTS `record`
 (
-    record_id   INT          NOT NULL AUTO_INCREMENT,
-    game_id          INT          NOT NULL,
-    username VARCHAR(255) NOT NULL,
-    score      INT NOT NULL,
+    record_id INT          NOT NULL AUTO_INCREMENT,
+    game_id   INT          NOT NULL,
+    username  VARCHAR(255) NOT NULL,
+    score     INT          NOT NULL,
 
     PRIMARY KEY (record_id),
     FOREIGN KEY (game_id) REFERENCES game (game_id)
@@ -647,13 +672,23 @@ INSERT INTO storage (uuid, file_name, uploader, upload_time, is_public)
 VALUES ('c678f433-0a14-40c2-8437-99af8dc0bd1c', 'game.txt', 'admin', NOW(), false);
 
 
-INSERT INTO game_map(game_id, game_key) VALUES (1, 'cCrUDW4alFayrgtI4GsFTEV0brLjZ5k3bwkrJfnKGiRRwEFJiuR1yXACeIzxe71qcVjqB2ykjnZwZ6mY8imGywhLcAm7W96404AuH');
-INSERT INTO game_map(game_id, game_key) VALUES (2, 'gYja8Bf8SnxHBDSnx0MWG6znN19VI6hf6UOnfbXiLt95hWFZlDF0DVS0kc51k9vGmhdBr1JfBVFxaWpSg77srqZIMuwNQgEitAyOB');
-INSERT INTO game_map(game_id, game_key) VALUES (3, 'DaE4hi1FSjpjVFYI9Jgar5Z8JwLsB11XPILOYozOlPBMvnlxsL0Ht6FkqpWTgiSgR2BZqcpca0ljs1gxYX02mDdJtDb1Lw6HiNYaE');
-INSERT INTO game_map(game_id, game_key) VALUES (4, 'gGyCkxZ6fXQwiPWZC4TnizHqRLVSGmanb1sAJUM74SK0mjczg0DIWcpIiS1KdoleemhnF2DkSkkQo5kHCXQmudgAReoo6lCaWDHLH');
-INSERT INTO game_map(game_id, game_key) VALUES (5, '51LNIrWoZug2QzfjjurlChVC6AALo54K2mvGIU7ZKBnbZWV3XJ0MKVUlfkYEjTVqLRor8KNILm9bvC9jdOJFeP3l3mW6CiP9cu7Iu');
-INSERT INTO game_map(game_id, game_key) VALUES (6, 'ov49pAr8uoofacPUZYZdaoLiQCnJbJRFKOGAczskq7hBrXrhErComSYmupwNsEm3Hq23wcmGcvwAyKBxyZ1j0iyGBu1kGIiDV2WUt');
-INSERT INTO game_map(game_id, game_key) VALUES (7, 'ikOPcy2ZAgdLwsfc3xXPclzzqI6oIbTlB2H2tUMwNhcBlFOllW4G42zTjAiILddzOtKdCskfqmiBBOsi7sK5ZVvSAbwjlt4Gl0d3d');
-INSERT INTO game_map(game_id, game_key) VALUES (8, 'ag3RtVNJ67ldHCQFi6OKqNhLNQXW3YjC7RrVSW6xD1InCcpgFiaXJlRsF9tOto47H2QQK0JZArgSZvdZxvxiAliALVR8Z24J8KHn7');
-INSERT INTO game_map(game_id, game_key) VALUES (9, 'SByGOg9RcBfheundodmEraUtLgAdnZjDZ2NF1gc18gsYSvyoRhkN0y8wKoLCORTlg54vakBNIsy6dWx2rYVwLXK0GkqWsxieif0RG');
-INSERT INTO game_map(game_id, game_key) VALUES (10, 'o6cf3Wd9OXOvzq9pRdBB4EeYBpimP0X1WwFBSOgLpajJ3MutNmsVWjDWjX5Vz8bVavbix4Ya2gyDVLHNgjIX3toZKOkuVkAM8sMMD');
+INSERT INTO game_map(game_id, game_key)
+VALUES (1, 'cCrUDW4alFayrgtI4GsFTEV0brLjZ5k3bwkrJfnKGiRRwEFJiuR1yXACeIzxe71qcVjqB2ykjnZwZ6mY8imGywhLcAm7W96404AuH');
+INSERT INTO game_map(game_id, game_key)
+VALUES (2, 'gYja8Bf8SnxHBDSnx0MWG6znN19VI6hf6UOnfbXiLt95hWFZlDF0DVS0kc51k9vGmhdBr1JfBVFxaWpSg77srqZIMuwNQgEitAyOB');
+INSERT INTO game_map(game_id, game_key)
+VALUES (3, 'DaE4hi1FSjpjVFYI9Jgar5Z8JwLsB11XPILOYozOlPBMvnlxsL0Ht6FkqpWTgiSgR2BZqcpca0ljs1gxYX02mDdJtDb1Lw6HiNYaE');
+INSERT INTO game_map(game_id, game_key)
+VALUES (4, 'gGyCkxZ6fXQwiPWZC4TnizHqRLVSGmanb1sAJUM74SK0mjczg0DIWcpIiS1KdoleemhnF2DkSkkQo5kHCXQmudgAReoo6lCaWDHLH');
+INSERT INTO game_map(game_id, game_key)
+VALUES (5, '51LNIrWoZug2QzfjjurlChVC6AALo54K2mvGIU7ZKBnbZWV3XJ0MKVUlfkYEjTVqLRor8KNILm9bvC9jdOJFeP3l3mW6CiP9cu7Iu');
+INSERT INTO game_map(game_id, game_key)
+VALUES (6, 'ov49pAr8uoofacPUZYZdaoLiQCnJbJRFKOGAczskq7hBrXrhErComSYmupwNsEm3Hq23wcmGcvwAyKBxyZ1j0iyGBu1kGIiDV2WUt');
+INSERT INTO game_map(game_id, game_key)
+VALUES (7, 'ikOPcy2ZAgdLwsfc3xXPclzzqI6oIbTlB2H2tUMwNhcBlFOllW4G42zTjAiILddzOtKdCskfqmiBBOsi7sK5ZVvSAbwjlt4Gl0d3d');
+INSERT INTO game_map(game_id, game_key)
+VALUES (8, 'ag3RtVNJ67ldHCQFi6OKqNhLNQXW3YjC7RrVSW6xD1InCcpgFiaXJlRsF9tOto47H2QQK0JZArgSZvdZxvxiAliALVR8Z24J8KHn7');
+INSERT INTO game_map(game_id, game_key)
+VALUES (9, 'SByGOg9RcBfheundodmEraUtLgAdnZjDZ2NF1gc18gsYSvyoRhkN0y8wKoLCORTlg54vakBNIsy6dWx2rYVwLXK0GkqWsxieif0RG');
+INSERT INTO game_map(game_id, game_key)
+VALUES (10, 'o6cf3Wd9OXOvzq9pRdBB4EeYBpimP0X1WwFBSOgLpajJ3MutNmsVWjDWjX5Vz8bVavbix4Ya2gyDVLHNgjIX3toZKOkuVkAM8sMMD');
