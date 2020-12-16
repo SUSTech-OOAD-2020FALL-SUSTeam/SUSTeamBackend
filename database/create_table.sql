@@ -148,13 +148,12 @@ CREATE TABLE IF NOT EXISTS `announcement`
 
 CREATE TABLE IF NOT EXISTS discount
 (
-    id         INT         NOT NULL,
-    type       INT         NOT NULL,
+    game_id         INT         NOT NULL,
     percentage DOUBLE      NOT NULL,
     start_time DATETIME(3) NOT NULL,
     end_time   DATETIME(3) NOT NULL,
 
-    PRIMARY KEY (id, type, start_time)
+    PRIMARY KEY (game_id, start_time)
 );
 
 CREATE TABLE IF NOT EXISTS `order`

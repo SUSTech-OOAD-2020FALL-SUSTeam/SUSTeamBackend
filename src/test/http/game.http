@@ -37,11 +37,11 @@ GET {{host}}/api/game/1
 
 ###
 
-GET {{host}}/api/game/10/profile
+GET {{host}}/api/game/1/profile
 
 ###
 
-GET {{host}}/api/game/10/detail
+GET {{host}}/api/game/1/detail
 
 ###
 
@@ -74,6 +74,13 @@ Authorization: Bearer {{admin-token}}
 GET {{host}}/api/games/
 
 ###
+
+###
+
+GET {{host}}/api/games/tags
+
+###
+
 
 GET {{host}}/api/games/?order=publishDate
 

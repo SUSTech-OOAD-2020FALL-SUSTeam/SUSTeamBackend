@@ -3,6 +3,9 @@ package susteam.game
 import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import io.vertx.kotlin.core.json.jsonObjectOf
+import susteam.discount.Discount
+import susteam.discount.toDiscount
+import susteam.discount.toJson
 import susteam.storage.StorageFile
 import susteam.storage.StorageImage
 import susteam.storage.getStorageFile
@@ -40,13 +43,15 @@ data class GameProfile(
     val author: String,
     val introduction: String?,
     val imageFullSize: StorageImage?,
-    val imageCardSize: StorageImage?
+    val imageCardSize: StorageImage?,
+    val discount: Discount?
 )
 
 data class GameDetail(
     val game: Game,
     val images: List<GameImage>,
-    val tags: List<String>
+    val tags: List<String>,
+    val discount: Discount?
 )
 
 data class GameTag(
@@ -96,7 +101,8 @@ fun GameProfile.toJson(): JsonObject = jsonObjectOf(
     "author" to author,
     "introduction" to introduction,
     "imageFullSize" to imageFullSize?.url,
-    "imageCardSize" to imageCardSize?.url
+    "imageCardSize" to imageCardSize?.url,
+    "discount" to discount?.toJson()
 )
 
 fun JsonObject.toGameProfile(): GameProfile = GameProfile(
@@ -107,7 +113,15 @@ fun JsonObject.toGameProfile(): GameProfile = GameProfile(
     getString("author"),
     getString("introduction"),
     getStorageImage("imageFullSize"),
-    getStorageImage("imageCardSize")
+    getStorageImage("imageCardSize"),
+    if (getDouble("percentage") != null)
+        Discount(
+            getInteger("gameId"),
+            getDouble("percentage"),
+            getInstant("startTime"),
+            getInstant("endTime")
+        )
+    else null
 )
 
 fun GameDetail.toJson(): JsonObject = jsonObjectOf(
@@ -119,7 +133,8 @@ fun GameDetail.toJson(): JsonObject = jsonObjectOf(
     "introduction" to game.introduction,
     "description" to game.description,
     "images" to JsonArray(images.map { it.toJson() }),
-    "tags" to JsonArray(tags)
+    "tags" to JsonArray(tags),
+    "discount" to discount?.toJson()
 )
 
 fun JsonObject.toGameDetail(): GameDetail {
@@ -129,7 +144,8 @@ fun JsonObject.toGameDetail(): GameDetail {
     return GameDetail(
         obj.toGame(),
         getJsonArray("images").map { (it as JsonObject).toGameImage() },
-        getJsonArray("tags").map { it as String }
+        getJsonArray("tags").map { it as String },
+        getJsonObject("discount").toDiscount()
     )
 }
 

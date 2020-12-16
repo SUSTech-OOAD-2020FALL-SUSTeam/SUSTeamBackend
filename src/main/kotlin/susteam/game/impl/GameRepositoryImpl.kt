@@ -6,10 +6,10 @@ import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.kotlin.core.json.jsonArrayOf
 import io.vertx.kotlin.ext.jdbc.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.queryAwait
-import io.vertx.kotlin.ext.sql.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.queryWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.ServiceException
+import susteam.discount.Discount
 import susteam.game.*
 import susteam.storage.getStorageFile
 import susteam.storage.getStorageImage
@@ -167,22 +167,33 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
 
     override suspend fun getAllGameProfile(vararg order: Pair<String, String>, limit: Int?): List<GameProfile> {
         val orderString = order.joinToString(", ") { "${it.first} ${it.second}" }
-        return database.queryAwait(
+        return database.queryWithParamsAwait(
             """
-                SELECT game.game_id gameId,
+                WITH sub AS (SELECT game_id, percentage, start_time, end_time
+                             FROM discount
+                             WHERE start_time <= ?
+                               AND end_time >= ?
+                             ORDER BY percentage
+                             LIMIT 1)
+                SELECT game.game_id   gameId,
                        name,
                        price,
-                       publish_date publishDate,
+                       publish_date   publishDate,
                        author,
                        introduction,
-                       gi1.url      imageFullSize,
-                       gi2.url      imageCardSize
+                       gi1.url        imageFullSize,
+                       gi2.url        imageCardSize,
+                       sub.percentage,
+                       sub.start_time startTime,
+                       sub.end_time   endTime
                 FROM game
                          LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
                          LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
+                         LEFT JOIN sub ON sub.game_id = game.game_id
                 ${if (order.isEmpty()) "" else "ORDER BY $orderString"}
                 ${if (limit == null) "" else "LIMIT $limit"};
-            """.trimIndent()
+            """.trimIndent(),
+            jsonArrayOf(ISO_INSTANT.format(Instant.now()), ISO_INSTANT.format(Instant.now()))
         ).rows.map { it.toGameProfile() }
     }
 
@@ -193,25 +204,48 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
     override suspend fun getGameProfile(gameId: Int): GameProfile? {
         return database.querySingleWithParamsAwait(
             """
-                SELECT game.game_id gameId,
+                WITH sub AS (SELECT game_id, percentage, start_time, end_time
+                             FROM discount
+                             WHERE start_time <= ?
+                               AND end_time >= ?
+                             ORDER BY percentage
+                             LIMIT 1)
+                SELECT game.game_id   gameId,
                        name,
                        price,
-                       publish_date publishDate,
+                       publish_date   publishDate,
                        author,
                        introduction,
-                       gi1.url      imageFullSize,
-                       gi2.url      imageCardSize
+                       gi1.url        imageFullSize,
+                       gi2.url        imageCardSize,
+                       sub.percentage,
+                       sub.start_time startTime,
+                       sub.end_time   endTime
                 FROM game
                          LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
                          LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
+                         LEFT JOIN sub ON sub.game_id = game.game_id
                 WHERE game.game_id = ?;
             """.trimIndent(),
-            jsonArrayOf(gameId)
+            jsonArrayOf(ISO_INSTANT.format(Instant.now()), ISO_INSTANT.format(Instant.now()), gameId)
         )?.let {
             GameProfile(
-                it.getInteger(0), it.getString(1), it.getInteger(2),
-                it.getInstant(3), it.getString(4), it.getString(5),
-                it.getStorageImage(6), it.getStorageImage(7)
+                it.getInteger(0),
+                it.getString(1),
+                it.getInteger(2),
+                it.getInstant(3),
+                it.getString(4),
+                it.getString(5),
+                it.getStorageImage(6),
+                it.getStorageImage(7),
+                if (it.getDouble(8) != null)
+                    Discount(
+                        it.getInteger(0),
+                        it.getDouble(8),
+                        it.getInstant(9),
+                        it.getInstant(10)
+                    )
+                else null
             )
         }
     }
@@ -227,7 +261,31 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
             database.queryWithParamsAwait(
                 """SELECT tag FROM game_tag WHERE game_id = ?;""",
                 jsonArrayOf(gameId)
-            ).results.map { it.getString(0) }
+            ).results.map { it.getString(0) },
+            database.querySingleWithParamsAwait(
+                """
+                    SELECT game_id    gameId,
+                           percentage,
+                           start_time startTime,
+                           end_time   endTime
+                    FROM discount
+                    WHERE game_id = ?
+                      AND start_time <= ?
+                      AND end_time >= ?
+                    ORDER BY percentage
+                    LIMIT 1;
+                """.trimIndent(),
+                jsonArrayOf(gameId, ISO_INSTANT.format(Instant.now()), ISO_INSTANT.format(Instant.now()))
+            ).let {
+                if (it != null)
+                    Discount(
+                        it.getInteger(0),
+                        it.getDouble(1),
+                        it.getInstant(2),
+                        it.getInstant(3)
+                    )
+                else null
+            }
         )
     }
 
@@ -265,24 +323,34 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
         val inputs = List(tagSize) { "?" }.joinToString(", ")
         val sql =
             """
-                WITH sub AS (
+                WITH sub2 AS (
                     SELECT game_id, COUNT(*) cnt
                     FROM game_tag
                     WHERE tag IN ($inputs)
                     GROUP BY game_id
                 )
-                SELECT game.game_id gameId,
+                WITH sub AS (SELECT game_id, percentage, start_time, end_time
+                             FROM discount
+                             WHERE start_time <= ?
+                               AND end_time >= ?
+                             ORDER BY percentage
+                             LIMIT 1)
+                SELECT game.game_id   gameId,
                        name,
                        price,
-                       publish_date publishDate,
+                       publish_date   publishDate,
                        author,
                        introduction,
-                       gi1.url      imageFullSize,
-                       gi2.url      imageCardSize,
-                       sub.cnt
+                       gi1.url        imageFullSize,
+                       gi2.url        imageCardSize,
+                       sub.percentage,
+                       sub.start_time startTime,
+                       sub.end_time   endTime,
+                       sub2.cnt
                 FROM game
                          LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
                          LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
+                         LEFT JOIN sub ON sub.game_id = game.game_id
                          JOIN sub ON game.game_id = sub.game_id
                 WHERE cnt = $tagSize
             """.trimIndent()
@@ -309,41 +377,62 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
     }
 
     override suspend fun getGameProfiles(games: List<Int>): List<GameProfile> {
-        return database.queryAwait(
+        return database.queryWithParamsAwait(
             """
-                SELECT game.game_id gameId,
+                WITH sub AS (SELECT game_id, percentage, start_time, end_time
+                             FROM discount
+                             WHERE start_time <= ?
+                               AND end_time >= ?
+                             ORDER BY percentage
+                             LIMIT 1)
+                SELECT game.game_id   gameId,
                        name,
                        price,
-                       publish_date publishDate,
+                       publish_date   publishDate,
                        author,
                        introduction,
-                       gi1.url      imageFullSize,
-                       gi2.url      imageCardSize
+                       gi1.url        imageFullSize,
+                       gi2.url        imageCardSize,
+                       sub.percentage,
+                       sub.start_time startTime,
+                       sub.end_time   endTime
                 FROM game
                          LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
                          LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
+                         LEFT JOIN sub ON sub.game_id = game.game_id
                 WHERE game.game_id IN (${games.joinToString(",")});
-            """.trimIndent()
+            """.trimIndent(),
+            jsonArrayOf(ISO_INSTANT.format(Instant.now()), ISO_INSTANT.format(Instant.now()))
         ).rows.map { it.toGameProfile() }
     }
 
     override suspend fun getDevelopedGameProfile(author: String): List<GameProfile> {
         return database.queryWithParamsAwait(
             """
-                SELECT game.game_id gameId,
+                WITH sub AS (SELECT game_id, percentage, start_time, end_time
+                             FROM discount
+                             WHERE start_time <= ?
+                               AND end_time >= ?
+                             ORDER BY percentage
+                             LIMIT 1)
+                SELECT game.game_id   gameId,
                        name,
                        price,
-                       publish_date publishDate,
+                       publish_date   publishDate,
                        author,
                        introduction,
-                       gi1.url      imageFullSize,
-                       gi2.url      imageCardSize
+                       gi1.url        imageFullSize,
+                       gi2.url        imageCardSize,
+                       sub.percentage,
+                       sub.start_time startTime,
+                       sub.end_time   endTime
                 FROM game
                          LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
                          LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
-                WHERE author = ?;
+                         LEFT JOIN sub ON sub.game_id = game.game_id
+               WHERE author = ?;
             """.trimIndent(),
-            jsonArrayOf(author)
-        ).rows.map { it.toGameProfile() }
+            jsonArrayOf(ISO_INSTANT.format(Instant.now()), ISO_INSTANT.format(Instant.now()), author)
+        ).rows.map{ it.toGameProfile() }
     }
 }
