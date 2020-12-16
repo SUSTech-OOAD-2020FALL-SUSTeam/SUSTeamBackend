@@ -16,7 +16,7 @@ GET {{host}}/api/gameKey/1709958556112275173779206261496011538612088445701588374
 
 ###
 
-GET {{host}}/api/key/11
+GET {{host}}/api/key/1
 Authorization: Bearer {{admin-token}}
 
 ###

@@ -1,0 +1,22 @@
+###
+
+POST {{host}}/api/record/cCrUDW4alFayrgtI4GsFTEV0brLjZ5k3bwkrJfnKGiRRwEFJiuR1yXACeIzxe71qcVjqB2ykjnZwZ6mY8imGywhLcAm7W96404AuH
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "username": "test001",
+  "score": 25
+}
+
+###
+
+GET {{host}}/api/record/cCrUDW4alFayrgtI4GsFTEV0brLjZ5k3bwkrJfnKGiRRwEFJiuR1yXACeIzxe71qcVjqB2ykjnZwZ6mY8imGywhLcAm7W96404AuH/15
+
+###
+
+GET {{host}}/api/record/max/cCrUDW4alFayrgtI4GsFTEV0brLjZ5k3bwkrJfnKGiRRwEFJiuR1yXACeIzxe71qcVjqB2ykjnZwZ6mY8imGywhLcAm7W96404AuH/test001
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+###

@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage, game_image, game_tag, announcement, `order`, game_save, relationship, achievement, user_achievement_progress, game_map;
+DROP TABLE IF EXISTS user, user_roles, game, game_version, comment, storage, game_image, game_tag, announcement, `order`, game_save, relationship, achievement, user_achievement_progress, game_map, record;
 
 CREATE TABLE user
 (
@@ -179,6 +179,17 @@ CREATE TABLE IF NOT EXISTS achievement
 
     PRIMARY KEY (achievement_id),
     UNIQUE (game_id, achievement_name),
+    FOREIGN KEY (game_id) REFERENCES game (game_id)
+);
+
+CREATE TABLE IF NOT EXISTS `record`
+(
+    record_id   INT          NOT NULL AUTO_INCREMENT,
+    game_id          INT          NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    score      INT NOT NULL,
+
+    PRIMARY KEY (record_id),
     FOREIGN KEY (game_id) REFERENCES game (game_id)
 );
 

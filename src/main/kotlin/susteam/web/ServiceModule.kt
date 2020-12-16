@@ -37,6 +37,10 @@ import susteam.order.OrderController
 import susteam.order.OrderRepository
 import susteam.order.OrderService
 import susteam.order.impl.OrderRepositoryImpl
+import susteam.record.RecordController
+import susteam.record.RecordRepository
+import susteam.record.RecordService
+import susteam.record.impl.RecordRepositoryImpl
 import susteam.repository.RepositoryProvider
 import susteam.repository.impl.RepositoryProviderImpl
 import susteam.save.GameSaveController
@@ -144,6 +148,10 @@ class ServiceModule(
         bind(AchievementController::class.java)
         bind(AchievementService::class.java)
         bind(AchievementRepository::class.java).to(AchievementRepositoryImpl::class.java)
+
+        bind(RecordController::class.java)
+        bind(RecordService::class.java)
+        bind(RecordRepository::class.java).to(RecordRepositoryImpl::class.java)
     }
 
     suspend fun close() {
