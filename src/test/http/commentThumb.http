@@ -1,0 +1,36 @@
+POST {{host}}/api/comment
+Authorization: Bearer {{test001-token}}
+Content-Type: application/json
+
+{
+  "gameId": 5,
+  "content": "good",
+  "score": 5
+}
+
+###
+
+POST {{host}}/api/commentThumb
+Content-Type: application/json
+Authorization: Bearer {{test001-token}}
+
+{
+  "gameId": 1,
+  "commenter": "test001",
+  "vote": 1
+}
+###
+
+POST {{host}}/api/commentThumb
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+  "gameId": 1,
+  "commenter": "test001",
+  "vote": 1
+}
+
+###
+
+GET {{host}}/api/commentThumb/test001/1
