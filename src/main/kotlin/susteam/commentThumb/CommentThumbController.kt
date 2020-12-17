@@ -10,11 +10,13 @@ import susteam.ServiceException
 import susteam.user.Auth
 
 class CommentThumbController @Inject constructor(
-    private val service: CommentThumbService) : CoroutineController() {
+    private val service: CommentThumbService
+) : CoroutineController() {
 
     override fun route(router: Router) {
         router.post("/commentThumb").coroutineHandler(::handleSetCommentThumb)
         router.get("/commentThumb/:commenter/:gameId").coroutineHandler(::handleGetCommentThumbSum)
+        router.get("/game/:gameId/commentThumb/:username").coroutineHandler(::handleGetCommentThumbByGame)
     }
 
 
@@ -26,7 +28,7 @@ class CommentThumbController @Inject constructor(
 
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
-        service.setCommentThumb(auth, gameId, commenter,voteNum)
+        service.setCommentThumb(auth, gameId, commenter, voteNum)
 
         context.success()
     }
@@ -41,6 +43,21 @@ class CommentThumbController @Inject constructor(
         context.success(
             jsonObjectOf(
                 "voteSum" to sum
+            )
+        )
+
+    }
+
+    suspend fun handleGetCommentThumbByGame(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+        val username = request.getParam("username") ?: throw ServiceException("username not found")
+
+        val list = service.getCommentThumbByGame(gameId, username)
+
+        context.success(
+            jsonObjectOf(
+                "commentThumbs" to list.map { it.toJson() }
             )
         )
 

@@ -21,4 +21,10 @@ interface CommentThumbRepository {
         gameId: Int,
         commenter: String
     ): Int?
+
+    suspend fun getCommentThumbByGame(
+        gameId: Int,
+        username: String
+    ): List<CommentThumb>
+
 }

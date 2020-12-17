@@ -23,15 +23,19 @@ class CommentThumbService @Inject constructor(
         }
 
         if (!repository.insertCommentThumb(auth.username, gameId, commenter, voteNum)) {
-                repository.changeCommentThumb(auth.username, gameId, commenter, voteNum)
-            }
+            repository.changeCommentThumb(auth.username, gameId, commenter, voteNum)
         }
+    }
 
     suspend fun getCommentThumbSum(
         gameId: Int,
         commenter: String
     ): Int {
         return repository.calCommentThumbSum(gameId, commenter) ?: 0
+    }
+
+    suspend fun getCommentThumbByGame(gameId: Int, username: String): List<CommentThumb> {
+        return repository.getCommentThumbByGame(gameId, username)
     }
 
 }

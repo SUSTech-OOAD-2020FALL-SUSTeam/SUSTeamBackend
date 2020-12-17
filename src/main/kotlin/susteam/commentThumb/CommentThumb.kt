@@ -17,7 +17,7 @@ fun CommentThumb.toJson(): JsonObject = jsonObjectOf(
     "vote" to vote
 )
 
-fun JsonObject.toComment(): CommentThumb = CommentThumb(
+fun JsonObject.toCommentThumb(): CommentThumb = CommentThumb(
     getString("commenter"),
     getInteger("gameId"),
     getString("username"),

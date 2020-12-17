@@ -8,7 +8,9 @@ import io.vertx.kotlin.ext.sql.querySingleWithParamsAwait
 import io.vertx.kotlin.ext.sql.queryWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.ServiceException
+import susteam.commentThumb.CommentThumb
 import susteam.commentThumb.CommentThumbRepository
+import susteam.commentThumb.toCommentThumb
 import susteam.record.Record
 import java.sql.SQLIntegrityConstraintViolationException
 
@@ -52,7 +54,22 @@ class CommentThumbRepositoryImpl @Inject constructor(private val database: JDBCC
                         comment_thumb
                         WHERE game_id = ? and commenter = ?
                         """,
-            jsonArrayOf(gameId, commenter))?.getInteger(0)
+            jsonArrayOf(gameId, commenter)
+        )?.getInteger(0)
     }
 
+    override suspend fun getCommentThumbByGame(
+        gameId: Int,
+        username: String
+    ): List<CommentThumb> {
+        return database.queryWithParamsAwait(
+            """
+                SELECT commenter, game_id, username, vote
+                FROM comment_thumb
+                WHERE game_id = ?
+                  AND username = ?;
+            """.trimIndent(),
+            jsonArrayOf(gameId, username)
+        ).rows.map { it.toCommentThumb() }
+    }
 }
