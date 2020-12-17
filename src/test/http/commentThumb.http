@@ -37,4 +37,4 @@ GET {{host}}/api/commentThumb/test001/1
 
 ###
 
-GET {{host}}/api/game/1/commentThumb/test001
+GET {{host}}/api/game/1/commentThumb

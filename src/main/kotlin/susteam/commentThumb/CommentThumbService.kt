@@ -1,13 +1,9 @@
 package susteam.commentThumb
 
 import com.google.inject.Inject
-import io.vertx.core.json.JsonObject
 import susteam.ServiceException
-import susteam.order.OrderStatus
-import susteam.record.Record
 import susteam.user.Auth
 import susteam.user.username
-import java.time.Instant
 
 class CommentThumbService @Inject constructor(
     private val repository: CommentThumbRepository
@@ -36,6 +32,10 @@ class CommentThumbService @Inject constructor(
 
     suspend fun getCommentThumbByGame(gameId: Int, username: String): List<CommentThumb> {
         return repository.getCommentThumbByGame(gameId, username)
+    }
+
+    suspend fun getCommentThumbSumByGame(gameId: Int): List<Triple<String,Int,Int>> {
+        return repository.getCommentThumbSumByGame(gameId)
     }
 
 }

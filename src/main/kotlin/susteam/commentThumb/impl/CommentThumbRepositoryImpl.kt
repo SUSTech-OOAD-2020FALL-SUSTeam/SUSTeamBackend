@@ -72,4 +72,27 @@ class CommentThumbRepositoryImpl @Inject constructor(private val database: JDBCC
             jsonArrayOf(gameId, username)
         ).rows.map { it.toCommentThumb() }
     }
+
+    override suspend fun getCommentThumbSumByGame(gameId: Int): List<Triple<String, Int, Int>> {
+        return database.queryWithParamsAwait(
+            """
+            SELECT username, COALESCE(up.upvote, 0) upvote, COALESCE(down.downvote, 0) downvote
+            FROM comment
+                     LEFT JOIN (SELECT commenter, COUNT(*) upvote
+                                FROM comment_thumb
+                                WHERE game_id = ?
+                                  AND vote = 1
+                                GROUP BY (commenter)) up
+                               ON username = up.commenter
+                     LEFT JOIN (SELECT commenter, COUNT(*) downvote
+                                FROM comment_thumb
+                                WHERE game_id = ?
+                                  AND vote = -1
+                                GROUP BY (commenter)) down
+                               ON username = down.commenter
+            WHERE game_id = ?;
+            """.trimIndent(),
+            jsonArrayOf(gameId, gameId, gameId)
+        ).results.map { Triple(it.getString(0), it.getInteger(1), it.getInteger(2)) }
+    }
 }

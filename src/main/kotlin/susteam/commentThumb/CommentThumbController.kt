@@ -1,7 +1,6 @@
 package susteam.commentThumb
 
 import com.google.inject.Inject
-import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.json.jsonObjectOf
@@ -19,7 +18,6 @@ class CommentThumbController @Inject constructor(
         router.get("/commentThumb/:commenter/:gameId").coroutineHandler(::handleGetCommentThumbSum)
         router.get("/game/:gameId/commentThumb").coroutineHandler(::handleGetCommentThumbByGame)
     }
-
 
     suspend fun handleSetCommentThumb(context: RoutingContext) {
         val params = context.bodyAsJson
@@ -55,11 +53,19 @@ class CommentThumbController @Inject constructor(
 
         val auth: Auth? = context.user()
 
-        val list = if (auth != null) service.getCommentThumbByGame(gameId, auth.username) else emptyList()
+        val commentThumbs = if (auth != null) service.getCommentThumbByGame(gameId, auth.username) else emptyList()
+        val thumbSummary = service.getCommentThumbSumByGame(gameId)
 
         context.success(
             jsonObjectOf(
-                "commentThumbs" to list.map { it.toJson() }
+                "commentThumbs" to commentThumbs.map { it.toJson() },
+                "thumbSummary" to thumbSummary.map {
+                    jsonObjectOf(
+                        "commenter" to it.first,
+                        "upvote" to it.second,
+                        "downvote" to it.third
+                    )
+                }
             )
         )
 

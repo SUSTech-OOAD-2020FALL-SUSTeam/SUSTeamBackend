@@ -27,4 +27,8 @@ interface CommentThumbRepository {
         username: String
     ): List<CommentThumb>
 
+    suspend fun getCommentThumbSumByGame(
+        gameId: Int
+    ): List<Triple<String, Int, Int>>
+
 }
