@@ -44,7 +44,7 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
                  WHERE user1 = ?
                    AND o.game_id = ?
                    AND (o.status = 'REFUNDABLE' OR o.status = 'SUCCESS')
-                   AND status = 'accept')
+                   AND r.status = 'accept')
                 """.trimIndent(),
             jsonArrayOf(username, gameId, username, gameId)
         ).rows.map { it.getString("friend_name").toString() }
