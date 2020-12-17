@@ -14,6 +14,7 @@ class FriendController @Inject constructor(
 ) : CoroutineController() {
     override fun route(router: Router) {
         router.get("/friend").coroutineHandler(::handleGetFriends)
+        router.get("/friend/:gameId").coroutineHandler(::handleGetFriendsHaveGame)
         router.get("/friend/invite/:username/:gameKey").coroutineHandler(::handleInviteFriend)
         router.get("/friend/apply").coroutineHandler(::handleGetFriendsApplication)
         router.get("/friend/reply").coroutineHandler(::handleGetFriendsReply)
@@ -24,6 +25,20 @@ class FriendController @Inject constructor(
     suspend fun handleGetFriends(context: RoutingContext) {
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
         val friendList: List<Friend> = service.getFriends(auth)
+        context.success(
+            jsonObjectOf(
+                "friends" to JsonArray(friendList.map { it.toJson() })
+            )
+        )
+    }
+
+    suspend fun handleGetFriendsHaveGame(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+
+        val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
+
+        val friendList: List<Friend> = service.getFriendsHaveGame(auth, gameId)
         context.success(
             jsonObjectOf(
                 "friends" to JsonArray(friendList.map { it.toJson() })

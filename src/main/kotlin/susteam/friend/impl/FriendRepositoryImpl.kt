@@ -27,6 +27,29 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
         ).rows.map { it.getString("friend_name").toString() }
     }
 
+    override suspend fun getFriendsUsernameHaveGame(username: String, gameId: Int): List<String> {
+        return database.queryWithParamsAwait(
+            """
+                (SELECT user1 friend_name
+                 FROM relationship r
+                          JOIN `order` o ON user1 = o.username
+                 WHERE user2 = ?
+                   AND o.game_id = ?
+                   AND (o.status = 'REFUNDABLE' OR o.status = 'SUCCESS')
+                   AND r.status = 'accept')
+                UNION
+                (SELECT user2 friend_name
+                 FROM relationship r
+                          JOIN `order` o ON user2 = o.username
+                 WHERE user1 = ?
+                   AND o.game_id = ?
+                   AND (o.status = 'REFUNDABLE' OR o.status = 'SUCCESS')
+                   AND status = 'accept')
+                """.trimIndent(),
+            jsonArrayOf(username, gameId, username, gameId)
+        ).rows.map { it.getString("friend_name").toString() }
+    }
+
     override suspend fun addFriend(username: String, target: String) {
         database.queryWithParamsAwait(
             """

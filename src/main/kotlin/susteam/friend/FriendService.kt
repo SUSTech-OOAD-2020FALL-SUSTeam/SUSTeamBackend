@@ -22,6 +22,13 @@ class FriendService @Inject constructor(
         }
     }
 
+    suspend fun getFriendsHaveGame(auth: Auth, gameId: Int): List<Friend> {
+        return repository.getFriendsUsernameHaveGame(auth.username, gameId).map { friendName ->
+            val friendStatus = status.getStatus(friendName)
+            Friend(friendName, friendStatus?.online ?: false, friendStatus?.lastSeen)
+        }
+    }
+
     suspend fun invitedFriend(auth: Auth, username: String, gameKey: String) {
         val game = gameRepository.getGameByGameKey(gameKey) ?: throw ServiceException("Game does not exist")
         if (username in getFriends(auth).map{ it.username })
