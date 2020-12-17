@@ -8,6 +8,7 @@ import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
 import susteam.user.Auth
+import susteam.user.username
 
 class CommentThumbController @Inject constructor(
     private val service: CommentThumbService
@@ -16,7 +17,7 @@ class CommentThumbController @Inject constructor(
     override fun route(router: Router) {
         router.post("/commentThumb").coroutineHandler(::handleSetCommentThumb)
         router.get("/commentThumb/:commenter/:gameId").coroutineHandler(::handleGetCommentThumbSum)
-        router.get("/game/:gameId/commentThumb/:username").coroutineHandler(::handleGetCommentThumbByGame)
+        router.get("/game/:gameId/commentThumb").coroutineHandler(::handleGetCommentThumbByGame)
     }
 
 
@@ -51,9 +52,10 @@ class CommentThumbController @Inject constructor(
     suspend fun handleGetCommentThumbByGame(context: RoutingContext) {
         val request = context.request()
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
-        val username = request.getParam("username") ?: throw ServiceException("username not found")
 
-        val list = service.getCommentThumbByGame(gameId, username)
+        val auth: Auth? = context.user()
+
+        val list = if (auth != null) service.getCommentThumbByGame(gameId, auth.username) else emptyList()
 
         context.success(
             jsonObjectOf(

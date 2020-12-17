@@ -64,7 +64,7 @@ class CommentThumbRepositoryImpl @Inject constructor(private val database: JDBCC
     ): List<CommentThumb> {
         return database.queryWithParamsAwait(
             """
-                SELECT commenter, game_id, username, vote
+                SELECT commenter, game_id gameId, username, vote
                 FROM comment_thumb
                 WHERE game_id = ?
                   AND username = ?;
