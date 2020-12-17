@@ -1,0 +1,21 @@
+###
+
+GET {{host}}/api/discount/1
+
+###
+
+GET {{host}}/api/discount/2
+
+###
+
+POST {{host}}/api/discount/2
+Content-Type: application/json
+Authorization: Bearer {{admin-token}}
+
+{
+    "percentage": 0.5,
+    "startTime": "2020-04-19T00:00:01.000Z",
+    "endTime": "2022-01-19T00:00:01.000Z"
+}
+
+###

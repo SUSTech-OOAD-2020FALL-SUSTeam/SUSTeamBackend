@@ -12,6 +12,7 @@ import susteam.achievement.AchievementController
 import susteam.announcement.AnnouncementController
 import susteam.comment.CommentController
 import susteam.commentThumb.CommentThumbController
+import susteam.discount.DiscountController
 import susteam.friend.FriendController
 import susteam.game.GameController
 import susteam.order.OrderController
@@ -71,7 +72,8 @@ class APIServerVerticle : CoroutineVerticle() {
             injector.getInstance(FriendController::class.java),
             injector.getInstance(AchievementController::class.java),
             injector.getInstance(RecordController::class.java),
-            injector.getInstance(CommentThumbController::class.java)
+            injector.getInstance(CommentThumbController::class.java),
+            injector.getInstance(DiscountController::class.java)
         )
         for (controller in controllers) {
             controller.route(router)

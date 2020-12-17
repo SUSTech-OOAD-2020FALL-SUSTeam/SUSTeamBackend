@@ -28,6 +28,10 @@ import susteam.commentThumb.CommentThumbController
 import susteam.commentThumb.CommentThumbRepository
 import susteam.commentThumb.CommentThumbService
 import susteam.commentThumb.impl.CommentThumbRepositoryImpl
+import susteam.discount.DiscountController
+import susteam.discount.DiscountRepository
+import susteam.discount.DiscountService
+import susteam.discount.impl.DiscountRepositoryImpl
 import susteam.friend.FriendController
 import susteam.friend.FriendRepository
 import susteam.friend.FriendService
@@ -160,6 +164,10 @@ class ServiceModule(
         bind(CommentThumbController::class.java)
         bind(CommentThumbService::class.java)
         bind(CommentThumbRepository::class.java).to(CommentThumbRepositoryImpl::class.java)
+
+        bind(DiscountController::class.java)
+        bind(DiscountService::class.java)
+        bind(DiscountRepository::class.java).to(DiscountRepositoryImpl::class.java)
     }
 
     suspend fun close() {
