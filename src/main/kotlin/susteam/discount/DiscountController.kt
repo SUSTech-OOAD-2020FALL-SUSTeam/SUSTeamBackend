@@ -1,6 +1,7 @@
 package susteam.discount
 
 import com.google.inject.Inject
+import io.vertx.core.json.JsonArray
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.json.jsonObjectOf
@@ -13,6 +14,7 @@ class DiscountController @Inject constructor(
 ) : CoroutineController() {
     override fun route(router: Router) {
         router.get("/discount/:gameId").coroutineHandler(::handleGetDiscount)
+        router.get("/discounts/:gameId").coroutineHandler(::handleGetDiscounts)
         router.post("/discount/:gameId").coroutineHandler(::handleAddDiscount)
     }
 
@@ -43,5 +45,18 @@ class DiscountController @Inject constructor(
         service.addDiscount(auth, gameId, percentage, startTime, endTime)
 
         context.success()
+    }
+
+    suspend fun handleGetDiscounts(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+
+        val discounts = service.getDiscounts(gameId)
+
+        context.success(
+            jsonObjectOf(
+                "discounts" to JsonArray(discounts.map { it })
+            )
+        )
     }
 }

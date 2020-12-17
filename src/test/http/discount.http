@@ -4,7 +4,7 @@ GET {{host}}/api/discount/1
 
 ###
 
-GET {{host}}/api/discount/2
+GET {{host}}/api/discounts/33
 
 ###
 

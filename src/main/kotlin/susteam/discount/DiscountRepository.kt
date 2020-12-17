@@ -11,4 +11,6 @@ interface DiscountRepository {
         startTime: Instant,
         endTime: Instant
     )
+
+    suspend fun getDiscounts(gameId: Int): List<Discount>
 }

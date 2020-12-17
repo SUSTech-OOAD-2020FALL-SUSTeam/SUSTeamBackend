@@ -4,9 +4,11 @@ import com.google.inject.Inject
 import io.vertx.ext.jdbc.JDBCClient
 import io.vertx.kotlin.core.json.jsonArrayOf
 import io.vertx.kotlin.ext.jdbc.querySingleWithParamsAwait
+import io.vertx.kotlin.ext.sql.queryWithParamsAwait
 import io.vertx.kotlin.ext.sql.updateWithParamsAwait
 import susteam.discount.Discount
 import susteam.discount.DiscountRepository
+import susteam.discount.toDiscount
 import java.time.Instant
 import java.time.format.DateTimeFormatter.ISO_INSTANT
 
@@ -52,4 +54,21 @@ class DiscountRepositoryImpl @Inject constructor(private val database: JDBCClien
             jsonArrayOf(gameId, percentage, ISO_INSTANT.format(startTime), ISO_INSTANT.format(endTime))
         )
     }
+
+    override suspend fun getDiscounts(gameId: Int): List<Discount> {
+        return database.queryWithParamsAwait(
+            """
+                SELECT game_id    gameId,
+                       percentage,
+                       start_time startTime,
+                       end_time   endTime
+                FROM discount
+                WHERE game_id = ?
+                ORDER BY start_time DESC;
+            """.trimIndent(),
+            jsonArrayOf(gameId)
+        ).rows.map{ it.toDiscount() }
+    }
+
+
 }

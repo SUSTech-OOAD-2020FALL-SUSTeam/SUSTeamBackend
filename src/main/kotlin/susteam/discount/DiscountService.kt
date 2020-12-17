@@ -14,6 +14,7 @@ class DiscountService @Inject constructor(
     private val gameRepository: GameRepository
 ) {
     suspend fun getDiscount(gameId: Int): Discount? {
+        gameRepository.getById(gameId) ?: throw ServiceException("Game does not exist")
         return repository.getDiscount(gameId)
     }
 
@@ -40,5 +41,10 @@ class DiscountService @Inject constructor(
         }
 
         repository.addDiscount(gameId, percentage, startTime, endTime)
+    }
+
+    suspend fun getDiscounts(gameId: Int): List<Discount> {
+        gameRepository.getById(gameId) ?: throw ServiceException("Game does not exist")
+        return repository.getDiscounts(gameId)
     }
 }
