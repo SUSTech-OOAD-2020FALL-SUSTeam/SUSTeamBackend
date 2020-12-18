@@ -49,4 +49,12 @@ class GameSaveService @Inject constructor(
             throw ServiceException("Permission denied, user not own the game")
         }
     }
+
+    suspend fun checkBoughtBool(auth: Auth, gameId: Int): Boolean {
+        return when {
+            auth.isAdmin() -> true
+            orderRepository.checkOrder(auth.username, gameId) == OrderStatus.SUCCESS -> true
+            else -> false
+        }
+    }
 }

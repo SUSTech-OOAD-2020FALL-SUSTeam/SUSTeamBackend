@@ -116,8 +116,12 @@ class GameSaveController @Inject constructor(
         val gameKey = request.getParam("gameKey")?: throw ServiceException("Game Key not found")
 
         val game = gameService.getGameByGameKey(gameKey)
-        service.checkBought(auth, game.id)
+        val bought = service.checkBoughtBool(auth, game.id)
 
-        context.success()
+        context.success(
+            jsonObjectOf(
+                "bought" to bought
+            )
+        )
     }
 }
