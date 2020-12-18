@@ -22,6 +22,7 @@ class GameSaveController @Inject constructor(
         router.get("/save/:username/:gameKey/:saveName/delete").coroutineHandler(::handleDeleteGameSave)
         router.get("/save/:username/:gameKey/:saveName").coroutineHandler(::handleGetGameSave)
         router.get("/check/:gameId").coroutineHandler(::handleCheckBought)
+        router.get("/check/key/:gameKey").coroutineHandler(::handleCheckBoughtByGameKey)
     }
 
     private suspend fun handleGetAllGameSave(context: RoutingContext) {
@@ -104,6 +105,18 @@ class GameSaveController @Inject constructor(
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
 
         service.checkBought(auth, gameId)
+
+        context.success()
+    }
+
+    private suspend fun handleCheckBoughtByGameKey(context: RoutingContext) {
+        val request = context.request()
+
+        val auth = context.user() ?: throw ServiceException("Permission denied, please login")
+        val gameKey = request.getParam("gameKey")?: throw ServiceException("Game Key not found")
+
+        val game = gameService.getGameByGameKey(gameKey)
+        service.checkBought(auth, game.id)
 
         context.success()
     }
