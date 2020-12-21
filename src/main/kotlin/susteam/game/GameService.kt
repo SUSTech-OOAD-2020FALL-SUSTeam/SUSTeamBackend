@@ -85,17 +85,30 @@ class GameService @Inject constructor(
         return repository.getGameKey(gameId) ?: throw ServiceException("Game key does not exist")
     }
 
-    suspend fun getNewestVersion(
-        gameId: Int
-    ): GameVersion {
-        return repository.getNewestVersion(gameId) ?: throw ServiceException("Game or version does not exist")
+    suspend fun getVersionOfBranch(
+        gameId: Int,
+        branchName: String = "Main"
+    ): List<GameVersion> {
+        repository.getById(gameId) ?: throw ServiceException("Game does not exist")
+        return repository.getVersionOfBranch(gameId, branchName)
     }
+
+    suspend fun getNewestVersion(
+        gameId: Int,
+        branchName: String = "Main"
+    ): GameVersion {
+        return repository.getNewestVersion(gameId, branchName)
+            ?: throw ServiceException("Game or version does not exist")
+    }
+
 
     suspend fun publishGameVersion(
         auth: Auth,
         gameId: Int,
+        branch: String,
         versionName: String,
-        url: StorageFile
+        url: StorageFile,
+        updateUrl: StorageFile?
     ) {
         if (versionName.isBlank()) {
             throw ServiceException("Game version name is blank")
@@ -114,8 +127,9 @@ class GameService @Inject constructor(
         }
 
         val uploadTime = Instant.now()
-        repository.createVersion(gameId, uploadTime, versionName, url.id)
+        repository.createVersion(gameId, branch, uploadTime, versionName, url.id, updateUrl?.id)
     }
+
 
     suspend fun updateGame(
         auth: Auth,

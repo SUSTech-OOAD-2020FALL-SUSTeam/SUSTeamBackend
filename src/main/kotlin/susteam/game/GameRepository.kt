@@ -33,16 +33,20 @@ interface GameRepository {
 
     suspend fun createVersion(
         gameId: Int,
+        branch: String,
         uploadTime: Instant,
         versionName: String,
-        url: String
+        url: String,
+        updateUrl: String?,
     )
 
     suspend fun getById(id: Int): Game?
 
     suspend fun getVersion(gameId: Int, versionName: String): GameVersion?
 
-    suspend fun getNewestVersion(gameId: Int): GameVersion?
+    suspend fun getNewestVersion(gameId: Int, branchName: String): GameVersion?
+
+    suspend fun getVersionOfBranch(gameId: Int, branchName: String): List<GameVersion>
 
     suspend fun getAllGameProfileOrderByPublishDate(): List<GameProfile>
 

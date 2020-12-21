@@ -60,10 +60,12 @@ CREATE TABLE IF NOT EXISTS game
 CREATE TABLE IF NOT EXISTS game_version
 (
     game_id     INT          NOT NULL,
+    branch      VARCHAR(255) NOT NULL DEFAULT 'Main',
     upload_time DATETIME(3)  NOT NULL,
     name        VARCHAR(255) NOT NULL,
     url         VARCHAR(255) NOT NULL,
-
+    update_url  VARCHAR(255),
+    
     UNIQUE (url),
     PRIMARY KEY (game_id, name),
     FOREIGN KEY (game_id) REFERENCES game (game_id)
@@ -148,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `announcement`
 
 CREATE TABLE IF NOT EXISTS discount
 (
-    game_id         INT         NOT NULL,
+    game_id    INT         NOT NULL,
     percentage DOUBLE      NOT NULL,
     start_time DATETIME(3) NOT NULL,
     end_time   DATETIME(3) NOT NULL,

@@ -37,7 +37,9 @@ class GameController @Inject constructor(
 
         router.get("/game/:gameId/version/:versionName").coroutineHandler(::handleGetVersion)
         router.get("/game/:gameId/version").coroutineHandler(::handleGetNewestVersion)
+        router.get("/game/:gameId/version/branch/:branchName").coroutineHandler(::handleGetVersionOfBranch)
         router.post("/game/:gameId/version").coroutineHandler(::handlePublishGameVersion)
+
         router.post("/game/:gameId/upload").coroutineHandler(::handleUploadGameVersion)
         router.get("/game/:gameId/version/:versionName/download").coroutineHandler(::handleDownloadGameVersion)
 
@@ -203,12 +205,14 @@ class GameController @Inject constructor(
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
 
         val params = context.bodyAsJson
+        val branch = params.getString("branch") ?: throw ServiceException("Game version name is empty")
         val versionName = params.getString("name") ?: throw ServiceException("Game version name is empty")
         val url = params.getStorageFile("url") ?: throw ServiceException("URL is empty")
+        val updateUrl = params.getStorageFile("updateUrl")
 
         val auth: Auth = context.user() ?: throw ServiceException("Permission denied, please login")
 
-        service.publishGameVersion(auth, gameId, versionName, url)
+        service.publishGameVersion(auth, gameId, branch, versionName, url, updateUrl)
 
         context.success()
     }
@@ -236,6 +240,20 @@ class GameController @Inject constructor(
         context.success(
             jsonObjectOf(
                 "gameVersion" to gameVersion.toJson()
+            )
+        )
+    }
+
+    suspend fun handleGetVersionOfBranch(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+        val branchName = request.getParam("branchName") ?: throw ServiceException("Game ID not found")
+
+        val versions = service.getVersionOfBranch(gameId, branchName)
+
+        context.success(
+            jsonObjectOf(
+                "versions" to versions.map { it.toJson() }
             )
         )
     }

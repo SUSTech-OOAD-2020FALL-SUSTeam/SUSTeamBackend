@@ -90,14 +90,16 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
 
     override suspend fun createVersion(
         gameId: Int,
+        branch: String,
         uploadTime: Instant,
         versionName: String,
-        url: String
+        url: String,
+        updateUrl: String?,
     ) {
         try {
             database.updateWithParamsAwait(
-                """INSERT INTO game_version (game_id, upload_time, name, url) VALUES (?, ?, ?, ?);""",
-                jsonArrayOf(gameId, uploadTime, versionName, url)
+                """INSERT INTO game_version (game_id, branch, upload_time, name, url, update_url) VALUES (?, ?, ?, ?, ?, ?);""",
+                jsonArrayOf(gameId, branch, uploadTime, versionName, url, updateUrl)
             )
         } catch (e: SQLIntegrityConstraintViolationException) {
             val message = e.message ?: throw e
@@ -132,27 +134,60 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
 
     override suspend fun getVersion(gameId: Int, versionName: String): GameVersion? {
         return database.querySingleWithParamsAwait(
-            """SELECT game_id, upload_time, name, url FROM game_version WHERE name = ? AND game_id = ?;""",
+            """
+            SELECT game_id, branch, upload_time, name, url, update_url FROM game_version 
+            WHERE name = ? AND game_id = ?;
+            """.trimIndent(),
             jsonArrayOf(versionName, gameId)
         )?.let {
             GameVersion(
-                it.getInteger(0), it.getInstant(1), it.getString(2), it.getStorageFile(3)!!
+                it.getInteger(0),
+                it.getString(1),
+                it.getInstant(2),
+                it.getString(3),
+                it.getStorageFile(4)!!,
+                it.getStorageFile(5)
             )
         }
     }
 
-    override suspend fun getNewestVersion(gameId: Int): GameVersion? {
+    override suspend fun getNewestVersion(gameId: Int, branchName: String): GameVersion? {
         return database.querySingleWithParamsAwait(
             """
-                SELECT game_id, upload_time, name, url FROM game_version
-                WHERE game_id = ?
+                SELECT game_id, branch, upload_time, name, url, update_url FROM game_version 
+                WHERE game_id = ? AND branch = ?
                 ORDER BY upload_time DESC
                 LIMIT 1;
             """.trimIndent(),
-            jsonArrayOf(gameId)
+            jsonArrayOf(gameId, branchName)
         )?.let {
             GameVersion(
-                it.getInteger(0), it.getInstant(1), it.getString(2), it.getStorageFile(3)!!
+                it.getInteger(0),
+                it.getString(1),
+                it.getInstant(2),
+                it.getString(3),
+                it.getStorageFile(4)!!,
+                it.getStorageFile(5)
+            )
+        }
+    }
+
+    override suspend fun getVersionOfBranch(gameId: Int, branchName: String): List<GameVersion> {
+        return database.queryWithParamsAwait(
+            """
+                SELECT game_id, branch, upload_time, name, url, update_url FROM game_version 
+                WHERE game_id = ? AND branch = ?
+                ORDER BY upload_time DESC;
+            """.trimIndent(),
+            jsonArrayOf(gameId, branchName)
+        ).results.map {
+            GameVersion(
+                it.getInteger(0),
+                it.getString(1),
+                it.getInstant(2),
+                it.getString(3),
+                it.getStorageFile(4)!!,
+                it.getStorageFile(5)
             )
         }
     }
@@ -433,6 +468,6 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
                WHERE author = ?;
             """.trimIndent(),
             jsonArrayOf(ISO_INSTANT.format(Instant.now()), ISO_INSTANT.format(Instant.now()), author)
-        ).rows.map{ it.toGameProfile() }
+        ).rows.map { it.toGameProfile() }
     }
 }
