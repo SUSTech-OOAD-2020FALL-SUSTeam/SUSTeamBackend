@@ -93,6 +93,11 @@ class GameService @Inject constructor(
         return repository.getVersionOfBranch(gameId, branchName)
     }
 
+    suspend fun getAllBranch(gameId: Int): List<String> {
+        repository.getById(gameId) ?: throw ServiceException("Game does not exist")
+        return repository.getAllBranch(gameId)
+    }
+
     suspend fun getNewestVersion(
         gameId: Int,
         branchName: String = "Main"

@@ -35,9 +35,10 @@ class GameController @Inject constructor(
         router.get("/games").coroutineHandler(::handleGetAllGames)
         router.get("/games/recommend").coroutineHandler(::handleGetRecommendGames)
 
-        router.get("/game/:gameId/version/:versionName").coroutineHandler(::handleGetVersion)
         router.get("/game/:gameId/version").coroutineHandler(::handleGetNewestVersion)
         router.get("/game/:gameId/version/branch/:branchName").coroutineHandler(::handleGetVersionOfBranch)
+        router.get("/game/:gameId/version/branches").coroutineHandler(::handleGetAllBranch)
+        router.get("/game/:gameId/version/:versionName").coroutineHandler(::handleGetVersion)
         router.post("/game/:gameId/version").coroutineHandler(::handlePublishGameVersion)
 
         router.post("/game/:gameId/upload").coroutineHandler(::handleUploadGameVersion)
@@ -256,6 +257,20 @@ class GameController @Inject constructor(
                 "versions" to versions.map { it.toJson() }
             )
         )
+    }
+
+    suspend fun handleGetAllBranch(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID not found")
+
+        val branches = service.getAllBranch(gameId)
+
+        context.success(
+            jsonObjectOf(
+                "branches" to branches
+            )
+        )
+
     }
 
     suspend fun handleUploadGameVersion(context: RoutingContext) {

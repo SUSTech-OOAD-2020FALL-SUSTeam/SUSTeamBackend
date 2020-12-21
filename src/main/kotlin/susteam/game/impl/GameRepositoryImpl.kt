@@ -192,6 +192,14 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
         }
     }
 
+    override suspend fun getAllBranch(gameId: Int): List<String> {
+        return database.queryWithParamsAwait(
+            """
+            SELECT DISTINCT branch FROM game_version WHERE game_id = ?
+            """.trimIndent(), jsonArrayOf(gameId)
+        ).results.map { it.getString(0) }
+    }
+
     override suspend fun getAllGameProfileOrderByPublishDate(): List<GameProfile> {
         return getAllGameProfile("publish_date" to "DESC")
     }

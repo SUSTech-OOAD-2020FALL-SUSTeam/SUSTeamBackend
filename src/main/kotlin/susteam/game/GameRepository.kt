@@ -48,6 +48,8 @@ interface GameRepository {
 
     suspend fun getVersionOfBranch(gameId: Int, branchName: String): List<GameVersion>
 
+    suspend fun getAllBranch(gameId: Int): List<String>
+
     suspend fun getAllGameProfileOrderByPublishDate(): List<GameProfile>
 
     suspend fun getAllGameProfileOrderByName(): List<GameProfile>
