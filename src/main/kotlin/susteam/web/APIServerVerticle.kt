@@ -35,8 +35,6 @@ class APIServerVerticle : CoroutineVerticle() {
         config.getJsonObject("webserver_config").getString("cors_origin")?.let {
             router.route().handler(
                 CorsHandler.create(it)
-                    .allowedHeader("Access-Control-Allow-Method")
-                    .allowedHeader("Access-Control-Allow-Origin")
                     .allowedHeader("Content-Type")
                     .allowedHeader("Authorization")
                     .allowedMethod(HttpMethod.GET)

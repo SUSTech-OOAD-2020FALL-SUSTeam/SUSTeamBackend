@@ -420,6 +420,9 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
     }
 
     override suspend fun getGameProfiles(games: List<Int>): List<GameProfile> {
+        if (games.isEmpty()) {
+            return emptyList()
+        }
         return database.queryWithParamsAwait(
             """
                 WITH sub AS (SELECT game_id, percentage, start_time, end_time
