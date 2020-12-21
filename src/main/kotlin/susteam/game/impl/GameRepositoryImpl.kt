@@ -371,13 +371,15 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
                     FROM game_tag
                     WHERE tag IN ($inputs)
                     GROUP BY game_id
-                )
-                WITH sub AS (SELECT game_id, percentage, start_time, end_time
-                             FROM discount
-                             WHERE start_time <= ?
-                               AND end_time >= ?
-                             ORDER BY percentage
-                             LIMIT 1)
+                ),
+                     sub AS (
+                         SELECT game_id, percentage, start_time, end_time
+                         FROM discount
+                         WHERE start_time <= ?
+                           AND end_time >= ?
+                         ORDER BY percentage
+                         LIMIT 1
+                     )
                 SELECT game.game_id   gameId,
                        name,
                        price,
@@ -394,11 +396,11 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
                          LEFT JOIN game_image gi1 ON game.game_id = gi1.game_id AND gi1.type = 'F'
                          LEFT JOIN game_image gi2 ON game.game_id = gi2.game_id AND gi2.type = 'C'
                          LEFT JOIN sub ON sub.game_id = game.game_id
-                         JOIN sub ON game.game_id = sub.game_id
-                WHERE cnt = $tagSize
+                         JOIN sub2 ON game.game_id = sub2.game_id
+                WHERE sub2.cnt = $tagSize;
             """.trimIndent()
         return database.queryWithParamsAwait(
-            sql, JsonArray(tags)
+            sql, JsonArray(tags).add(ISO_INSTANT.format(Instant.now())).add(ISO_INSTANT.format(Instant.now()))
         ).rows.map { it.toGameProfile() }
     }
 
