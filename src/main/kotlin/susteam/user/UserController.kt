@@ -1,13 +1,21 @@
 package susteam.user
 
 import com.google.inject.Inject
+import io.vertx.core.file.FileSystem
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import io.vertx.kotlin.core.file.readFileAwait
 import io.vertx.kotlin.core.json.jsonObjectOf
 import susteam.CoroutineController
 import susteam.ServiceException
+import susteam.storage.StorageService
+import javax.imageio.ImageIO
 
-class UserController @Inject constructor(private val service: UserService) : CoroutineController() {
+class UserController @Inject constructor(
+    private val service: UserService,
+    private val fileSystem: FileSystem,
+    private val storage: StorageService
+) : CoroutineController() {
 
     override fun route(router: Router) {
         router.get("/token").coroutineHandler(::handleGetToken)
@@ -15,7 +23,8 @@ class UserController @Inject constructor(private val service: UserService) : Cor
 
         router.post("/user").coroutineHandler(::handleSignUp)
         router.get("/user/:username").coroutineHandler(::handleGetUser)
-        router.post("/user").coroutineHandler(::handleUpdateUser)
+        router.put("/user/:username").coroutineHandler(::handleUpdateUser)
+        router.put("/user/:username/avatar").coroutineHandler(::handleUploadAvatar)
     }
 
     suspend fun handleGetToken(context: RoutingContext) {
@@ -79,16 +88,32 @@ class UserController @Inject constructor(private val service: UserService) : Cor
         )
     }
 
+    suspend fun handleUploadAvatar(context: RoutingContext) {
+        val username = context.request().getParam("username") ?: throw ServiceException("Username not found")
+        val user = context.user() ?: throw ServiceException("Permission denied, please login")
+
+        if (!user.isAdmin() && username != user.username) {
+            throw ServiceException("Permission denied")
+        }
+
+        val image = context.fileUploads().first()
+        val bytes = fileSystem.readFileAwait(image.uploadedFileName()).bytes
+        ImageIO.read(bytes.inputStream()) ?: throw ServiceException("Cannot decode image")
+
+        val store = storage.uploadImage(image)
+        service.updateUser(username, avatar = store.url)
+
+        context.success()
+    }
+
     suspend fun handleUpdateUser(context: RoutingContext) {
         val params = context.bodyAsJson
-        val username = params.getString("username") ?: throw ServiceException("Username is empty")
-        val mail = params.getString("mail") ?: throw ServiceException("Mail is empty")
-        val avatar: String? = params.getString("avatar")
-        val description: String? = params.getString("description")
-        val balance: Int = params.getInteger("balance") ?: throw ServiceException("balance is empty")
-        val user: User = User(username, mail, avatar, description, balance)
+        val request = context.request()
 
-        service.updateUser(user)
+        val username = request.getParam("username") ?: throw ServiceException("Username not found")
+        val description: String? = params.getString("description")
+
+        service.updateUser(username, description = description)
 
         context.success()
     }
