@@ -2,6 +2,7 @@ package susteam.status
 
 import susteam.user.Auth
 import susteam.user.username
+import java.time.Duration
 import java.time.Instant
 
 data class Status(
@@ -23,6 +24,14 @@ object UserStatus {
             }
         } else {
             StatusMap[username] = Status(true, Instant.now())
+        }
+    }
+
+    fun updateOnlineStatus() {
+        StatusMap.forEach {
+            if (Duration.between(it.value.lastSeen, Instant.now()).toMinutes() >= 10) {
+                it.value.online = false
+            }
         }
     }
 }

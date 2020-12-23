@@ -18,6 +18,7 @@ import susteam.game.GameController
 import susteam.order.OrderController
 import susteam.record.RecordController
 import susteam.save.GameSaveController
+import susteam.status.UserStatus
 import susteam.storage.StorageController
 import susteam.user.UserController
 import susteam.web.handler.StatusUpdateHandler
@@ -75,6 +76,10 @@ class APIServerVerticle : CoroutineVerticle() {
         )
         for (controller in controllers) {
             controller.route(router)
+        }
+
+        vertx.setPeriodic(1000 * 60) {
+            UserStatus.updateOnlineStatus()
         }
 
         Unit
