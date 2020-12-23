@@ -112,7 +112,7 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
                 UPDATE relationship SET status = ?
                 WHERE user1 = ? AND user2 = ? AND status = 'pending';
             """.trimIndent(),
-            jsonArrayOf(newStatus, username, applicant)
+            jsonArrayOf(newStatus, applicant, username)
         ).updated == 1
     }
 }
