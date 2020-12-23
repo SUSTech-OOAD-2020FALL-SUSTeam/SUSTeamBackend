@@ -14,12 +14,12 @@ class FriendController @Inject constructor(
 ) : CoroutineController() {
     override fun route(router: Router) {
         router.get("/friend").coroutineHandler(::handleGetFriends)
-        router.get("/friend/:gameId").coroutineHandler(::handleGetFriendsHaveGame)
         router.get("/friend/invite/:username/:gameKey").coroutineHandler(::handleInviteFriend)
         router.get("/friend/apply").coroutineHandler(::handleGetFriendsApplication)
         router.get("/friend/reply").coroutineHandler(::handleGetFriendsReply)
         router.get("/friend/apply/:username").coroutineHandler(::handleAddFriend)
         router.post("/friend/reply/:username").coroutineHandler(::handleReplyTo)
+        router.get("/friend/:gameId").coroutineHandler(::handleGetFriendsHaveGame)
     }
 
     suspend fun handleGetFriends(context: RoutingContext) {
