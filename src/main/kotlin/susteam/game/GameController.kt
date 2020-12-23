@@ -43,6 +43,7 @@ class GameController @Inject constructor(
 
         router.post("/game/:gameId/upload").coroutineHandler(::handleUploadGameVersion)
         router.get("/game/:gameId/version/:versionName/download").coroutineHandler(::handleDownloadGameVersion)
+        router.get("/game/:gameId/version/:versionName/update/download").coroutineHandler(::handleDownloadGameVersionUpdate)
 
         router.post("/game/:gameId/image").coroutineHandler(::handleUploadGameImage)
 
@@ -300,7 +301,6 @@ class GameController @Inject constructor(
     }
 
     suspend fun handleDownloadGameVersion(context: RoutingContext) {
-
         val request = context.request()
         val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
         val versionName = request.getParam("versionName") ?: throw ServiceException("Game version name is empty")
@@ -312,6 +312,17 @@ class GameController @Inject constructor(
         context.reroute("/api/store/${storageFile.id}")
     }
 
+    suspend fun handleDownloadGameVersionUpdate(context: RoutingContext) {
+        val request = context.request()
+        val gameId = request.getParam("gameId")?.toIntOrNull() ?: throw ServiceException("Game ID is empty")
+        val versionName = request.getParam("versionName") ?: throw ServiceException("Game version name is empty")
+        val auth = context.user() ?: throw ServiceException("Permission denied, please login")
+
+        val storageFile = service.downloadUpdate(auth, gameId, versionName)
+
+        context.put("allow-storage", storageFile.id)
+        context.reroute("/api/store/${storageFile.id}")
+    }
 
     suspend fun handleUploadGameImage(context: RoutingContext) {
         val gameId = context.request().getParam("gameId")?.toIntOrNull()

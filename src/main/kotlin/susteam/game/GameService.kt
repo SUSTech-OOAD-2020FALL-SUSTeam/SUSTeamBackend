@@ -187,6 +187,20 @@ class GameService @Inject constructor(
         return getGameVersion(gameId, versionName).url
     }
 
+    suspend fun downloadUpdate(auth: Auth, gameId: Int, versionName: String): StorageFile {
+        val downloadPermission = when {
+            auth.isAdmin() -> true
+            auth.username == getGame(gameId).author -> true
+            orderRepository.checkOrder(auth.username, gameId) == OrderStatus.SUCCESS -> true
+            else -> false
+        }
+        if (!downloadPermission) {
+            throw ServiceException("Permission denied, user not own the game")
+        }
+        return getGameVersion(gameId, versionName).updateUrl
+            ?: throw ServiceException("No update package can downlaod")
+    }
+
     suspend fun uploadGameImage(gameId: Int, image: StorageImage, type: String) {
         when (type) {
             "N" -> repository.createGameImage(gameId, image.id, type)

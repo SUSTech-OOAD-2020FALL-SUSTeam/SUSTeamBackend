@@ -99,7 +99,7 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
         try {
             database.updateWithParamsAwait(
                 """INSERT INTO game_version (game_id, branch, upload_time, name, url, update_url) VALUES (?, ?, ?, ?, ?, ?);""",
-                jsonArrayOf(gameId, branch, uploadTime, versionName, url, updateUrl)
+                jsonArrayOf(gameId, branch, uploadTime.toString(), versionName, url, updateUrl)
             )
         } catch (e: SQLIntegrityConstraintViolationException) {
             val message = e.message ?: throw e
