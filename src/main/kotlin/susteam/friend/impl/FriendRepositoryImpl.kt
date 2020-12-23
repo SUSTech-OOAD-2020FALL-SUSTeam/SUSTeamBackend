@@ -98,7 +98,7 @@ class FriendRepositoryImpl @Inject constructor(private val database: JDBCClient)
         return database.queryWithParamsAwait(
             """
                 SELECT user1 AS `from`, status FROM relationship
-                WHERE user2 = ?;
+                WHERE user2 = ? AND status = 'pending';
             """.trimIndent(),
             jsonArrayOf(username)
         ).rows.map {
