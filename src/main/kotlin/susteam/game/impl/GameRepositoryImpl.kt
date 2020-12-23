@@ -217,7 +217,7 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
                              WHERE start_time <= ?
                                AND end_time >= ?
                              ORDER BY percentage
-                             LIMIT 1)
+                             )
                 SELECT game.game_id   gameId,
                        name,
                        price,
@@ -252,7 +252,7 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
                              WHERE start_time <= ?
                                AND end_time >= ?
                              ORDER BY percentage
-                             LIMIT 1)
+                             )
                 SELECT game.game_id   gameId,
                        name,
                        price,
@@ -378,7 +378,6 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
                          WHERE start_time <= ?
                            AND end_time >= ?
                          ORDER BY percentage
-                         LIMIT 1
                      )
                 SELECT game.game_id   gameId,
                        name,
@@ -432,7 +431,7 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
                              WHERE start_time <= ?
                                AND end_time >= ?
                              ORDER BY percentage
-                             LIMIT 1)
+                             )
                 SELECT game.game_id   gameId,
                        name,
                        price,
@@ -462,7 +461,7 @@ class GameRepositoryImpl @Inject constructor(private val database: JDBCClient) :
                              WHERE start_time <= ?
                                AND end_time >= ?
                              ORDER BY percentage
-                             LIMIT 1)
+                             )
                 SELECT game.game_id   gameId,
                        name,
                        price,
